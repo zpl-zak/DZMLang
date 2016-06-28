@@ -86,6 +86,8 @@ main(void)
     
     register_function(&test, &setPlayerHealth, ...);
     
+    global_vtable[] <- OnUpdate
+    
     
     
 #endif

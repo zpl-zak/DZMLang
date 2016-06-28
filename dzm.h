@@ -111,6 +111,7 @@ zero_size(memory_index Size, void *Ptr)
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 
 #include "dzm_mem.h"
+#include "pr/dzm_pr.h"
 
 #define DZM_H
 #endif

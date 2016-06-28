@@ -206,11 +206,14 @@ clear_arena(MEMORY_ARENA *Arena)
     initialize_arena(Arena, Arena->Size, Arena->Base);
 }
 
-inline void
+/*inline void
 check_arena(MEMORY_ARENA *Arena)
 {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
     zassert(Arena->TempCount == 0);
-}
+#pragma clang diagnostic pop
+}*/
 
 inline void *
 copy(mi Size, void *SourceInit, void *DestInit)
