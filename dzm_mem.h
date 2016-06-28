@@ -1,0 +1,233 @@
+// (c) ZaKlaus 2016; All Rights Reserved;;
+
+#if !defined(DZM_MEM_H)
+
+typedef struct
+{
+    mi Size;
+    u8 *Base;
+    mi Used;
+    
+    s32 TempCount;
+} MEMORY_ARENA;
+
+typedef struct
+{
+    MEMORY_ARENA *Arena;
+    mi Used;
+} TEMP_MEMORY;
+
+typedef struct
+{
+    u32 Flags;
+    u32 Alignment;
+} ARENA_PUSH_PARAMS;
+
+enum
+{
+    ArenaFlag_ClearToZero = 0x1
+};
+
+inline void
+initialize_arena(MEMORY_ARENA *Arena, mi Size, void *Base)
+{
+    Arena->Size = Size;
+    Arena->Base = (u8 *)Base;
+    Arena->Used = 0;
+    Arena->TempCount = 0;
+}
+
+inline mi
+get_alignment_offset(MEMORY_ARENA *Arena, mi Alignment)
+{
+    mi AlignmentOffset = 0;
+    
+    mi ResultPointer = (mi)Arena->Base + Arena->Used;
+    mi AlignmentMask = Alignment - 1;
+    if(ResultPointer & AlignmentMask)
+    {
+        AlignmentOffset = Alignment - (ResultPointer & AlignmentMask);
+    }
+    
+    return(AlignmentOffset);
+}
+
+inline ARENA_PUSH_PARAMS
+default_arena_params(void)
+{
+    ARENA_PUSH_PARAMS Params;
+    Params.Flags = ArenaFlag_ClearToZero;
+    Params.Alignment = 4;
+    return(Params);
+}
+
+inline ARENA_PUSH_PARAMS
+align_noclear(u32 Alignment)
+{
+    ARENA_PUSH_PARAMS Params = default_arena_params();
+    Params.Flags &= ~ArenaFlag_ClearToZero;
+    Params.Alignment = Alignment;
+    return(Params);
+}
+
+inline ARENA_PUSH_PARAMS
+align(u32 Alignment, b32 Clear)
+{
+    ARENA_PUSH_PARAMS Params = default_arena_params();
+
+    if(Clear)
+    {
+        Params.Flags |= ArenaFlag_ClearToZero;
+    }
+    else
+    {
+        Params.Flags &= ~ArenaFlag_ClearToZero;
+    }
+    Params.Alignment = Alignment;
+    return(Params);
+}
+
+inline ARENA_PUSH_PARAMS
+noclear(void)
+{
+    ARENA_PUSH_PARAMS Params = default_arena_params();
+    Params.Flags &= ~ArenaFlag_ClearToZero;
+    return(Params);
+}
+
+inline mi
+get_arena_size_remaining(MEMORY_ARENA *Arena, ARENA_PUSH_PARAMS Params)
+{
+    return (Arena->Size - (Arena->Used + get_alignment_offset(Arena, Params.Alignment)));
+}
+
+inline mi
+get_effective_size_for(MEMORY_ARENA *Arena, mi SizeInit, ARENA_PUSH_PARAMS Params)
+{
+    mi Size = SizeInit;
+    
+    mi AlignmentOffset = get_alignment_offset(Arena, Params.Alignment);
+    
+    return(Size + AlignmentOffset);
+}
+
+inline b32
+arena_hasroom_for(MEMORY_ARENA *Arena, mi SizeInit, ARENA_PUSH_PARAMS Params)
+{
+    mi Size = get_effective_size_for(Arena, SizeInit, Params);
+    
+    return(((Arena->Used + Size) <= Arena->Size));
+}
+
+inline void *
+push_size(MEMORY_ARENA *Arena, mi SizeInit, ARENA_PUSH_PARAMS Params)
+{
+    mi Size = get_effective_size_for(Arena, SizeInit, Params);
+    
+    zassert((Arena->Used + Size) <= Arena->Size);
+    
+    mi AlignmentOffset = get_alignment_offset(Arena, Params.Alignment);
+    void *Result = Arena->Base + Arena->Used + AlignmentOffset;
+    Arena->Used += Size;
+    
+    zassert(Size >= SizeInit);
+    
+    if(Params.Flags & ArenaFlag_ClearToZero)
+    {
+        zero_size(SizeInit, Result);
+    }
+    
+    return(Result);
+}
+
+inline char *
+push_string(MEMORY_ARENA *Arena, char *Source)
+{
+    u32 Size = 1;
+    for(char *At = Source;
+        *At;
+        ++At)
+    {
+        ++Size;
+    }
+    
+    char *Dest = (char *)push_size(Arena, Size, noclear());
+    for(u32 CharIdx = 0;
+        CharIdx < Size;
+        ++CharIdx)
+    {
+        Dest[CharIdx] = Source[CharIdx];
+    }
+    
+    return(Dest);
+}
+
+inline char *
+push_string0(MEMORY_ARENA *Arena, u32 Length, char *Source)
+{
+    char *Dest = (char *)push_size(Arena, Length + 1, noclear());
+    for(u32 CharIdx = 0;
+        CharIdx < Length;
+        ++CharIdx)
+    {
+        Dest[CharIdx] = Source[CharIdx];
+    }
+    Dest[Length] = 0;
+    
+    return(Dest);
+}
+
+inline TEMP_MEMORY
+begin_temp(MEMORY_ARENA *Arena)
+{
+    TEMP_MEMORY Result = {
+        .Arena = Arena,
+        .Used = Arena->Used
+    };
+    
+    ++Arena->TempCount;
+    
+    return(Result);
+}
+
+inline void
+end_temp(TEMP_MEMORY TempMem)
+{
+    MEMORY_ARENA *Arena = TempMem.Arena;
+    zassert(Arena->Used >= TempMem.Used);
+    Arena->Used = TempMem.Used;
+    zassert(Arena->TempCount > 0);
+    --Arena->TempCount;
+}
+
+inline void
+clear_arena(MEMORY_ARENA *Arena)
+{
+    initialize_arena(Arena, Arena->Size, Arena->Base);
+}
+
+inline void
+check_arena(MEMORY_ARENA *Arena)
+{
+    zassert(Arena->TempCount == 0);
+}
+
+inline void *
+copy(mi Size, void *SourceInit, void *DestInit)
+{
+    u8 *Source = (u8 *)SourceInit;
+    u8 *Dest = (u8 *)DestInit;
+    while(Size--) {*Dest++ = *Source++;}
+    
+    return(DestInit);
+}
+
+#define push_struct(Arena, type, ...) (type *)push_size(Arena, sizeof(type), ## __VA_ARGS__)
+#define push_array(Arena, Count, type, ...) (type *)push_size(Arena, Count*sizeof(type), ## __VA_ARGS__)
+#define push_copy(Arena, Size, Source, ...) (type *)copy(Size, Source, push_size(Arena, Size, ## __VA_ARGS__))
+#define push_type push_struct
+
+#define DPARAMS default_arena_params
+
+#define DZM_MEM_H
+#endif
