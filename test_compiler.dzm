@@ -1,0 +1,18 @@
+(load "stdlib.dzm")
+
+(define filename (read))
+
+(define text '())
+
+(define in (open-input filename))
+
+(define (parse-file i)
+	(begin 
+		(let c (read-char i))
+		(if (not (nil? c))
+			(parse-file i)
+		)
+	)
+)
+(parse-file in)
+(close-input filename)

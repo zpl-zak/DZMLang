@@ -1,0 +1,13 @@
+(load "stdlib.dzm")
+
+(define n (env))
+(load "stdlib.dzm" n)
+(define (repl)
+	(write-char #\>)
+	(write-char #\space)
+	(write (eval (read) n))
+	(write-char #\newline)
+	(repl))
+
+(write-string "REPL Session. Press ^C to quit.\n")
+(repl)

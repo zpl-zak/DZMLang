@@ -7,6 +7,11 @@
 #include <limits.h>
 #include <float.h>
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
 typedef int8_t int8;
 typedef int16_t int16;
 typedef int32_t int32;
@@ -44,6 +49,9 @@ typedef real32 r32;
 typedef real64 r64;
 
 typedef uintptr_t umm;
+
+typedef unsigned char u8;
+
 
 #if !defined(COMPILER_MSVC)
 #define COMPILER_MSVC 0
@@ -87,6 +95,7 @@ typedef uintptr_t umm;
 
 #define InvalidCodePath zassert(!"InvalidCodePath")
 #define InvalidDefaultCase default: {InvalidCodePath;} break
+#define Unreachable(Statement) return(Statement)
 
 #define Kilobytes(Value) ((Value)*1024LL)
 #define Megabytes(Value) (Kilobytes(Value)*1024LL)
@@ -97,6 +106,12 @@ typedef uintptr_t umm;
 #define Align4(Value) ((Value + 3) & ~3)
 #define Align8(Value) ((Value + 7) & ~7)
 #define Align16(Value) ((Value + 15) & ~15)
+
+#define STRINGIFY(X) #X
+#define CONCAT(X,Y) X##Y
+#define SQUOTE(X, I, C) char __s_quote__I; sprintf(__s_quote__I, "'%s'", X); C = 
+#define UL_ (u8 *)
+#define L_  (s8 *)
 
 inline void
 zero_size(memory_index Size, void *Ptr)
@@ -110,8 +125,18 @@ zero_size(memory_index Size, void *Ptr)
 
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 
+// == Util
+#include "dzm_utl.h"
+
+// == Memory Manager
 #include "dzm_mem.h"
-#include "pr/dzm_pr.h"
+
+// == Schemed
+#include "lang/dzm_mdl.h"
+#include "lang/dzm_lex.h"
+#include "lang/dzm_evl.h"
+#include "lang/dzm_prt.h"
+#include "lang/dzm_rep.h"
 
 #define DZM_H
 #endif

@@ -27,3 +27,7 @@
 *.exe
 *.out
 *.app
+/vs2015/win32/*.db
+/*.ctm
+/vs2015/win32/Debug/*.pdb
+Debug

@@ -3,6 +3,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int
+main(int argc, char** argv)
+//main(void)
+{
+    //test_repl();
+    test_init(argc, argv);
+    
+    return(0);
+}
+
+/*
 enum
 {
     Monster_Brute,
@@ -55,11 +66,9 @@ monster_attack(MONSTER *MonsterInit)
             InvalidDefaultCase;
         }
     }
-}
+}*/
 
-int
-main(void)
-{
+#if 0
     MONSTER Brute = { .Next = 0, .Type = Monster_Brute, .Props = 0 };
     MONSTER Slasher = { .Next = 0, .Type = Monster_Slasher, .Props = 0 };
     Brute.Next = &Slasher;
@@ -76,21 +85,4 @@ main(void)
     
     monster_attack(&Brute);
     monster_attack(&Brute);
-    
-#if 0
-    SCRIPT test = load_script("fib.nieco");
-    exec_script(&test);
-    cache_script(test, [FILE]);
-    
-    call_event(&test, "onUpdate");
-    
-    register_function(&test, &setPlayerHealth, ...);
-    
-    global_vtable[] <- OnUpdate
-    
-    
-    
 #endif
-    
-    return(0);
-}

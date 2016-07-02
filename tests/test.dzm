@@ -1,0 +1,7 @@
+(define (underscore-string list)
+	(define (iter l o)
+		(if (nil? l)
+			o
+			(iter (cdr l) (concat o (car l) #\_))))
+	(iter list #\_)
+)
