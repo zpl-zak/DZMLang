@@ -2,22 +2,23 @@
 
 #if !defined(DZM_EVL_H)
 
-b32
+static inline b32
 is_self_evaluating(OBJECT *Exp)
 {
     return(is_boolean(Exp)   ||
            is_fixnum(Exp)    ||
+           is_realnum(Exp)   ||
            is_character(Exp) ||
            is_string(Exp));
 }
 
-b32
+static inline b32
 is_variable(OBJECT *Exp)
 {
     return(is_symbol(Exp));
 }
 
-b32
+static inline b32
 is_tagged_list(OBJECT *Exp, OBJECT *Tag)
 {
     OBJECT *A;
@@ -30,43 +31,43 @@ is_tagged_list(OBJECT *Exp, OBJECT *Tag)
     return(0);
 }
 
-b32
+static inline b32
 is_quoted(OBJECT *Exp)
 {
     return(is_tagged_list(Exp, QuoteSymbol));
 }
 
-OBJECT *
+static inline OBJECT *
 text_of_quotation(OBJECT *Exp)
 {
     return(pair_get_a(pair_get_b(Exp)));
 }
 
-b32
+static inline b32
 is_assignment(OBJECT *Exp)
 {
     return(is_tagged_list(Exp, SetSymbol));
 }
 
-b32
+static inline b32
 is_definition(OBJECT *Exp)
 {
     return(is_tagged_list(Exp, DefineSymbol));
 }
 
-OBJECT *
+static inline OBJECT *
 assignment_variable(OBJECT *Exp)
 {
     return(pair_get_a(pair_get_b(Exp)));
 }
 
-OBJECT *
+static inline OBJECT *
 assignment_value(OBJECT *Exp)
 {
     return(pair_get_a(pair_get_b(pair_get_b(Exp))));
 }
 
-OBJECT *
+static inline OBJECT *
 definition_variable(OBJECT *Exp)
 {
     if(is_symbol(pair_get_a(pair_get_b(Exp))))
@@ -79,10 +80,10 @@ definition_variable(OBJECT *Exp)
     }
 }
 
-OBJECT *
+static inline OBJECT *
 make_lambda(OBJECT *Parameters, OBJECT *Body);
 
-OBJECT *
+static inline OBJECT *
 definition_value(OBJECT *Exp)
 {
     if(is_symbol(pair_get_a(pair_get_b(Exp))))
@@ -96,7 +97,7 @@ definition_value(OBJECT *Exp)
     }
 }
 
-OBJECT *
+static inline OBJECT *
 make_if(OBJECT *Predicate, OBJECT *Consequent, OBJECT *Alternative)
 {
     return(make_pair(IfSymbol,
@@ -105,25 +106,25 @@ make_if(OBJECT *Predicate, OBJECT *Consequent, OBJECT *Alternative)
                                          make_pair(Alternative, Nil)))));
 }
 
-b32
+static inline b32
 is_if(OBJECT *Exp)
 {
     return(is_tagged_list(Exp, IfSymbol));
 }
 
-OBJECT *
+static inline OBJECT *
 if_predicate (OBJECT *Exp)
 {
     return(pair_get_a(pair_get_b(Exp)));
 }
 
-OBJECT *
+static inline OBJECT *
 if_consequent(OBJECT *Exp)
 {
     return(pair_get_a(pair_get_b(pair_get_b(Exp))));
 }
 
-OBJECT *
+static inline OBJECT *
 if_alternative(OBJECT *Exp)
 {
     if(is_nil(pair_get_b(pair_get_b(pair_get_b(Exp)))))
@@ -136,98 +137,98 @@ if_alternative(OBJECT *Exp)
     }
 }
 
-OBJECT *
+static inline OBJECT *
 make_lambda(OBJECT *Parameters, OBJECT *Body)
 {
     return(make_pair(LambdaSymbol,
                      make_pair(Parameters, Body)));
 }
 
-b32
+static inline b32
 is_lambda(OBJECT *Exp)
 {
     return(is_tagged_list(Exp, LambdaSymbol));
 }
 
-OBJECT *
+static inline OBJECT *
 lambda_parameters(OBJECT *Exp)
 {
     return(pair_get_a(pair_get_b(Exp)));
 }
 
-OBJECT *
+static inline OBJECT *
 lambda_body(OBJECT *Exp)
 {
     return(pair_get_b(pair_get_b(Exp)));
 }
 
-OBJECT *
+static inline OBJECT *
 make_begin(OBJECT *Exp)
 {
     return(make_pair(BeginSymbol, Exp));
 }
 
-b32
+static inline b32
 is_begin(OBJECT *Exp)
 {
     return(is_tagged_list(Exp, BeginSymbol));
 }
 
-OBJECT *
+static inline OBJECT *
 begin_actions(OBJECT *Exp)
 {
     return(pair_get_b(Exp));
 }
 
-b32
+static inline b32
 is_last_exp(OBJECT *Seq)
 {
     return(is_nil(pair_get_b(Seq)));
 }
 
-OBJECT *
+static inline OBJECT *
 first_exp(OBJECT *Seq)
 {
     return(pair_get_a(Seq));
 }
 
-OBJECT *
+static inline OBJECT *
 rest_exps(OBJECT *Seq)
 {
     return(pair_get_b(Seq));
 }
 
-b32
+static inline b32
 is_cond(OBJECT *Exp)
 {
     return(is_tagged_list(Exp, CondSymbol));
 }
 
-OBJECT *
+static inline OBJECT *
 cond_clauses(OBJECT *Exp)
 {
     return(pair_get_b(Exp));
 }
 
-OBJECT *
+static inline OBJECT *
 cond_predicate(OBJECT *Clause)
 {
     return(pair_get_a(Clause));
 }
 
-OBJECT *
+static inline OBJECT *
 cond_actions(OBJECT *Clause)
 {
     return(pair_get_b(Clause));
 }
 
-b32
+static inline b32
 is_cond_else_clause(OBJECT *Clause)
 {
     return(cond_predicate(Clause) == ElseSymbol);
 }
 
-OBJECT *
+static inline OBJECT *
 sequence_to_exp(OBJECT *Seq)
 {
     if(is_nil(Seq))
@@ -244,7 +245,7 @@ sequence_to_exp(OBJECT *Seq)
     }
 }
 
-OBJECT *
+static inline OBJECT *
 expand_clauses(OBJECT *Clauses)
 {
     OBJECT *First;
@@ -280,85 +281,85 @@ expand_clauses(OBJECT *Clauses)
     Unreachable(Nil);
 }
 
-OBJECT *
+static inline OBJECT *
 cond_to_if(OBJECT *Exp)
 {
     return(expand_clauses(cond_clauses(Exp)));
 }
 
-OBJECT *
+static inline OBJECT *
 make_application(OBJECT *Operator, OBJECT *Operands)
 {
     return(make_pair(Operator, Operands));
 }
 
-b32
+static inline b32
 is_application(OBJECT *Exp)
 {
     return(is_pair(Exp));
 }
 
-OBJECT *
+static inline OBJECT *
 operator(OBJECT *Exp)
 {
     return(pair_get_a(Exp));
 }
 
-OBJECT *
+static inline OBJECT *
 operands(OBJECT *Exp)
 {
     return(pair_get_b(Exp));
 }
 
-b32
+static inline b32
 is_no_operands(OBJECT *Ops)
 {
     return(is_nil(Ops));
 }
 
-OBJECT *
+static inline OBJECT *
 first_operand(OBJECT *Ops)
 {
     return(pair_get_a(Ops));
 }
 
-OBJECT *
+static inline OBJECT *
 rest_operands(OBJECT *Ops)
 {
     return(pair_get_b(Ops));
 }
 
-b32
+static inline b32
 is_let(OBJECT *Exp)
 {
     return(is_tagged_list(Exp, LetSymbol));
 }
 
-OBJECT *
+static inline OBJECT *
 let_bindings(OBJECT *Exp)
 {
     return(pair_get_a(pair_get_b(Exp)));
 }
 
-OBJECT *
+static inline OBJECT *
 let_body(OBJECT *Exp)
 {
     return(pair_get_b(pair_get_b(Exp)));
 }
 
-OBJECT *
+static inline OBJECT *
 binding_parameter(OBJECT *Binding)
 {
     return(pair_get_a(Binding));
 }
 
-OBJECT *
+static inline OBJECT *
 binding_argument(OBJECT *Binding)
 {
     return(pair_get_a(pair_get_b(Binding)));
 }
 
-OBJECT *
+static inline OBJECT *
 bindings_parameters(OBJECT *Bindings)
 {
     return(is_nil(Bindings) ?
@@ -367,7 +368,7 @@ bindings_parameters(OBJECT *Bindings)
                      bindings_parameters(pair_get_b(Bindings))));
 }
 
-OBJECT *
+static inline OBJECT *
 bindings_arguments(OBJECT *Bindings)
 {
     return(is_nil(Bindings) ?
@@ -376,19 +377,19 @@ bindings_arguments(OBJECT *Bindings)
                      bindings_arguments(pair_get_b(Bindings))));
 }
 
-OBJECT *
+static inline OBJECT *
 let_parameters(OBJECT *Exp)
 {
     return(bindings_parameters(let_bindings(Exp)));
 }
 
-OBJECT *
+static inline OBJECT *
 let_arguments(OBJECT *Exp)
 {
     return(bindings_arguments(let_bindings(Exp)));
 }
 
-OBJECT *
+static inline OBJECT *
 let_to_application(OBJECT *Exp)
 {
     return(make_application(
@@ -397,37 +398,37 @@ let_to_application(OBJECT *Exp)
         let_arguments(Exp)));
 }
 
-b32
+static inline b32
 is_and(OBJECT *Exp)
 {
     return(is_tagged_list(Exp, AndSymbol));
 }
 
-OBJECT *
+static inline OBJECT *
 and_tests(OBJECT *Exp)
 {
     return(pair_get_b(Exp));
 }
 
-b32
+static inline b32
 is_or(OBJECT *Exp)
 {
     return(is_tagged_list(Exp, OrSymbol));
 }
 
-OBJECT *
+static inline OBJECT *
 or_tests(OBJECT *Exp)
 {
     return(pair_get_b(Exp));
 }
 
-OBJECT *
+static inline OBJECT *
 apply_operator(OBJECT *Exp)
 {
     return(pair_get_a(Exp));
 }
 
-OBJECT *
+static inline OBJECT *
 prepare_apply_operands(OBJECT *Args)
 {
     if(is_nil(pair_get_b(Args)))
@@ -441,28 +442,28 @@ prepare_apply_operands(OBJECT *Args)
     }
 }
 
-OBJECT *
+static inline OBJECT *
 apply_operands(OBJECT *Args)
 {
     return(prepare_apply_operands(pair_get_b(Args)));
 }
 
-OBJECT *
+static inline OBJECT *
 eval_expression(OBJECT *Args)
 {
     return(pair_get_a(Args));
 }
 
-OBJECT *
+static inline OBJECT *
 eval_env(OBJECT *Args)
 {
     return(pair_get_a(pair_get_b(Args)));
 }
 
-OBJECT *
+static inline OBJECT *
 eval(OBJECT *Exp, OBJECT *Env);
 
-OBJECT *
+static inline OBJECT *
 list_of_values(OBJECT *Exps, OBJECT *Env)
 {
     if(is_no_operands(Exps))
@@ -476,7 +477,7 @@ list_of_values(OBJECT *Exps, OBJECT *Env)
     }
 }
 
-OBJECT *
+static inline OBJECT *
 eval_assignment(OBJECT *Exp, OBJECT *Env)
 {
     set_variable_value(assignment_variable(Exp),
@@ -485,7 +486,7 @@ eval_assignment(OBJECT *Exp, OBJECT *Env)
     return(OKSymbol);
 }
 
-OBJECT *
+static inline OBJECT *
 eval_definition(OBJECT *Exp, OBJECT *Env)
 {
     define_variable(definition_variable(Exp),
@@ -494,7 +495,7 @@ eval_definition(OBJECT *Exp, OBJECT *Env)
     return(OKSymbol);
 }
 
-OBJECT *
+static inline OBJECT *
 eval(OBJECT *Exp, OBJECT *Env)
 {
     OBJECT *Procedure;

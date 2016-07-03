@@ -2,7 +2,7 @@
 
 #if !defined(DZM_LEX_H)
 
-b32
+static inline b32
 is_delimiter(s32 C)
 {
     return(isspace(C) || C == EOF ||
@@ -10,7 +10,7 @@ is_delimiter(s32 C)
            C == '"'   || C == ';');
 }
 
-b32
+static inline b32
 is_initial(s32 C)
 {
     return(isalpha(C) || C == '*' || C == '/' || C == '>' ||
@@ -18,7 +18,7 @@ is_initial(s32 C)
            C == '_'   || C == '%');
 }
 
-s32
+static inline s32
 peek(FILE *In)
 {
     s32 C = getc(In);
@@ -26,7 +26,7 @@ peek(FILE *In)
     return(C);
 }
 
-void
+static inline void
 eat_whitespace(FILE *In)
 {
     s32 C;
@@ -48,7 +48,7 @@ eat_whitespace(FILE *In)
     }
 }
 
-void
+static inline void
 eat_expected_string(FILE *In, char *Str)
 {
     s32 C;
@@ -65,7 +65,7 @@ eat_expected_string(FILE *In, char *Str)
     }
 }
 
-void
+static inline void
 peek_expected_delimiter(FILE *In)
 {
     if(!is_delimiter(peek(In)))
@@ -75,7 +75,7 @@ peek_expected_delimiter(FILE *In)
     }
 }
 
-OBJECT *
+static inline OBJECT *
 read_character(FILE *In)
 {
     s32 C = getc(In);
@@ -112,10 +112,10 @@ read_character(FILE *In)
     return(make_character(C));
 }
 
-OBJECT *
+static inline OBJECT *
 read(FILE *In);
 
-OBJECT *
+static inline OBJECT *
 read_pair(FILE *In)
 {
     s32 C;
@@ -164,7 +164,7 @@ read_pair(FILE *In)
     }
 }
 
-OBJECT *
+static inline OBJECT *
 read(FILE *In)
 {
     s32 C;
@@ -199,11 +199,13 @@ read(FILE *In)
             InvalidDefaultCase;
         }
     }
-    // NOTE(zaklaus): FIXNUM
+    // NOTE(zaklaus): FIXNUM | REALNUM
     else if(isdigit(C) || (C == '-' && (isdigit(peek(In)))))
     {
-        s16 Sign = 1;
-        s32 Num = 0;
+        real32 Sign = 1.0f;
+        float Num = 0.0f;
+        float Realcnt = 1.0f;
+        b32 Real = 0;
         if(C == '-')
         {
             Sign = -1;
@@ -213,15 +215,30 @@ read(FILE *In)
             ungetc(C, In);
         }
         
-        while(isdigit(C = getc(In)))
+        while(isdigit(C = getc(In)) || C == '.')
         {
-            Num = (Num * 10) + (C - '0');
+            if(C == '.')
+            {
+                Real=1;
+                continue;
+            }
+            if(Real)
+            {
+                Realcnt *= 10.0f;
+            }
+            Num = (Num * 10.0f) + (C - '0');
         }
+        if(Real)
+            Num = (float)Num / (float)Realcnt;
         Num *= Sign;
+        
         if(is_delimiter(C))
         {
             ungetc(C, In);
-            return(make_fixnum(Num));
+            if(!Real)
+                return(make_fixnum((s32)Num));
+            else
+                return(make_realnum(Num));
         }
         else
         {

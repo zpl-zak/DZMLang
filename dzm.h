@@ -113,7 +113,7 @@ typedef unsigned char u8;
 #define UL_ (u8 *)
 #define L_  (s8 *)
 
-inline void
+static inline void
 zero_size(memory_index Size, void *Ptr)
 {
     uint8 *Byte = (uint8 *)Ptr;
@@ -131,7 +131,7 @@ zero_size(memory_index Size, void *Ptr)
 // == Memory Manager
 #include "dzm_mem.h"
 
-// == Schemed
+// == Interpreter
 #include "lang/dzm_mdl.h"
 #include "lang/dzm_lex.h"
 #include "lang/dzm_evl.h"

@@ -2,34 +2,51 @@
 
 #if !defined(DZM_PRC_H)
 
-#define def_proc(Name) OBJECT * Name##_proc(OBJECT *Args) 
+#define def_proc(Name) static inline OBJECT * Name##_proc(OBJECT *Args) 
 #define add_procedure(Name, Call)        \
-define_variable(make_symbol((u8 *)Name),\
+define_variable(make_symbol((u8 *)Name), \
 make_procedure(Call),                    \
 Env);
 
 // NOTE(zaklaus): Arithmetic operators
-OBJECT *
+static inline OBJECT *
 add_proc(OBJECT *Args)
 {
-    s32 Result = 0;
+    real32 Result = 0;
+    b32 Real = 0;
     
     while(!is_nil(Args))
     {
-        Result += (pair_get_a(Args))->uData.FIXNUM.Value;
+        if(is_fixnum(pair_get_a(Args)))
+            Result += (pair_get_a(Args))->uData.FIXNUM.Value;
+        else 
+        {
+            Real = 1;
+            Result += (pair_get_a(Args))->uData.REALNUM.Value;
+        }
         Args = pair_get_b(Args);
     }
-    return(make_fixnum(Result));
+    
+    if(!Real)
+        return(make_fixnum((s32)Result));
+    else
+        return(make_realnum(Result));
 }
 
-OBJECT *
+static inline OBJECT *
 sub_proc(OBJECT *Args)
 {
-    s32 Result = 0;
-    
+    real32 Result = 0;
+    b32 Real = 0;
     if(!is_nil(Args))
     {
-        Result = (pair_get_a(Args))->uData.FIXNUM.Value;
+        if(is_fixnum(pair_get_a(Args)))
+            Result = (pair_get_a(Args))->uData.FIXNUM.Value;
+        else 
+        {
+            Real = 1;
+            Result = (pair_get_a(Args))->uData.REALNUM.Value;
+        }
         Args = pair_get_b(Args);
     }
     
@@ -38,19 +55,28 @@ sub_proc(OBJECT *Args)
         Result -= (pair_get_a(Args))->uData.FIXNUM.Value;
         Args = pair_get_b(Args);
     }
-    return(make_fixnum(Result));
+    if(!Real)
+        return(make_fixnum((s32)Result));
+    else
+        return(make_realnum(Result));
 }
 
-OBJECT *
+static inline OBJECT *
 div_proc(OBJECT *Args)
 {
-    s32 Result = 0;
-    
+    real32 Result = 0;
+    b32 Real = 0;
     if(!is_nil(Args))
     {
-        Result = (pair_get_a(Args))->uData.FIXNUM.Value;
+        if(is_fixnum(pair_get_a(Args)))
+            Result = (pair_get_a(Args))->uData.FIXNUM.Value;
+        else 
+        {
+            Real = 1;
+            Result = (pair_get_a(Args))->uData.REALNUM.Value;
+        }
         Args = pair_get_b(Args);
-    }
+   }
     
     while(!is_nil(Args))
     {
@@ -60,13 +86,22 @@ div_proc(OBJECT *Args)
             InvalidCodePath;
         }
         
-        Result /= (pair_get_a(Args))->uData.FIXNUM.Value;
+        if(is_fixnum(pair_get_a(Args)))
+            Result /= (pair_get_a(Args))->uData.FIXNUM.Value;
+        else 
+        {
+            Real = 1;
+            Result /= (pair_get_a(Args))->uData.REALNUM.Value;
+        }
         Args = pair_get_b(Args);
     }
-    return(make_fixnum(Result));
+    if(!Real)
+        return(make_fixnum((s32)Result));
+    else
+        return(make_realnum(Result));
 }
 
-OBJECT *
+static inline OBJECT *
 mod_proc(OBJECT *Args)
 {
     s32 Result = 0;
@@ -89,19 +124,30 @@ mod_proc(OBJECT *Args)
         Args = pair_get_b(Args);
     }
     return(make_fixnum(Result));
+    
 }
 
-OBJECT *
+static inline OBJECT *
 mul_proc(OBJECT *Args)
 {
-    s32 Result = 1;
+    real32 Result = 1;
+    b32 Real = 0;
     
     while(!is_nil(Args))
     {
-        Result *= (pair_get_a(Args))->uData.FIXNUM.Value;
+        if(is_fixnum(pair_get_a(Args)))
+            Result *= (pair_get_a(Args))->uData.FIXNUM.Value;
+        else 
+        {
+            Real = 1;
+            Result *= (pair_get_a(Args))->uData.REALNUM.Value;
+        }
         Args = pair_get_b(Args);
     }
-    return(make_fixnum(Result));
+    if(!Real)
+        return(make_fixnum((s32)Result));
+    else
+        return(make_realnum(Result));
 }
 
 // NOTE(zaklaus): Existence checks
@@ -124,6 +170,11 @@ def_proc(is_symbol)
 def_proc(is_integer)
 {
     return(is_fixnum(pair_get_a(Args)) ? True : False);
+}
+
+def_proc(is_real)
+{
+    return(is_realnum(pair_get_a(Args)) ? True : False);
 }
 
 def_proc(is_char)
@@ -345,6 +396,7 @@ def_proc(is_eq)
     
     switch(Obj1->Type)
     {
+        case REALNUM:
         case FIXNUM:
         {
             return((Obj1->uData.FIXNUM.Value == 
@@ -616,7 +668,15 @@ system_end:
     //return(make_string((u8 *)system((char *)pair_get_a(Args)->uData.STRING.Value)));
 }
 
-void
+def_proc(arena_mem)
+{
+    return(make_pair(make_fixnum(
+        get_arena_size_remaining(GlobalArena, default_arena_params())),
+        make_fixnum(GlobalArena->Size)));
+    Unreachable(Args);
+}
+
+static inline void
 init_builtins(OBJECT *Env)
 {
     define_variable(make_symbol(UL_"+"),
@@ -693,6 +753,8 @@ init_builtins(OBJECT *Env)
     
     add_procedure("concat"      , concat_proc);
     add_procedure("system"      , system_proc);
+    
+    add_procedure("arena-mem"   , arena_mem_proc);
 }
 
 #define DZM_PRC_H

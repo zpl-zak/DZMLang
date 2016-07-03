@@ -2,10 +2,10 @@
 
 #if !defined(DZM_PRT_H)
 
-void
+static inline void
 write(FILE *Out, OBJECT *Obj);
 
-void
+static inline void
 write_pair(FILE *Out, OBJECT *Obj)
 {
     OBJECT *A = pair_get_a(Obj);
@@ -28,7 +28,7 @@ write_pair(FILE *Out, OBJECT *Obj)
     }
 }
 
-void
+static inline void
 write(FILE *Out, OBJECT *Obj)
 {
     if(Obj == 0)
@@ -40,6 +40,11 @@ write(FILE *Out, OBJECT *Obj)
         case FIXNUM:
         {
             fprintf(Out, "%1d", Obj->uData.FIXNUM.Value);
+        }break;
+        
+        case REALNUM:
+        {
+            fprintf(Out, "%1f", Obj->uData.REALNUM.Value);
         }break;
         
         case BOOLEAN:

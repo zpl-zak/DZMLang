@@ -28,7 +28,7 @@ enum
     ArenaFlag_ClearToZero = 0x1
 };
 
-inline void
+static inline void
 initialize_arena(MEMORY_ARENA *Arena, mi Size, void *Base)
 {
     Arena->Size = Size;
@@ -37,7 +37,7 @@ initialize_arena(MEMORY_ARENA *Arena, mi Size, void *Base)
     Arena->TempCount = 0;
 }
 
-inline mi
+static inline mi
 get_alignment_offset(MEMORY_ARENA *Arena, mi Alignment)
 {
     mi AlignmentOffset = 0;
@@ -52,7 +52,7 @@ get_alignment_offset(MEMORY_ARENA *Arena, mi Alignment)
     return(AlignmentOffset);
 }
 
-inline ARENA_PUSH_PARAMS
+static inline ARENA_PUSH_PARAMS
 default_arena_params(void)
 {
     ARENA_PUSH_PARAMS Params;
@@ -61,7 +61,7 @@ default_arena_params(void)
     return(Params);
 }
 
-inline ARENA_PUSH_PARAMS
+static inline ARENA_PUSH_PARAMS
 align_noclear(u32 Alignment)
 {
     ARENA_PUSH_PARAMS Params = default_arena_params();
@@ -70,7 +70,7 @@ align_noclear(u32 Alignment)
     return(Params);
 }
 
-inline ARENA_PUSH_PARAMS
+static inline ARENA_PUSH_PARAMS
 align(u32 Alignment, b32 Clear)
 {
     ARENA_PUSH_PARAMS Params = default_arena_params();
@@ -87,7 +87,7 @@ align(u32 Alignment, b32 Clear)
     return(Params);
 }
 
-inline ARENA_PUSH_PARAMS
+static inline ARENA_PUSH_PARAMS
 noclear(void)
 {
     ARENA_PUSH_PARAMS Params = default_arena_params();
@@ -95,13 +95,13 @@ noclear(void)
     return(Params);
 }
 
-inline mi
+static inline mi
 get_arena_size_remaining(MEMORY_ARENA *Arena, ARENA_PUSH_PARAMS Params)
 {
     return (Arena->Size - (Arena->Used + get_alignment_offset(Arena, Params.Alignment)));
 }
 
-inline mi
+static inline mi
 get_effective_size_for(MEMORY_ARENA *Arena, mi SizeInit, ARENA_PUSH_PARAMS Params)
 {
     mi Size = SizeInit;
@@ -111,7 +111,7 @@ get_effective_size_for(MEMORY_ARENA *Arena, mi SizeInit, ARENA_PUSH_PARAMS Param
     return(Size + AlignmentOffset);
 }
 
-inline b32
+static inline b32
 arena_hasroom_for(MEMORY_ARENA *Arena, mi SizeInit, ARENA_PUSH_PARAMS Params)
 {
     mi Size = get_effective_size_for(Arena, SizeInit, Params);
@@ -119,7 +119,7 @@ arena_hasroom_for(MEMORY_ARENA *Arena, mi SizeInit, ARENA_PUSH_PARAMS Params)
     return(((Arena->Used + Size) <= Arena->Size));
 }
 
-inline void *
+static inline void *
 push_size(MEMORY_ARENA *Arena, mi SizeInit, ARENA_PUSH_PARAMS Params)
 {
     mi Size = get_effective_size_for(Arena, SizeInit, Params);
@@ -140,7 +140,7 @@ push_size(MEMORY_ARENA *Arena, mi SizeInit, ARENA_PUSH_PARAMS Params)
     return(Result);
 }
 
-inline char *
+static inline char *
 push_string(MEMORY_ARENA *Arena, char *Source)
 {
     u32 Size = 1;
@@ -162,7 +162,7 @@ push_string(MEMORY_ARENA *Arena, char *Source)
     return(Dest);
 }
 
-inline char *
+static inline char *
 push_string0(MEMORY_ARENA *Arena, u32 Length, char *Source)
 {
     char *Dest = (char *)push_size(Arena, Length + 1, noclear());
@@ -177,7 +177,7 @@ push_string0(MEMORY_ARENA *Arena, u32 Length, char *Source)
     return(Dest);
 }
 
-inline TEMP_MEMORY
+static inline TEMP_MEMORY
 begin_temp(MEMORY_ARENA *Arena)
 {
     TEMP_MEMORY Result = {
@@ -190,7 +190,7 @@ begin_temp(MEMORY_ARENA *Arena)
     return(Result);
 }
 
-inline void
+static inline void
 end_temp(TEMP_MEMORY TempMem)
 {
     MEMORY_ARENA *Arena = TempMem.Arena;
@@ -200,13 +200,13 @@ end_temp(TEMP_MEMORY TempMem)
     --Arena->TempCount;
 }
 
-inline void
+static inline void
 clear_arena(MEMORY_ARENA *Arena)
 {
     initialize_arena(Arena, Arena->Size, Arena->Base);
 }
 
-/*inline void
+/*static inline void
 check_arena(MEMORY_ARENA *Arena)
 {
 #pragma clang diagnostic push
@@ -215,7 +215,7 @@ check_arena(MEMORY_ARENA *Arena)
 #pragma clang diagnostic pop
 }*/
 
-inline void *
+static inline void *
 copy(mi Size, void *SourceInit, void *DestInit)
 {
     u8 *Source = (u8 *)SourceInit;

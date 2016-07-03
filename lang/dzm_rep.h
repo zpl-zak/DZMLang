@@ -2,7 +2,7 @@
 
 #if !defined(DZM_REP_H)
 
-void
+static inline void
 test_load_file(char *Name)
 {
     FILE *File = fopen(Name, "r");
@@ -25,7 +25,7 @@ test_load_file(char *Name)
     fclose(File);
 }
 
-void
+static inline void
 test_repl(void)
 {
     printf("DZMLang REPL; By ZaKlaus.\nUse ^C to exit.\n");
@@ -40,9 +40,11 @@ test_repl(void)
     }
 }
 
-void
+static inline void
 test_init(int argc, char** argv)
 {
+    GlobalArena = malloc(sizeof(MEMORY_ARENA));
+    initialize_arena(GlobalArena, MAX_VM_SIZE, malloc(MAX_VM_SIZE));
     if(argc < 2)
     {
         init_defs();

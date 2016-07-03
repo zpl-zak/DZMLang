@@ -3,11 +3,13 @@
 #if !defined(DZM_MDL_H)
 
 #define MAX_STRING_SIZE 1000
+#define MAX_VM_SIZE     4096 * 1000
 
 enum OBJECT_TYPE_
 {
     UNKNOWN,
     FIXNUM,
+    REALNUM,
     BOOLEAN,
     CHARACTER,
     STRING,
@@ -30,6 +32,11 @@ typedef struct OBJECT_
         {
             s32 Value;
         } FIXNUM;
+        
+        struct
+        {
+            real32 Value;
+        } REALNUM;
         
         struct
         {
@@ -81,17 +88,20 @@ typedef struct OBJECT_
     } uData;
 } OBJECT;
 
-OBJECT *
+MEMORY_ARENA *GlobalArena;
+
+static inline OBJECT *
 alloc_object(void)
 {
-    OBJECT *Obj = malloc(sizeof(OBJECT));
+    //OBJECT *Obj = malloc(sizeof(OBJECT));
+    OBJECT *Obj = push_type(GlobalArena, OBJECT, default_arena_params());
     
     zassert(Obj != 0);
     
     return(Obj);
 }
 
-OBJECT *
+static inline OBJECT *
 make_fixnum(s32 Value)
 {
     OBJECT *Obj = alloc_object();
@@ -100,7 +110,16 @@ make_fixnum(s32 Value)
     return(Obj);
 }
 
-OBJECT *
+static inline OBJECT *
+make_realnum(real32 Value)
+{
+    OBJECT *Obj = alloc_object();
+    Obj->Type = REALNUM;
+    Obj->uData.REALNUM.Value = Value;
+    return(Obj);
+}
+
+static inline OBJECT *
 make_character(u8 Value)
 {
     OBJECT *Obj = alloc_object();
@@ -111,7 +130,7 @@ make_character(u8 Value)
 
 OBJECT *Nil;
 
-OBJECT *
+static inline OBJECT *
 make_string(u8 *Value)
 {
     OBJECT *Obj = alloc_object();
@@ -128,7 +147,7 @@ make_string(u8 *Value)
     return(Obj);
 }
 
-OBJECT *
+static inline OBJECT *
 make_pair(OBJECT *A, OBJECT *B)
 {
     OBJECT *Obj = alloc_object();
@@ -138,7 +157,7 @@ make_pair(OBJECT *A, OBJECT *B)
     return(Obj);
 }
 
-OBJECT *
+static inline OBJECT *
 make_input(FILE *In)
 {
     OBJECT *Obj = alloc_object();
@@ -148,7 +167,7 @@ make_input(FILE *In)
     return(Obj);
 }
 
-OBJECT *
+static inline OBJECT *
 make_output(FILE *Out)
 {
     OBJECT *Obj = alloc_object();
@@ -158,67 +177,73 @@ make_output(FILE *Out)
     return(Obj);
 }
 
-b32
+static inline b32
 is_fixnum(OBJECT *Obj)
 {
     return(Obj->Type == FIXNUM);
 }
 
-b32
+static inline b32
+is_realnum(OBJECT *Obj)
+{
+    return(Obj->Type == REALNUM);
+}
+
+static inline b32
 is_boolean(OBJECT *Obj)
 {
     return(Obj->Type == BOOLEAN);
 }
 
-b32
+static inline b32
 is_input(OBJECT *Obj)
 {
     return(Obj->Type == INPUT);
 }
 
-b32
+static inline b32
 is_output(OBJECT *Obj)
 {
     return(Obj->Type == OUTPUT);
 }
 
-b32
+static inline b32
 is_eof_id(OBJECT *Obj)
 {
     return(Obj->Type == EOF_ID);
 }
 
-b32
+static inline b32
 is_character(OBJECT *Obj)
 {
     return(Obj->Type == CHARACTER);
 }
 
-b32
+static inline b32
 is_string(OBJECT *Obj)
 {
     return(Obj->Type == STRING);
 }
 
-b32
+static inline b32
 is_nil(OBJECT *Obj)
 {
     return(Obj->Type == NIL);
 }
 
-b32
+static inline b32
 is_pair(OBJECT *Obj)
 {
     return(Obj->Type == PAIR);
 }
 
-b32
+static inline b32
 is_symbol(OBJECT *Obj)
 {
     return(Obj->Type == SYMBOL);
 }
 
-b32
+static inline b32
 is_eof_obj(OBJECT *Obj)
 {
     return(Obj->Type == EOF_ID);
@@ -247,21 +272,23 @@ OBJECT *EOF_Obj;
 
 OBJECT *NilEnv;
 OBJECT *GlobalEnv;
+
+MEMORY_ARENA *GlobalArena;
 // -- GLOBAL VARS
 
-OBJECT *
+static inline OBJECT *
 make_symbol(u8 *Value);
 
-OBJECT *
+static inline OBJECT *
 pair_get_a(OBJECT *Pair);
-OBJECT *
+static inline OBJECT *
 pair_get_b(OBJECT *Pair);
-void
+static inline void
 pair_set_a(OBJECT *Pair, OBJECT *A);
-void
+static inline void
 pair_set_b(OBJECT *Pair, OBJECT *B);
 
-OBJECT *
+static inline OBJECT *
 make_procedure(OBJECT *(*Fn)(OBJECT *Args))
 {
     OBJECT *Obj = alloc_object();
@@ -271,7 +298,7 @@ make_procedure(OBJECT *(*Fn)(OBJECT *Args))
 }
 
 
-OBJECT *
+static inline OBJECT *
 make_compound(OBJECT *Parameters, OBJECT *Body, OBJECT *Env)
 {
     OBJECT *Obj = alloc_object();
@@ -283,62 +310,62 @@ make_compound(OBJECT *Parameters, OBJECT *Body, OBJECT *Env)
     return(Obj);
 }
 
-b32
+static inline b32
 is_procedure(OBJECT *Obj)
 {
     return(Obj->Type == PROCEDURE);
 }
 
-b32
+static inline b32
 is_compound(OBJECT *Obj)
 {
     return(Obj->Type == COMPOUND);
 }
 
-OBJECT *
+static inline OBJECT *
 enclosing_env(OBJECT *Env)
 {
     return(pair_get_b(Env));
 }
 
-OBJECT *
+static inline OBJECT *
 first_frame(OBJECT *Env)
 {
     return(pair_get_a(Env));
 }
 
-OBJECT *
+static inline OBJECT *
 make_frame(OBJECT *Vars, OBJECT *Vals)
 {
     return(make_pair(Vars, Vals));
 }
 
-OBJECT *
+static inline OBJECT *
 frame_variables(OBJECT *Frame)
 {
     return(pair_get_a(Frame));
 }
 
-OBJECT *
+static inline OBJECT *
 frame_values(OBJECT *Frame)
 {
     return(pair_get_b(Frame));
 }
 
-void
+static inline void
 add_binding_to_frame(OBJECT *Var, OBJECT *Val, OBJECT *Frame)
 {
     pair_set_a(Frame, make_pair(Var, pair_get_a(Frame)));
     pair_set_b(Frame, make_pair(Val, pair_get_b(Frame)));
 }
 
-OBJECT *
+static inline OBJECT *
 extend_env(OBJECT *Vars, OBJECT *Vals, OBJECT *Base)
 {
     return(make_pair(make_frame(Vars, Vals), Base));
 }
 
-OBJECT *
+static inline OBJECT *
 lookup_variable_value(OBJECT *Var, OBJECT *Env)
 {
     OBJECT *Frame;
@@ -364,7 +391,7 @@ lookup_variable_value(OBJECT *Var, OBJECT *Env)
     Unreachable(Nil);
 }
 
-void
+static inline void
 set_variable_value(OBJECT *Var, OBJECT *Val, OBJECT *Env)
 {
     OBJECT *Frame;
@@ -392,7 +419,7 @@ set_variable_value(OBJECT *Var, OBJECT *Val, OBJECT *Env)
     InvalidCodePath;
 }
 
-void
+static inline void
 define_variable(OBJECT *Var, OBJECT *Val, OBJECT *Env)
 {
     OBJECT *Frame = first_frame(Env);
@@ -411,7 +438,7 @@ define_variable(OBJECT *Var, OBJECT *Val, OBJECT *Env)
     add_binding_to_frame(Var, Val, Frame);
 }
 
-OBJECT *
+static inline OBJECT *
 setup_env(void)
 {
     OBJECT *InitEnv;
@@ -420,10 +447,10 @@ setup_env(void)
     return(InitEnv);
 }
 
-void
+static inline void
 init_builtins(OBJECT *Env);
 
-OBJECT *
+static inline OBJECT *
 make_env(void)
 {
     OBJECT * Env = setup_env();
@@ -431,23 +458,23 @@ make_env(void)
     return(Env);
 }
 
-OBJECT *
+static inline OBJECT *
 eval(OBJECT *Exp, OBJECT *Env);
 
-OBJECT *
+static inline OBJECT *
 read(FILE *In);
 
-void
+static inline void
 write(FILE *Out, OBJECT *Obj);
 
-s32
+static inline s32
 peek(FILE *In);
 
 #include "dzm_prc.h"
 
-void
+static inline void
 init_defs(void)
-{
+{    
     False = alloc_object();
     False->Type = BOOLEAN;
     False->uData.BOOLEAN.Value = 0;
@@ -477,19 +504,19 @@ init_defs(void)
     GlobalEnv = make_env();
 }
 
-b32
+static inline b32
 is_false(OBJECT *Obj)
 {
     return(Obj == False);
 }
 
-b32
+static inline b32
 is_true(OBJECT *Obj)
 {
     return(Obj == True);
 }
 
-OBJECT *
+static inline OBJECT *
 pair_get_a(OBJECT *Pair)
 {
 	if (is_pair(Pair))
@@ -498,25 +525,25 @@ pair_get_a(OBJECT *Pair)
 		return(Nil);
 }
 
-OBJECT *
+static inline OBJECT *
 pair_get_b(OBJECT *Pair)
 {
     return(Pair->uData.PAIR.B);
 }
 
-void
+static inline void
 pair_set_a(OBJECT *Pair, OBJECT *A)
 {
     Pair->uData.PAIR.A = A;
 }
 
-void
+static inline void
 pair_set_b(OBJECT *Pair, OBJECT *B)
 {
     Pair->uData.PAIR.B = B;
 }
 
-OBJECT *
+static inline OBJECT *
 make_symbol(u8 *Value)
 {
     OBJECT *Obj = alloc_object();

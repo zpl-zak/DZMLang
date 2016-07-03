@@ -1,18 +1,9 @@
-(load "stdlib.dzm")
+(define in (open-input "test.cpa"))
 
-(define filename (read))
-
-(define text '())
-
-(define in (open-input filename))
-
-(define (parse-file i)
-	(begin 
-		(let c (read-char i))
-		(if (not (nil? c))
-			(parse-file i)
-		)
+(define (eval x)
+	(define c (read-char in))
+	(cond
+		((= c #\P) (write "PRINTING!"))
+		(else '())
 	)
 )
-(parse-file in)
-(close-input filename)
