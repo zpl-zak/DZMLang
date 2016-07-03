@@ -153,6 +153,7 @@ write(FILE *Out, OBJECT *Obj)
             InvalidCodePath;
         }break;
     }
+    Obj->Mark = 1;
 }
 
 #define DZM_PRT_H

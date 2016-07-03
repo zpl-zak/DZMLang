@@ -25,7 +25,9 @@ enum OBJECT_TYPE_
 
 typedef struct OBJECT_
 {
+    struct OBJECT_ *Next;
     u8 Type;
+    b32 Mark;
     union
     {
         struct
@@ -89,12 +91,46 @@ typedef struct OBJECT_
 } OBJECT;
 
 MEMORY_ARENA *GlobalArena;
+OBJECT *GlobalTable;
+OBJECT *GlobalLast;
 
 static inline OBJECT *
 alloc_object(void)
 {
+    OBJECT *Obj = 0;
+    
+    for(OBJECT *It = GlobalTable->Next;
+        It;
+        It = It->Next)
+    {
+        if(It->Mark == 1)
+        {
+            Obj = It;
+            Obj->Mark = 0;
+            break;
+        }
+    }
+    
     //OBJECT *Obj = malloc(sizeof(OBJECT));
-    OBJECT *Obj = push_type(GlobalArena, OBJECT, default_arena_params());
+    
+    if(Obj == 0)
+    {
+        Obj = push_type(GlobalArena, OBJECT, default_arena_params());
+        
+        if(GlobalTable->Next == 0)
+        {
+            GlobalTable->Next = GlobalLast = Obj;
+            Obj->Next = 0;
+        }
+        else
+        {
+            GlobalLast->Next = Obj;
+            GlobalLast = Obj;
+            Obj->Next = 0;
+        }
+        
+        Obj->Mark = 0;
+    }
     
     zassert(Obj != 0);
     
@@ -475,6 +511,9 @@ peek(FILE *In);
 static inline void
 init_defs(void)
 {    
+    GlobalTable = malloc(sizeof(OBJECT));
+    GlobalTable->Next = 0;
+    
     False = alloc_object();
     False->Type = BOOLEAN;
     False->uData.BOOLEAN.Value = 0;

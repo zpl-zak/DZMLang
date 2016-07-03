@@ -60,12 +60,7 @@
   (iter l '()))
 
 (define (reverse-string l)
-	(define (iter i o)
-		(if (nil? (car i))
-			o
-			(iter (cdr i) (concat (car i) o))))
-	(iter l)
-)
+	(list->string (reverse (string->list l))))
 
 (define (map proc items)
     (if (null? items)

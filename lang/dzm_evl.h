@@ -598,6 +598,7 @@ tailcall:
     {
         Procedure = eval(operator(Exp), Env);
         Arguments = list_of_values(operands(Exp), Env);
+        Exp->Mark = 1;
 
         if(is_procedure(Procedure) &&
            Procedure->uData.PROCEDURE.Fn == apply_proc)
@@ -616,7 +617,34 @@ tailcall:
         
         if(is_procedure(Procedure))
         {
-            return((Procedure->uData.PROCEDURE.Fn)(Arguments));
+            OBJECT *Res = (Procedure->uData.PROCEDURE.Fn)(Arguments);
+            
+            if(is_self_evaluating(Res))
+            {
+                Res->Mark = 1;
+            }
+            else if(is_pair(Res))
+            {
+                b32 ShouldMark = 0;
+                OBJECT *It = Res;
+                
+                while((It) != Nil)
+                {
+                    if(is_self_evaluating(pair_get_a(It)))
+                    {
+                        (pair_get_a(It))->Mark = 1;
+                        ShouldMark = 1;
+                    }
+                    It = pair_get_b(It);
+                }
+                
+                if(ShouldMark)
+                {
+                    //Res->Mark = 1;
+                }
+            }
+            
+            return(Res);
         }
         else if(is_compound(Procedure))
         {
