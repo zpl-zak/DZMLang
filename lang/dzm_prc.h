@@ -50,11 +50,19 @@ sub_proc(OBJECT *Args)
         Args = pair_get_b(Args);
     }
     
+    b32 IsAlone = 1;
     while(!is_nil(Args))
     {
         Result -= (pair_get_a(Args))->uData.FIXNUM.Value;
         Args = pair_get_b(Args);
+        IsAlone = 0;
     }
+    
+    if(IsAlone)
+    {
+        Result = -Result;
+    }
+    
     if(!Real)
         return(make_fixnum((s32)Result));
     else
@@ -345,7 +353,8 @@ concat_tailcall:
 
 def_proc(cons)
 {
-    return(make_pair(pair_get_a(Args), pair_get_a(pair_get_b(Args))));
+    pair_set_b(Args, pair_get_a(pair_get_b(Args)));
+    return(Args);
 }
 
 def_proc(car)

@@ -107,6 +107,27 @@ alloc_object(void)
         {
             Obj = It;
             Obj->Mark = 0;
+            
+            // NOTE(zaklaus): Handle special cases
+            switch(Obj->Type)
+            {
+                case SYMBOL:
+                case STRING:
+                {
+                    free(Obj->uData.STRING.Value);
+                }break;
+                
+                case PAIR:
+                {
+                    // TODO(zaklaus): Decide what to do with pair-wise objects.
+                }break;
+                
+                default:
+                {
+                    
+                }break;
+            }
+            
             break;
         }
     }
@@ -171,12 +192,6 @@ make_string(u8 *Value)
 {
     OBJECT *Obj = alloc_object();
     Obj->Type = STRING;
-    if(Value == 0)
-    {
-        Obj->uData.STRING.Value = malloc(1);
-        *Obj->uData.STRING.Value = 0;
-        return(Nil);
-    }
     Obj->uData.STRING.Value = malloc(strlen((char *)Value) + 1);
     zassert(Obj->uData.STRING.Value != NULL);
     string_copy(Obj->uData.STRING.Value, Value);
