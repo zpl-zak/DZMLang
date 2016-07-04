@@ -2,6 +2,8 @@
 
 #if !defined(DZM_H)
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdint.h>
 #include <stddef.h>
 #include <limits.h>
@@ -50,8 +52,9 @@ typedef real64 r64;
 
 typedef uintptr_t umm;
 
-typedef unsigned char u8;
-
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 #if !defined(COMPILER_MSVC)
 #define COMPILER_MSVC 0
@@ -59,24 +62,6 @@ typedef unsigned char u8;
 
 #if !defined(COMPILER_LLVM)
 #define COMPILER_LLVM 0
-#endif
-
-#if !COMPILER_MSVC && !COMPILER_LLVM
-#if _MSC_VER
-#undef COMPILER_MSVC
-#define COMPILER_MSVC 1
-#else
-#undef COMPILER_LLVM
-#define COMPILER_LLVM 1
-#endif
-#endif
-
-#if COMPILER_MSVC
-#include <intrin.h>
-#elif COMPILER_LLVM
-#include <x86intrin.h>
-#else
-#error SEE/NEON optimizations are not available for this compiler yet!!!!
 #endif
 
 #ifdef COMPILER_MSVC
