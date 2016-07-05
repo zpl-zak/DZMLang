@@ -338,7 +338,7 @@ read(FILE *In)
     fprintf(stderr, "Read illegal state\n");
     InvalidCodePath;
     
-    Unreachable(0);
+    Unreachable(Nil);
 }
 
 #define DZM_LEX_H
