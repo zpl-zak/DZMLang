@@ -2,5 +2,3 @@ language: c
 sudo: false # only for faster builds
 script:
   - gcc -g -std=gnu99 -Wall -Wextra -Werror test.c -o test
-  - ./test tests/test.dzm
-  - echo There are no real tests yet!
