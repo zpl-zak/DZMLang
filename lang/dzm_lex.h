@@ -58,7 +58,7 @@ eat_expected_string(FILE *In, char *Str)
         C = getc(In);
         if(C != *Str)
         {
-            fprintf(stderr, "Unexpected char '%c'\n", C);
+            fprintf(stderr, "Unexpected char '%c'", C);
             InvalidCodePath;
         }
         Str++;
@@ -70,7 +70,7 @@ peek_expected_delimiter(FILE *In)
 {
     if(!is_delimiter(peek(In)))
     {
-        fprintf(stderr, "Char not followed by delimiter\n");
+        push_log("Char not followed by delimiter", ERR_WARN);
         InvalidCodePath;
     }
 }
@@ -84,7 +84,7 @@ read_character(FILE *In)
     {
         case EOF:
         {
-            fprintf(stderr, "Incomplete char literal\n");
+            push_log("Incomplete char literal", ERR_WARN);
             InvalidCodePath;
         }break;
         
@@ -141,7 +141,7 @@ read_pair(FILE *In)
         C = peek(In);
         if(!is_delimiter(C))
         {
-            fprintf(stderr, "Dot is not followed by delimiter\n");
+            push_log("Dot is not followed by delimiter", ERR_WARN);
             InvalidCodePath;
         }
         B = read(In);
@@ -151,7 +151,7 @@ read_pair(FILE *In)
         C = getc(In);
         if(C != ')')
         {
-            fprintf(stderr, "Pair does not end with ')'\n");
+            push_log("Pair does not end with ')'", ERR_WARN);
             InvalidCodePath;
         }
         return(make_pair(A,B));
@@ -163,8 +163,6 @@ read_pair(FILE *In)
         return(make_pair(A,B));
     }
 }
-
-#include <signal.h>
 
 static inline OBJECT *
 read(FILE *In)
@@ -244,7 +242,7 @@ read(FILE *In)
         }
         else
         {
-            fprintf(stderr, "Number not followed by delimiter\n");
+            push_log("Number not followed by delimiter", ERR_WARN);
             InvalidCodePath;
         }
     }
@@ -263,7 +261,7 @@ read(FILE *In)
             }
             else
             {
-                fprintf(stderr, "Symbol too long. Max. Len is %d\n", MAX_STRING_SIZE);
+                LOG(ERR_WARN, "Symbol too long. Max. Len is %d", MAX_STRING_SIZE);
                 InvalidCodePath;
             }
             C = getc(In);
@@ -276,7 +274,7 @@ read(FILE *In)
         }
         else
         {
-            fprintf(stderr, "Symbol not followed by delimiter\n");
+            LOG(ERR_WARN, "Symbol not followed by delimiter");
             InvalidCodePath;
         }
     }
@@ -297,7 +295,7 @@ read(FILE *In)
             }
             if(C == EOF)
             {
-                fprintf(stderr, "Non-terminated string literal\n");
+                LOG(ERR_WARN, "Non-terminated string literal\n");
                 InvalidCodePath;
             }
             
@@ -308,7 +306,7 @@ read(FILE *In)
             }
             else
             {
-                fprintf(stderr, "String too long. Max. Len is %d\n", MAX_STRING_SIZE);
+                LOG(ERR_WARN, "String too long. Max. Len is %d", MAX_STRING_SIZE);
                 InvalidCodePath;
             }
         }
@@ -331,14 +329,14 @@ read(FILE *In)
     }
     else
     {
-        fprintf(stderr, "Bad Input. Unexpected '%c'\n", C);
+        LOG(ERR_WARN, "Bad Input. Unexpected '%c'", C);
         
         InvalidCodePath;
     }
-    fprintf(stderr, "Read illegal state\n");
+    LOG(ERR_WARN, "Read illegal state");
     InvalidCodePath;
     
-    Unreachable(Nil);
+    return(Nil);
 }
 
 #define DZM_LEX_H

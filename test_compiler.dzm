@@ -1,9 +1,0 @@
-(define in (open-input "test.cpa"))
-
-(define (eval x)
-	(define c (read-char in))
-	(cond
-		((= c #\P) (write "PRINTING!"))
-		(else '())
-	)
-)

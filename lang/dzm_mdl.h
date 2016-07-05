@@ -2,9 +2,6 @@
 
 #if !defined(DZM_MDL_H)
 
-#define MAX_STRING_SIZE 32768
-#define MAX_VM_SIZE     4096 * 1024 * 128
-
 enum OBJECT_TYPE_
 {
     UNKNOWN,
@@ -493,7 +490,7 @@ lookup_variable_value(OBJECT *Var, OBJECT *Env)
         }
         Env = enclosing_env(Env);
     }
-    fprintf(stderr, "Unbound variable\n");
+    LOG(ERR_WARN, "Unbound variable");
     Var->Mark = 1;
     Unreachable(Nil);
 }
@@ -523,7 +520,7 @@ set_variable_value(OBJECT *Var, OBJECT *Val, OBJECT *Env)
         Env = enclosing_env(Env);
     }
     Var->Mark = 1;
-    fprintf(stderr, "Unbound variable\n");
+    LOG(ERR_WARN, "Unbound variable");
     InvalidCodePath;
 }
 

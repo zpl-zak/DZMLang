@@ -267,7 +267,7 @@ expand_clauses(OBJECT *Clauses)
             }
             else
             {
-                fprintf(stderr, "Else clause isn't last cond->if\n");
+                LOG(ERR_WARN, "Else clause isn't last cond->if");
                 InvalidCodePath;
             }
         }
@@ -659,17 +659,17 @@ tailcall:
         }
         else
         {
-            fprintf(stderr, "Unknown procedure type\n");
+            LOG(ERR_WARN, "Unknown procedure type");
             InvalidCodePath;
         }
     }
     else
     {
-        fprintf(stderr, "Unknown operation for expression\n");
+        LOG(ERR_WARN, "Unknown operation for expression");
         InvalidCodePath;
     }
     
-    Unreachable(Nil);
+    return(Nil);
 }
 
 #define DZM_EVL_H

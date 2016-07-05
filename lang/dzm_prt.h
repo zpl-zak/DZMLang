@@ -150,14 +150,14 @@ write(FILE *Out, OBJECT *Obj)
         
         default:
         {
-            fprintf(stderr, "Unknown value\n");// for '%#08x'\n", (unsigned int*)&Obj);
+            fprintf(stderr, "Unknown value");// for '%#08x'\n", (unsigned int*)&Obj);
             InvalidCodePath;
         }break;
     }
     
     if(PrintMemUsage)
     {
-        fprintf(stdout, "\nLOG) Free: %d, Total: %d\n", get_arena_size_remaining(GlobalArena, default_arena_params()), GlobalArena->Size);
+        LOG(ERR_INFO, "Free: %d, Total: %d", get_arena_size_remaining(GlobalArena, default_arena_params()), GlobalArena->Size);
     }
     
     Obj->Mark = 1;

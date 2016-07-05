@@ -98,6 +98,9 @@ typedef uintptr_t umm;
 #define UL_ (u8 *)
 #define L_  (s8 *)
 
+#define MAX_STRING_SIZE 32768
+#define MAX_VM_SIZE     4096 * 1024 * 128
+
 static inline void
 zero_size(memory_index Size, void *Ptr)
 {
@@ -112,6 +115,7 @@ zero_size(memory_index Size, void *Ptr)
 
 // == Util
 #include "dzm_utl.h"
+#include "dzm_log.h"
 
 // == Memory Manager
 #include "dzm_mem.h"

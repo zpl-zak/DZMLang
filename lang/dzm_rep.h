@@ -45,6 +45,12 @@ test_init(int argc, char** argv)
 {
     GlobalArena = malloc(sizeof(MEMORY_ARENA));
     initialize_arena(GlobalArena, MAX_VM_SIZE, malloc(MAX_VM_SIZE));
+    
+    init_logging();
+    FILE *Log = fopen("dzm_log.txt", "w");
+    set_log_output(Log);
+    set_log_verbose(1);
+    
     if(argc < 2)
     {
         init_defs();
@@ -57,6 +63,8 @@ test_init(int argc, char** argv)
     printf("DZMLang Interpreter; By ZaKlaus.\n");
     
     test_load_file(argv[1]);
+    
+    fclose(Log);
 }
 
 #define DZM_REP_H

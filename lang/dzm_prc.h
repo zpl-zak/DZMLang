@@ -90,7 +90,8 @@ div_proc(OBJECT *Args)
     {
         if((pair_get_a(Args))->uData.FIXNUM.Value == 0)
         {
-            fprintf(stderr, "Division by zero\n");
+            LOG(ERR_WARN, "Division by zero");
+            return(Nil);
             InvalidCodePath;
         }
         
@@ -124,7 +125,8 @@ mod_proc(OBJECT *Args)
     {
         if((pair_get_a(Args))->uData.FIXNUM.Value == 0)
         {
-            fprintf(stderr, "Division by zero\n");
+            LOG(ERR_WARN, "Division by zero");
+            return(Nil);
             InvalidCodePath;
         }
         
@@ -436,7 +438,7 @@ def_proc(is_eq)
 
 def_proc(apply)
 {
-    fprintf(stderr, "illegal state: The body of the apply should not execute\n");
+    LOG(ERR_WARN, "illegal state: The body of the apply should not execute");
     InvalidCodePath;
     
     Unreachable(Args);
@@ -444,7 +446,7 @@ def_proc(apply)
 
 def_proc(eval)
 {
-    fprintf(stderr, "illegal state: The body of the apply should not execute\n");
+    LOG(ERR_WARN, "illegal state: The body of the apply should not execute");
     InvalidCodePath;
     
     Unreachable(Args);
@@ -480,7 +482,8 @@ def_proc(load)
     In = fopen((char *)Filename, "r");
     if(In == 0)
     {
-        fprintf(stderr, "Could not load file \"%s\"\n", Filename);
+        LOG(ERR_WARN, "Could not load file \"%s\"\n", Filename);
+        return(Nil);
         InvalidCodePath;
     }
     
@@ -539,7 +542,7 @@ def_proc(open_input)
     In = fopen((char *)Filename, "r");
     if(In == 0)
     {
-        fprintf(stderr, "Could not load file \"%s\"\n", Filename);
+        LOG(ERR_WARN, "Could not load file \"%s\"\n", Filename);
         InvalidCodePath;
     }
     return(make_input(In));
@@ -552,7 +555,7 @@ def_proc(close_input)
     Result = fclose((pair_get_a(Args))->uData.INPUT.Stream);
     if(Result == EOF)
     {
-        fprintf(stderr, "Could not close input\n");
+        LOG(ERR_WARN, "Could not close input");
         InvalidCodePath;
     }
     return(OKSymbol);
@@ -572,7 +575,7 @@ def_proc(open_output)
     In = fopen((char *)Filename, "w");
     if(In == 0)
     {
-        fprintf(stderr, "Could not load file \"%s\"\n", Filename);
+        LOG(ERR_WARN, "Could not load file \"%s\"\n", Filename);
         InvalidCodePath;
     }
     return(make_output(In));
@@ -585,7 +588,7 @@ def_proc(close_output)
     Result = fclose((pair_get_a(Args))->uData.INPUT.Stream);
     if(Result == EOF)
     {
-        fprintf(stderr, "Could not close output\n");
+        LOG(ERR_WARN, "Could not close output");
         InvalidCodePath;
     }
     return(OKSymbol);
