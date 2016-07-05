@@ -627,6 +627,26 @@ def_proc(write_string)
     return(OKSymbol);
 }
 
+def_proc(read_string)
+{
+    FILE *In;
+    OBJECT *Result;
+    u8 Buffer[MAX_STRING_SIZE] = {0};
+    u8 Idx = 0;
+    
+    In = is_nil(Args) ? stdin : (pair_get_a(Args))->uData.INPUT.Stream;
+    
+    u8 C = 0;
+    
+    while((char)(C = fgetc(In)) != EOF)
+    {
+        Buffer[Idx++] = C;
+    }
+    
+    Result = make_string(Buffer);
+    return((Result == 0) ? EOF_Obj : Result);
+}
+
 def_proc(read_char)
 {
     s32 Result;
@@ -755,10 +775,11 @@ init_builtins(OBJECT *Env)
     add_procedure("open-input"  , open_input_proc);
     add_procedure("close-input" , close_input_proc);
     add_procedure("input?"      , is_input_proc);
-    add_procedure("read"             , read_proc);
-    add_procedure("read-char"        , read_char_proc);
-    add_procedure("peek-char"        , peek_char_proc);
-    add_procedure("eof?"      , is_eof_obj_proc);
+    add_procedure("read"               , read_proc);
+    add_procedure("read-char"          , read_char_proc);
+    add_procedure("read-string"        , read_string_proc);
+    add_procedure("peek-char"          , peek_char_proc);
+    add_procedure("eof?"        , is_eof_obj_proc);
     add_procedure("open-output" , open_output_proc);
     add_procedure("close-output", close_output_proc);
     add_procedure("output?"     , is_output_proc);

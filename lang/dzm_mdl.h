@@ -2,8 +2,8 @@
 
 #if !defined(DZM_MDL_H)
 
-#define MAX_STRING_SIZE 1000
-#define MAX_VM_SIZE     4096 * 1000
+#define MAX_STRING_SIZE 32768
+#define MAX_VM_SIZE     4096 * 1024 * 128
 
 enum OBJECT_TYPE_
 {
