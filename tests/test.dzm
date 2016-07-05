@@ -1,7 +1,4 @@
-(define (underscore-string list)
-	(define (iter l o)
-		(if (nil? l)
-			o
-			(iter (cdr l) (concat o (car l) #\_))))
-	(iter list #\_)
-)
+(define z 25)
+(= z 25)
+
+(= 2 (car '(2 1 0)))
