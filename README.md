@@ -1,4 +1,5 @@
-# DZMLang
+# DZMLang ![build](https://travis-ci.org/zaklaus/DZMLang.svg)
+
 Scheme-like functional language written in C.
 
 ## Contains
