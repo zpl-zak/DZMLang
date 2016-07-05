@@ -164,6 +164,8 @@ read_pair(FILE *In)
     }
 }
 
+#include <signal.h>
+
 static inline OBJECT *
 read(FILE *In)
 {
@@ -320,6 +322,7 @@ read(FILE *In)
     }
     else if(C == '\'')
     {
+        //raise(SIGABRT);
         return(make_pair(QuoteSymbol, make_pair(read(In), Nil)));
     }
     else if(C == EOF)

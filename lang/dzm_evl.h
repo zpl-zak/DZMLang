@@ -513,7 +513,10 @@ tailcall:
     }
     else if(is_quoted(Exp))
     {
-        return(text_of_quotation(Exp));
+        OBJECT *R = text_of_quotation(Exp);
+        //Exp->Mark = 1;
+        //R->Mark = 1;
+        return(R);
     }
     else if(is_assignment(Exp))
     {
@@ -598,7 +601,7 @@ tailcall:
     {
         Procedure = eval(operator(Exp), Env);
         Arguments = list_of_values(operands(Exp), Env);
-        Exp->Mark = 1;
+        //Exp->Mark = 1;
 
         if(is_procedure(Procedure) &&
            Procedure->uData.PROCEDURE.Fn == apply_proc)
@@ -619,7 +622,7 @@ tailcall:
         {
             OBJECT *Res = (Procedure->uData.PROCEDURE.Fn)(Arguments);
             
-            if(is_self_evaluating(Res))
+            /*if(is_self_evaluating(Res))
             {
                 Res->Mark = 1;
             }
@@ -632,7 +635,7 @@ tailcall:
                 {
                     if(is_self_evaluating(pair_get_a(It)))
                     {
-                        (pair_get_a(It))->Mark = 1;
+                        //(pair_get_a(It))->Mark = 1;
                         ShouldMark = 1;
                     }
                     It = pair_get_b(It);
@@ -642,7 +645,7 @@ tailcall:
                 {
                     //Res->Mark = 1;
                 }
-            }
+            }*/
             
             return(Res);
         }

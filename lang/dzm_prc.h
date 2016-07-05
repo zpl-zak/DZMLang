@@ -685,6 +685,12 @@ def_proc(arena_mem)
     Unreachable(Args);
 }
 
+def_proc(log_mem)
+{
+    PrintMemUsage = !PrintMemUsage;
+    return(Args);
+}
+
 static inline void
 init_builtins(OBJECT *Env)
 {
@@ -764,6 +770,7 @@ init_builtins(OBJECT *Env)
     add_procedure("system"      , system_proc);
     
     add_procedure("arena-mem"   , arena_mem_proc);
+    add_procedure("log-mem"     , log_mem_proc);
 }
 
 #define DZM_PRC_H

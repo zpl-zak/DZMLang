@@ -10,6 +10,7 @@ write_pair(FILE *Out, OBJECT *Obj)
 {
     OBJECT *A = pair_get_a(Obj);
     OBJECT *B = pair_get_b(Obj);
+    Obj->Mark = 1;
     
     write(Out, A);
     if(is_pair(B))
@@ -153,6 +154,12 @@ write(FILE *Out, OBJECT *Obj)
             InvalidCodePath;
         }break;
     }
+    
+    if(PrintMemUsage)
+    {
+        fprintf(stdout, "\nLOG) Free: %d, Total: %d\n", get_arena_size_remaining(GlobalArena, default_arena_params()), GlobalArena->Size);
+    }
+    
     Obj->Mark = 1;
 }
 

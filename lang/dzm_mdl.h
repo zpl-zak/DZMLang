@@ -26,6 +26,7 @@ enum OBJECT_TYPE_
 typedef struct OBJECT_
 {
     struct OBJECT_ *Next;
+    struct OBJECT_ *Parent;
     u8 Type;
     b32 Mark;
     union
@@ -92,65 +93,118 @@ typedef struct OBJECT_
 
 MEMORY_ARENA *GlobalArena;
 OBJECT *GlobalTable;
-OBJECT *GlobalLast;
+OBJECT *GlobalEnv;
+OBJECT *Nil;
+OBJECT *SymbolTable;
+
+// TODO(zaklaus): Move to dzm_log.h!!!
+b32 PrintMemUsage;
+
+static inline OBJECT *
+pair_get_a(OBJECT *Pair);
+
+static inline OBJECT *
+pair_get_b(OBJECT *Pair);
+
+static inline b32
+is_nil(OBJECT *Obj);
+
+static inline void
+free_special_object(OBJECT *Obj)
+{
+    switch(Obj->Type)
+    {
+        case SYMBOL:
+        case STRING:
+        {
+            if(Obj->uData.STRING.Value)
+            {
+                free(Obj->uData.STRING.Value);
+                Obj->uData.STRING.Value = 0;
+            }
+        }break;
+        
+        case PAIR:
+        {
+            // TODO(zaklaus): Decide what to do with pair-wise objects.
+        }break;
+        
+        default:
+        {
+            
+        }break;
+    }
+}
 
 static inline OBJECT *
 alloc_object(void)
 {
     OBJECT *Obj = 0;
     
+    if(GlobalTable)
     for(OBJECT *It = GlobalTable->Next;
         It;
         It = It->Next)
     {
-        if(It->Mark == 1)
-        {
-            Obj = It;
-            Obj->Mark = 0;
-            
-            // NOTE(zaklaus): Handle special cases
-            switch(Obj->Type)
+        // NOTE(zaklaus): EXPERIMENTAL
+        /*{
+            OBJECT *StackObj = GlobalEnv;
+            b32 IsDead = 1;
+            while(StackObj != 0 && !is_nil(pair_get_a(StackObj)))
             {
-                case SYMBOL:
-                case STRING:
+                if(It == pair_get_a(StackObj))
                 {
-                    free(Obj->uData.STRING.Value);
-                }break;
-                
-                case PAIR:
-                {
-                    // TODO(zaklaus): Decide what to do with pair-wise objects.
-                }break;
-                
-                default:
-                {
-                    
-                }break;
+                    IsDead = 0;
+                    break;
+                }
+                StackObj = pair_get_b(StackObj);
             }
             
-            break;
-        }
+            if(IsDead)
+            {
+                It->Mark = 1;
+            }
+        }*/
+        
+        if(It->Mark == 255)// && (It->Parent == Nil || It->Type == SYMBOL))
+        {
+            free_special_object(It);
+            It->Type = NIL;
+            
+            /*if(Obj->Parent == SymbolTable)
+            {
+                SymbolTable->Mark = 1;
+                SymbolTable = pair_get_b(SymbolTable);
+                Obj->Parent = Nil;
+            }*/
+            
+            if(!Obj)
+            {
+                Obj = It;
+                Obj->Mark = 0;
+            }
+        }    
     }
     
     //OBJECT *Obj = malloc(sizeof(OBJECT));
     
     if(Obj == 0)
     {
-        Obj = push_type(GlobalArena, OBJECT, default_arena_params());
+        Obj = push_type(GlobalArena, OBJECT, align_noclear(sizeof(OBJECT)));
         
-        if(GlobalTable->Next == 0)
+        if(GlobalTable == 0)
         {
-            GlobalTable->Next = GlobalLast = Obj;
-            Obj->Next = 0;
+            GlobalTable = Obj;
+            GlobalTable->Next = 0;
         }
         else
         {
-            GlobalLast->Next = Obj;
-            GlobalLast = Obj;
-            Obj->Next = 0;
+            Obj->Next = GlobalTable;
+            GlobalTable = Obj;
         }
         
         Obj->Mark = 0;
+        Obj->Parent = Nil;
     }
     
     zassert(Obj != 0);
@@ -203,8 +257,8 @@ make_pair(OBJECT *A, OBJECT *B)
 {
     OBJECT *Obj = alloc_object();
     Obj->Type = PAIR;
-    Obj->uData.PAIR.A = A;
-    Obj->uData.PAIR.B = B;
+    Obj->uData.PAIR.A = A; A->Parent = Obj;
+    Obj->uData.PAIR.B = B; B->Parent = Obj;
     return(Obj);
 }
 
@@ -431,6 +485,7 @@ lookup_variable_value(OBJECT *Var, OBJECT *Env)
         {
             if(Var == pair_get_a(Vars))
             {
+                (pair_get_a(Vars))->Mark = 1;
                 return(pair_get_a(Vals));
             }
             Vars = pair_get_b(Vars);
@@ -439,6 +494,7 @@ lookup_variable_value(OBJECT *Var, OBJECT *Env)
         Env = enclosing_env(Env);
     }
     fprintf(stderr, "Unbound variable\n");
+    Var->Mark = 1;
     Unreachable(Nil);
 }
 
@@ -466,6 +522,7 @@ set_variable_value(OBJECT *Var, OBJECT *Val, OBJECT *Env)
         }
         Env = enclosing_env(Env);
     }
+    Var->Mark = 1;
     fprintf(stderr, "Unbound variable\n");
     InvalidCodePath;
 }
@@ -525,9 +582,8 @@ peek(FILE *In);
 
 static inline void
 init_defs(void)
-{    
-    GlobalTable = malloc(sizeof(OBJECT));
-    GlobalTable->Next = 0;
+{
+    PrintMemUsage = 0;
     
     False = alloc_object();
     False->Type = BOOLEAN;
@@ -588,13 +644,13 @@ pair_get_b(OBJECT *Pair)
 static inline void
 pair_set_a(OBJECT *Pair, OBJECT *A)
 {
-    Pair->uData.PAIR.A = A;
+    Pair->uData.PAIR.A = A; A->Parent = Pair;
 }
 
 static inline void
 pair_set_b(OBJECT *Pair, OBJECT *B)
 {
-    Pair->uData.PAIR.B = B;
+    Pair->uData.PAIR.B = B; B->Parent = Pair;
 }
 
 static inline OBJECT *
