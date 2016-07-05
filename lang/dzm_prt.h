@@ -157,7 +157,7 @@ write(FILE *Out, OBJECT *Obj)
     
     if(PrintMemUsage)
     {
-        LOG(ERR_INFO, "Free: %d, Total: %d", get_arena_size_remaining(GlobalArena, default_arena_params()), GlobalArena->Size);
+        LOG(ERR_INFO, "Free: %d, Total: %d", (int)get_arena_size_remaining(GlobalArena, default_arena_params()), (int)GlobalArena->Size);
     }
     
     Obj->Mark = 1;

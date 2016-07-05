@@ -625,7 +625,7 @@ def_proc(write_string)
     String = pair_get_a(Args);
     Args = pair_get_b(Args);
     Out = is_nil(Args) ? stdout : (pair_get_a(Args))->uData.OUTPUT.Stream;
-    fprintf(Out, (char *)String->uData.STRING.Value);
+    fprintf(Out, "%s", (char *)String->uData.STRING.Value);
     fflush(Out);
     return(OKSymbol);
 }
