@@ -1,4 +1,4 @@
-# DZMLang ![build](https://travis-ci.org/zaklaus/DZMLang.svg)
+# DZMLang [![Build Status](https://travis-ci.org/zaklaus/DZMLang.svg?branch=master)](https://travis-ci.org/zaklaus/DZMLang) [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/zaklaus/DZMLang/blob/master/LICENSE)
 
 Scheme-like functional language written in C.
 
