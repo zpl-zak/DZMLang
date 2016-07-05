@@ -1,4 +1,4 @@
-// (c) ZaKlaus 2016; All Rights Reserved;;
+// (c) ZaKlaus 2016; MIT Licensed, see LICENSE;;
 
 #if !defined(DZM_PRT_H)
 
