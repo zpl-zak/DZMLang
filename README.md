@@ -16,7 +16,7 @@ Scheme-like functional language written in C.
 * On Windows
    * Install latest version of MinGW GCC compiler
    * Use build.bat to compile project
-   * **NOTE**: ctime.exe is a time-tracking utility which measures build times for me. ctime.exe was developed by Casey Muratori, more info about ctime.exe utility can be found here [Youtube](https://www.youtube.com/watch?v=LdMHyGxfg6U).
+   * **NOTE**: ctime.exe is a time-tracking utility which measures build times for me. ctime.exe was developed by [Casey Muratori](https://twitter.com/cmuratori), more info about ctime.exe utility can be found here: [Youtube](https://www.youtube.com/watch?v=LdMHyGxfg6U).
 * On Linux
    * Make sure you have the latest stable version of GCC compiler installed.
    * There is no makefile for automating building process yet. Use gcc build line from build.bat to build your linux executable
