@@ -668,6 +668,7 @@ def_proc(read_char)
 
 def_proc(system)
 {
+#if _ELEVATED == 1
     if(!is_string(pair_get_a(Args)))
     {
         return(Nil);
@@ -697,7 +698,11 @@ system_end:
         return(OKSymbol);
     else
         return(pair_get_a(pair_get_b(Args)));
-    //return(make_string((u8 *)system((char *)pair_get_a(Args)->uData.STRING.Value)));
+#else
+    LOG(ERR_WARN, "Procedure requires elevation!");
+    return(OKSymbol);
+    Unreachable(Args);
+#endif
 }
 
 def_proc(arena_mem)

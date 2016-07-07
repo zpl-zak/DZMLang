@@ -113,6 +113,14 @@ zero_size(memory_index Size, void *Ptr)
 
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
 
+#ifdef DZM_ELEVATED
+#undef _ELEVATED
+#define _ELEVATED 1
+#else
+#undef _ELEVATED
+#define _ELEVATED 0
+#endif
+
 // == Util
 #include "dzm_utl.h"
 #include "dzm_log.h"

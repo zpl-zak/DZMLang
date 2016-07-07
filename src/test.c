@@ -1,3 +1,4 @@
+#define DZM_ELEVATED
 #include "dzm.h"
 
 #include <stdio.h>
