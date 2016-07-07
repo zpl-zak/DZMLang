@@ -446,7 +446,7 @@ def_proc(apply)
 
 def_proc(eval)
 {
-    LOG(ERR_WARN, "illegal state: The body of the apply should not execute");
+    LOG(ERR_WARN, "illegal state: The body of the eval should not execute");
     InvalidCodePath;
     
     Unreachable(Args);
