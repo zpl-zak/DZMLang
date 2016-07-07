@@ -47,6 +47,8 @@ test_init(int argc, char** argv)
     GlobalArena = malloc(sizeof(MEMORY_ARENA));
     initialize_arena(GlobalArena, MAX_VM_SIZE, malloc(MAX_VM_SIZE));
     
+    init_mem();
+    
     init_logging();
     FILE *Log = fopen("dzm_log.txt", "w");
     set_log_output(Log);
