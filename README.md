@@ -24,14 +24,6 @@ Scheme-like functional language written in C.
 * On OSX
    * Project should compile fine on Clang and GCC. Unfortunately, I can't provide any assistance with OSX build.
 
-## Known Bugs
-* ~~Interpreter crashes when using GlobalEnv objects inside of evaluated environment "(eval '(arena-mem) environment)".~~
-* GC behaves funny for several cases:
-    * printing empty symbols like a,b then printing ab locks up the interpreter,
-    * printing the same quote several times will trigger dead loop in write and write_pair,
-    * random crashes when mixing input. (ie. writing char, then symbol, calling procedure, ...)
-* **(Bugs will be moved later into Issues page)**
-
 ## Credits
 *  **Hal Abelson's, Jerry Sussman's and Julie Sussman's Structure and Interpretation of Computer Programs** (MIT Press, 1984; ISBN 0-262-01077-1; known as SICP) book.
 
