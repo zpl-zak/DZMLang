@@ -29,6 +29,7 @@ static inline void
 test_repl(void)
 {
     printf("DZMLang REPL; By ZaKlaus.\nUse ^C to exit.\n");
+    printf("Version: %s\n", DZM_VERSION);
     
     //init_defs();
     
@@ -45,6 +46,8 @@ test_init(int argc, char** argv)
 {
     GlobalArena = malloc(sizeof(MEMORY_ARENA));
     initialize_arena(GlobalArena, MAX_VM_SIZE, malloc(MAX_VM_SIZE));
+    
+    init_mem();
     
     init_logging();
     FILE *Log = fopen("dzm_log.txt", "w");

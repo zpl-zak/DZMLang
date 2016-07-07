@@ -64,6 +64,8 @@ typedef uintptr_t umm;
 #define COMPILER_LLVM 0
 #endif
 
+#include "../dzm_ver.h"
+
 #ifdef COMPILER_MSVC
 #define TRAP() *(int *)0 = 0
 #elif COMPILER_LLVM

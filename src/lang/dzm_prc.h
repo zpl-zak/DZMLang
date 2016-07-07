@@ -634,19 +634,27 @@ def_proc(read_string)
 {
     FILE *In;
     OBJECT *Result;
-    u8 Buffer[MAX_STRING_SIZE] = {0};
-    u8 Idx = 0;
     
-    In = is_nil(Args) ? stdin : (pair_get_a(Args))->uData.INPUT.Stream;
-    
-    u8 C = 0;
-    
-    while((char)(C = fgetc(In)) != EOF)
+    if(is_nil(pair_get_a(Args)))
     {
-        Buffer[Idx++] = C;
+        LOG(ERR_WARN, "read-string expects 1 parameter to be: INPUT stream.");
+        return(OKSymbol);
     }
     
-    Result = make_string(Buffer);
+    In = (pair_get_a(Args))->uData.INPUT.Stream;
+    
+    fseek(In, 0, SEEK_END);
+    s32 Size = ftell(In);
+    rewind(In);
+    
+    TEMP_MEMORY Temp = begin_temp(&StringArena);
+    char *String = (char *)push_size(&StringArena, Size + 1, default_arena_params());
+    fread(String, Size, 1, In);
+    String[Size] = 0;
+    Result = make_string((u8 *)String);
+    
+    end_temp(Temp);
+    
     return((Result == 0) ? EOF_Obj : Result);
 }
 
