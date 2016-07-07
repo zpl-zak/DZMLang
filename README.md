@@ -25,7 +25,7 @@ Scheme-like functional language written in C.
    * Project should compile fine on Clang and GCC. Unfortunately, I can't provide any assistance with OSX build.
 
 ## Known Bugs
-* Interpreter crashes when using GlobalEnv objects inside of evaluated environment "(eval '(arena-mem) environment)".
+* ~~Interpreter crashes when using GlobalEnv objects inside of evaluated environment "(eval '(arena-mem) environment)".~~
 * GC behaves funny for several cases:
     * printing empty symbols like a,b then printing ab locks up the interpreter,
     * printing the same quote several times will trigger dead loop in write and write_pair,
