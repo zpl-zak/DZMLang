@@ -29,6 +29,7 @@ static inline void
 test_repl(void)
 {
     printf("DZMLang REPL; By ZaKlaus.\nUse ^C to exit.\n");
+    printf("Version: %s\n", DZM_VERSION);
     
     //init_defs();
     
