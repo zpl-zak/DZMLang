@@ -27,12 +27,14 @@ push_log(char *String, u8 ErrType)
         return;
     }
     
-    fprintf(LogOutput, "%s: %s\n", ErrPrefix[ErrType], String);
+    mi Prefix = (ErrType >= (char)LogBarrier) ? 2 : ErrType;
+    
+    fprintf(LogOutput, "%s: %s\n", ErrPrefix[Prefix], String);
     fflush(LogOutput);
     
     if(IsVerbose)
     {
-        fprintf(stderr, "%s: %s\n", ErrPrefix[ErrType], String);
+        fprintf(stderr, "%s: %s\n", ErrPrefix[Prefix], String);
     }
     
     if(ErrType >= LogBarrier)

@@ -30,12 +30,12 @@ typedef struct OBJECT_
     {
         struct
         {
-            s32 Value;
+            s64 Value;
         } FIXNUM;
         
         struct
         {
-            real32 Value;
+            real64 Value;
         } REALNUM;
         
         struct
@@ -210,7 +210,7 @@ alloc_object(void)
 }
 
 static inline OBJECT *
-make_fixnum(s32 Value)
+make_fixnum(s64 Value)
 {
     OBJECT *Obj = alloc_object();
     Obj->Type = FIXNUM;
@@ -219,7 +219,7 @@ make_fixnum(s32 Value)
 }
 
 static inline OBJECT *
-make_realnum(real32 Value)
+make_realnum(real64 Value)
 {
     OBJECT *Obj = alloc_object();
     Obj->Type = REALNUM;
@@ -575,6 +575,18 @@ write(FILE *Out, OBJECT *Obj);
 static inline s32
 peek(FILE *In);
 
+static inline b32
+is_false(OBJECT *Obj)
+{
+    return(Obj == False);
+}
+
+static inline b32
+is_true(OBJECT *Obj)
+{
+    return(Obj == True);
+}
+
 #include "dzm_prc.h"
 
 static inline void
@@ -609,18 +621,6 @@ init_defs(void)
     
     NilEnv = Nil;
     GlobalEnv = make_env();
-}
-
-static inline b32
-is_false(OBJECT *Obj)
-{
-    return(Obj == False);
-}
-
-static inline b32
-is_true(OBJECT *Obj)
-{
-    return(Obj == True);
 }
 
 static inline OBJECT *

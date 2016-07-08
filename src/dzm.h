@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <limits.h>
 #include <float.h>
+#include <inttypes.h>
 
 #include <stdlib.h>
 #include <stdio.h>

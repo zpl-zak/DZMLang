@@ -40,12 +40,12 @@ write(FILE *Out, OBJECT *Obj)
     {
         case FIXNUM:
         {
-            fprintf(Out, "%1d", Obj->uData.FIXNUM.Value);
+            fprintf(Out, "%" PRId64, Obj->uData.FIXNUM.Value);
         }break;
         
         case REALNUM:
         {
-            fprintf(Out, "%1f", Obj->uData.REALNUM.Value);
+            fprintf(Out, "%1lf", Obj->uData.REALNUM.Value);
         }break;
         
         case BOOLEAN:

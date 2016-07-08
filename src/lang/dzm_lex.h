@@ -203,8 +203,8 @@ read(FILE *In)
     else if(isdigit(C) || (C == '-' && (isdigit(peek(In)))))
     {
         real32 Sign = 1.0f;
-        float Num = 0.0f;
-        float Realcnt = 1.0f;
+        real64 Num = 0.0f;
+        real64 Realcnt = 1.0f;
         b32 Real = 0;
         if(C == '-')
         {
@@ -229,14 +229,14 @@ read(FILE *In)
             Num = (Num * 10.0f) + (C - '0');
         }
         if(Real)
-            Num = (float)Num / (float)Realcnt;
+            Num = (real64)Num / (real64)Realcnt;
         Num *= Sign;
         
         if(is_delimiter(C))
         {
             ungetc(C, In);
             if(!Real)
-                return(make_fixnum((s32)Num));
+                return(make_fixnum((s64)Num));
             else
                 return(make_realnum(Num));
         }
