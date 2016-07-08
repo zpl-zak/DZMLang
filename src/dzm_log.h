@@ -14,7 +14,7 @@ b32 IsVerbose;
 
 FILE *LogOutput;
 char ErrPrefix[3][6] = {"INFO", "WARN", "FATAL"};
-char LogBuffer[MAX_STRING_SIZE] = {0};
+char *LogBuffer = 0;
 
 #define LOG(t, f,...) sprintf(LogBuffer, f, ## __VA_ARGS__); push_log(LogBuffer, t)
 
@@ -70,6 +70,7 @@ static inline void
 init_logging(void)
 {
     LogBarrier = ERR_FATAL;
+    LogBuffer = (char *)StringArena.Base;
     LogOutput = stderr;
     IsVerbose = 0;
 }

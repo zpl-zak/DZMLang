@@ -168,7 +168,7 @@ static inline OBJECT *
 read(FILE *In)
 {
     s32 C;
-    u8 Buffer[MAX_STRING_SIZE]; // TODO(zaklaus): DYNAMIC!!!!
+    u8 *Buffer = StringArena.Base;
     
     eat_whitespace(In);
     
@@ -255,15 +255,7 @@ read(FILE *In)
         while(is_initial(C) || isdigit(C) ||
               C == '+' || C == '-')
         {
-            if(Idx < MAX_STRING_SIZE - 1)
-            {
-                Buffer[Idx++] = C;
-            }
-            else
-            {
-                LOG(ERR_WARN, "Symbol too long. Max. Len is %d", MAX_STRING_SIZE);
-                InvalidCodePath;
-            }
+            Buffer[Idx++] = C;
             C = getc(In);
         }
         if(is_delimiter(C))
@@ -298,17 +290,7 @@ read(FILE *In)
                 LOG(ERR_WARN, "Non-terminated string literal\n");
                 InvalidCodePath;
             }
-            
-            // TODO(zaklaus): Make it dynamic...
-            if(Idx < MAX_STRING_SIZE - 1)
-            {
-                Buffer[Idx++] = C;
-            }
-            else
-            {
-                LOG(ERR_WARN, "String too long. Max. Len is %d", MAX_STRING_SIZE);
-                InvalidCodePath;
-            }
+            Buffer[Idx++] = C;
         }
         Buffer[Idx] = 0;
         return(make_string(Buffer));

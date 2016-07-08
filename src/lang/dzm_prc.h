@@ -230,8 +230,10 @@ def_proc(integer_to_char)
 
 def_proc(number_to_string)
 {
-    char Buffer[MAX_STRING_SIZE];
+    TEMP_MEMORY Mem = begin_temp(&StringArena);
+    char *Buffer = (char *)push_size(&StringArena, 66, default_arena_params());
     sprintf(Buffer, "%" PRId64, (pair_get_a(Args))->uData.FIXNUM.Value);
+    end_temp(Mem);
     return(make_string((u8 *)Buffer));
 }
 
