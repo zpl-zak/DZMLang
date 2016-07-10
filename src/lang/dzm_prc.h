@@ -314,7 +314,7 @@ concat_tailcall:
    
     if(is_string(Text))
     {
-        Result = malloc(strlen((char *)Text->uData.STRING.Value)+1);
+        Result = (char *)malloc(strlen((char *)Text->uData.STRING.Value)+1);
         strcpy(Result, (char *)Text->uData.STRING.Value);
     }
     else if(is_pair(Text))
@@ -324,7 +324,7 @@ concat_tailcall:
     }
     else
     {
-        Result = malloc(2);
+        Result = (char *)malloc(2);
         Result[0] = (char)Text->uData.CHARACTER.Value;
         Result[1] = 0;
     }
@@ -335,7 +335,7 @@ concat_tailcall:
         concat_tailcall2:
         if(is_string(Text))
         {
-            Result = realloc(Result, strlen(Result) + strlen((char *)Text->uData.STRING.Value)+1);
+            Result = (char *)realloc(Result, strlen(Result) + strlen((char *)Text->uData.STRING.Value)+1);
             strcat(Result, (char *)Text->uData.STRING.Value);
         }
         else if(is_nil(Text))
@@ -350,7 +350,7 @@ concat_tailcall:
         else
         {
             mi ResultEnd = strlen(Result);
-            Result = realloc(Result, strlen(Result) + 2);
+            Result = (char *)realloc(Result, strlen(Result) + 2);
             Result[ResultEnd] = (char)Text->uData.CHARACTER.Value;
             Result[ResultEnd+1] = 0;
         }

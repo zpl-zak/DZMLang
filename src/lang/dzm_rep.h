@@ -3,7 +3,7 @@
 #if !defined(DZM_REP_H)
 
 static inline void
-test_load_file(char *Name)
+test_load_file(const char *Name)
 {
     FILE *File = fopen(Name, "r");
     
@@ -44,7 +44,7 @@ test_repl(void)
 static inline void
 test_init(int argc, char** argv)
 {
-    GlobalArena = malloc(sizeof(MEMORY_ARENA));
+    GlobalArena = (MEMORY_ARENA *)malloc(sizeof(MEMORY_ARENA));
     initialize_arena(GlobalArena, MAX_VM_SIZE, malloc(MAX_VM_SIZE));
     
     init_mem();

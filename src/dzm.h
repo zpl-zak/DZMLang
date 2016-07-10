@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <limits.h>
 #include <float.h>
+
+#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
 #include <stdlib.h>

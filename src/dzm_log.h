@@ -2,12 +2,12 @@
 
 #if !defined(DZM_LOG_H)
 
-typedef enum 
+enum ERR_TYPE
 {
     ERR_INFO,
     ERR_WARN,
     ERR_FATAL,
-} ERR_TYPE;
+};
 
 u8 LogBarrier;
 b32 IsVerbose;
@@ -19,7 +19,7 @@ char *LogBuffer = 0;
 #define LOG(t, f,...) sprintf(LogBuffer, f, ## __VA_ARGS__); push_log(LogBuffer, t)
 
 static inline void
-push_log(char *String, u8 ErrType)
+push_log(const char *String, u8 ErrType)
 {
     if(ErrType > ERR_FATAL)
     {

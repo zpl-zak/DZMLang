@@ -2,7 +2,7 @@
 
 #if !defined(DZM_MDL_H)
 
-enum OBJECT_TYPE_
+enum OBJECT_TYPE
 {
     UNKNOWN,
     FIXNUM,
@@ -20,10 +20,10 @@ enum OBJECT_TYPE_
     EOF_ID,
 };
 
-typedef struct OBJECT_
+struct OBJECT
 {
-    struct OBJECT_ *Next;
-    struct OBJECT_ *Parent;
+    OBJECT *Next;
+    OBJECT *Parent;
     u8 Type;
     b32 Mark;
     union
@@ -55,8 +55,8 @@ typedef struct OBJECT_
         
         struct
         {
-            struct OBJECT_ *A;
-            struct OBJECT_ *B;
+            OBJECT *A;
+            OBJECT *B;
         } PAIR;
         
         struct
@@ -66,14 +66,14 @@ typedef struct OBJECT_
         
         struct
         {
-            struct OBJECT_ *(*Fn)(struct OBJECT_ *Args);
+            OBJECT *(*Fn)(OBJECT *Args);
         } PROCEDURE;
         
         struct
         {
-            struct OBJECT_ *Parameters;
-            struct OBJECT_ *Body;
-            struct OBJECT_ *Env;
+            OBJECT *Parameters;
+            OBJECT *Body;
+            OBJECT *Env;
         } COMPOUND;
         
         struct
@@ -86,7 +86,7 @@ typedef struct OBJECT_
             FILE *Stream;
         } OUTPUT;
     } uData;
-} OBJECT;
+};
 
 MEMORY_ARENA *GlobalArena;
 OBJECT *GlobalTable;
@@ -236,14 +236,12 @@ make_character(u8 Value)
     return(Obj);
 }
 
-OBJECT *Nil;
-
 static inline OBJECT *
 make_string(u8 *Value)
 {
     OBJECT *Obj = alloc_object();
     Obj->Type = STRING;
-    Obj->uData.STRING.Value = malloc(strlen((char *)Value) + 1);
+    Obj->uData.STRING.Value = (u8 *)malloc(strlen((char *)Value) + 1);
     zassert(Obj->uData.STRING.Value != NULL);
     string_copy(Obj->uData.STRING.Value, Value);
     return(Obj);
@@ -354,8 +352,6 @@ is_eof_obj(OBJECT *Obj)
 // == GLOBAL VARS
 OBJECT *False;
 OBJECT *True;
-OBJECT *Nil;
-OBJECT *SymbolTable;
 
 OBJECT *QuoteSymbol;
 OBJECT *DefineSymbol;
@@ -373,9 +369,6 @@ OBJECT *IfSymbol;
 OBJECT *EOF_Obj;
 
 OBJECT *NilEnv;
-OBJECT *GlobalEnv;
-
-MEMORY_ARENA *GlobalArena;
 // -- GLOBAL VARS
 
 static inline OBJECT *
@@ -666,7 +659,7 @@ make_symbol(u8 *Value)
     }
     
     Obj->Type = SYMBOL;
-    Obj->uData.SYMBOL.Value = malloc(strlen((char *)Value) + 1);
+    Obj->uData.SYMBOL.Value = (u8 *)malloc(strlen((char *)Value) + 1);
     zassert(Obj->uData.SYMBOL.Value != 0);
     
     string_copy(Obj->uData.SYMBOL.Value, Value);

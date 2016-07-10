@@ -49,7 +49,7 @@ eat_whitespace(FILE *In)
 }
 
 static inline void
-eat_expected_string(FILE *In, char *Str)
+eat_expected_string(FILE *In, const char *Str)
 {
     s32 C;
     
