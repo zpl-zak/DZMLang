@@ -1,5 +1,5 @@
-CC=gcc
-CCFLAGS=-g -std=gnu99 -Wall -Wextra -Werror
+CC=g++
+CCFLAGS=-g -std=gnu++11 -Wall -Wextra -Werror
 
 all:
-	$(CC) $(CCFLAGS) src/test.c -o test
+	$(CC) $(CCFLAGS) src/test.cpp -o test
