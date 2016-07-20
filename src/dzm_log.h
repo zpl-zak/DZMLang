@@ -2,24 +2,24 @@
 
 #if !defined(DZM_LOG_H)
 
-typedef enum 
+enum ERR_TYPE
 {
     ERR_INFO,
     ERR_WARN,
     ERR_FATAL,
-} ERR_TYPE;
+};
 
 u8 LogBarrier;
 b32 IsVerbose;
 
 FILE *LogOutput;
 char ErrPrefix[3][6] = {"INFO", "WARN", "FATAL"};
-char LogBuffer[MAX_STRING_SIZE] = {0};
+char *LogBuffer = 0;
 
 #define LOG(t, f,...) sprintf(LogBuffer, f, ## __VA_ARGS__); push_log(LogBuffer, t)
 
 static inline void
-push_log(char *String, u8 ErrType)
+push_log(const char *String, u8 ErrType)
 {
     if(ErrType > ERR_FATAL)
     {
@@ -27,12 +27,14 @@ push_log(char *String, u8 ErrType)
         return;
     }
     
-    fprintf(LogOutput, "%s: %s\n", ErrPrefix[ErrType], String);
+    mi Prefix = (ErrType >= (char)LogBarrier) ? 2 : ErrType;
+    
+    fprintf(LogOutput, "%s: %s\n", ErrPrefix[Prefix], String);
     fflush(LogOutput);
     
     if(IsVerbose)
     {
-        fprintf(stderr, "%s: %s\n", ErrPrefix[ErrType], String);
+        fprintf(stderr, "%s: %s\n", ErrPrefix[Prefix], String);
     }
     
     if(ErrType >= LogBarrier)
@@ -68,6 +70,7 @@ static inline void
 init_logging(void)
 {
     LogBarrier = ERR_FATAL;
+    LogBuffer = (char *)StringArena.Base;
     LogOutput = stderr;
     IsVerbose = 0;
 }

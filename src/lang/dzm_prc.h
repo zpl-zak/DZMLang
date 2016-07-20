@@ -8,11 +8,15 @@ define_variable(make_symbol((u8 *)Name), \
 make_procedure(Call),                    \
 Env);
 
+#define check_args(o)                                  \
+if(is_nil(pair_get_a(Args)))                           \
+LOG(LOG_WARN, o " " "is missing required arguments")
+
 // NOTE(zaklaus): Arithmetic operators
 static inline OBJECT *
 add_proc(OBJECT *Args)
 {
-    real32 Result = 0;
+    real64 Result = 0;
     b32 Real = 0;
     
     while(!is_nil(Args))
@@ -28,7 +32,7 @@ add_proc(OBJECT *Args)
     }
     
     if(!Real)
-        return(make_fixnum((s32)Result));
+        return(make_fixnum((s64)Result));
     else
         return(make_realnum(Result));
 }
@@ -64,7 +68,7 @@ sub_proc(OBJECT *Args)
     }
     
     if(!Real)
-        return(make_fixnum((s32)Result));
+        return(make_fixnum((s64)Result));
     else
         return(make_realnum(Result));
 }
@@ -105,7 +109,7 @@ div_proc(OBJECT *Args)
         Args = pair_get_b(Args);
     }
     if(!Real)
-        return(make_fixnum((s32)Result));
+        return(make_fixnum((s64)Result));
     else
         return(make_realnum(Result));
 }
@@ -155,7 +159,7 @@ mul_proc(OBJECT *Args)
         Args = pair_get_b(Args);
     }
     if(!Real)
-        return(make_fixnum((s32)Result));
+        return(make_fixnum((s64)Result));
     else
         return(make_realnum(Result));
 }
@@ -226,8 +230,10 @@ def_proc(integer_to_char)
 
 def_proc(number_to_string)
 {
-    char Buffer[MAX_STRING_SIZE];
-    sprintf(Buffer, "%1d", (pair_get_a(Args))->uData.FIXNUM.Value);
+    TEMP_MEMORY Mem = begin_temp(&StringArena);
+    char *Buffer = (char *)push_size(&StringArena, 66, default_arena_params());
+    sprintf(Buffer, "%" PRId64, (pair_get_a(Args))->uData.FIXNUM.Value);
+    end_temp(Mem);
     return(make_string((u8 *)Buffer));
 }
 
@@ -308,7 +314,7 @@ concat_tailcall:
    
     if(is_string(Text))
     {
-        Result = malloc(strlen((char *)Text->uData.STRING.Value)+1);
+        Result = (char *)malloc(strlen((char *)Text->uData.STRING.Value)+1);
         strcpy(Result, (char *)Text->uData.STRING.Value);
     }
     else if(is_pair(Text))
@@ -318,7 +324,7 @@ concat_tailcall:
     }
     else
     {
-        Result = malloc(2);
+        Result = (char *)malloc(2);
         Result[0] = (char)Text->uData.CHARACTER.Value;
         Result[1] = 0;
     }
@@ -329,7 +335,7 @@ concat_tailcall:
         concat_tailcall2:
         if(is_string(Text))
         {
-            Result = realloc(Result, strlen(Result) + strlen((char *)Text->uData.STRING.Value)+1);
+            Result = (char *)realloc(Result, strlen(Result) + strlen((char *)Text->uData.STRING.Value)+1);
             strcat(Result, (char *)Text->uData.STRING.Value);
         }
         else if(is_nil(Text))
@@ -344,7 +350,7 @@ concat_tailcall:
         else
         {
             mi ResultEnd = strlen(Result);
-            Result = realloc(Result, strlen(Result) + 2);
+            Result = (char *)realloc(Result, strlen(Result) + 2);
             Result[ResultEnd] = (char)Text->uData.CHARACTER.Value;
             Result[ResultEnd+1] = 0;
         }
@@ -727,6 +733,40 @@ def_proc(log_mem)
     return(Args);
 }
 
+def_proc(error_reporting)
+{
+    if(is_nil(pair_get_a(Args)))
+    {
+        LOG(ERR_WARN, "error-reporting is missing: <error-level>");
+        return(OKSymbol);
+    }
+    
+    u8 Result = (u8)(pair_get_a(Args)->uData.FIXNUM.Value);
+    error_reporting(Result);
+    return(OKSymbol);
+}
+
+def_proc(log_verbose)
+{
+    if(!is_nil(pair_get_a(Args)) && !is_boolean(pair_get_a(Args)))
+    {
+        LOG(ERR_WARN, "log-verbose is missing: <BOOLEAN>");
+        return(OKSymbol);
+    }
+    b32 Result = 0;
+    if(!is_nil(pair_get_a(Args)))
+    {
+        Result = (is_true(pair_get_a(Args))) ? 1 : 0;
+    }
+    else
+    {
+        Result = !IsVerbose;
+    }
+    
+    set_log_verbose(Result);
+    return(OKSymbol);
+}
+
 static inline void
 init_builtins(OBJECT *Env)
 {
@@ -806,8 +846,10 @@ init_builtins(OBJECT *Env)
     add_procedure("concat"      , concat_proc);
     add_procedure("system"      , system_proc);
     
-    add_procedure("arena-mem"   , arena_mem_proc);
-    add_procedure("log-mem"     , log_mem_proc);
+    add_procedure("arena-mem"      , arena_mem_proc);
+    add_procedure("log-mem"        , log_mem_proc);
+    add_procedure("error-reporting", error_reporting_proc);
+    add_procedure("log-verbose"    , log_verbose_proc);
 }
 
 #define DZM_PRC_H

@@ -49,7 +49,7 @@ eat_whitespace(FILE *In)
 }
 
 static inline void
-eat_expected_string(FILE *In, char *Str)
+eat_expected_string(FILE *In, const char *Str)
 {
     s32 C;
     
@@ -168,7 +168,7 @@ static inline OBJECT *
 read(FILE *In)
 {
     s32 C;
-    u8 Buffer[MAX_STRING_SIZE]; // TODO(zaklaus): DYNAMIC!!!!
+    u8 *Buffer = StringArena.Base;
     
     eat_whitespace(In);
     
@@ -203,8 +203,8 @@ read(FILE *In)
     else if(isdigit(C) || (C == '-' && (isdigit(peek(In)))))
     {
         real32 Sign = 1.0f;
-        float Num = 0.0f;
-        float Realcnt = 1.0f;
+        real64 Num = 0.0f;
+        real64 Realcnt = 1.0f;
         b32 Real = 0;
         if(C == '-')
         {
@@ -229,14 +229,14 @@ read(FILE *In)
             Num = (Num * 10.0f) + (C - '0');
         }
         if(Real)
-            Num = (float)Num / (float)Realcnt;
+            Num = (real64)Num / (real64)Realcnt;
         Num *= Sign;
         
         if(is_delimiter(C))
         {
             ungetc(C, In);
             if(!Real)
-                return(make_fixnum((s32)Num));
+                return(make_fixnum((s64)Num));
             else
                 return(make_realnum(Num));
         }
@@ -255,15 +255,7 @@ read(FILE *In)
         while(is_initial(C) || isdigit(C) ||
               C == '+' || C == '-')
         {
-            if(Idx < MAX_STRING_SIZE - 1)
-            {
-                Buffer[Idx++] = C;
-            }
-            else
-            {
-                LOG(ERR_WARN, "Symbol too long. Max. Len is %d", MAX_STRING_SIZE);
-                InvalidCodePath;
-            }
+            Buffer[Idx++] = C;
             C = getc(In);
         }
         if(is_delimiter(C))
@@ -298,17 +290,7 @@ read(FILE *In)
                 LOG(ERR_WARN, "Non-terminated string literal\n");
                 InvalidCodePath;
             }
-            
-            // TODO(zaklaus): Make it dynamic...
-            if(Idx < MAX_STRING_SIZE - 1)
-            {
-                Buffer[Idx++] = C;
-            }
-            else
-            {
-                LOG(ERR_WARN, "String too long. Max. Len is %d", MAX_STRING_SIZE);
-                InvalidCodePath;
-            }
+            Buffer[Idx++] = C;
         }
         Buffer[Idx] = 0;
         return(make_string(Buffer));

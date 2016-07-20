@@ -300,7 +300,7 @@ is_application(OBJECT *Exp)
 }
 
 static inline OBJECT *
-operator(OBJECT *Exp)
+op(OBJECT *Exp)
 {
     return(pair_get_a(Exp));
 }
@@ -599,7 +599,7 @@ tailcall:
     }
     else if(is_application(Exp))
     {
-        Procedure = eval(operator(Exp), Env);
+        Procedure = eval(op(Exp), Env);
         Arguments = list_of_values(operands(Exp), Env);
         //Exp->Mark = 1;
 
