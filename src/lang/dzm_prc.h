@@ -770,25 +770,11 @@ def_proc(log_verbose)
 static inline void
 init_builtins(OBJECT *Env)
 {
-    define_variable(make_symbol(UL_"+"),
-                    make_procedure(add_proc),
-                    Env);
-    
-    define_variable(make_symbol(UL_"-"),
-                    make_procedure(sub_proc),
-                    Env);
-    
-    define_variable(make_symbol(UL_"*"),
-                    make_procedure(mul_proc),
-                    Env);
-    
-    define_variable(make_symbol(UL_"/"),
-                    make_procedure(div_proc),
-                    Env);
-    
-    define_variable(make_symbol(UL_"%"),
-                    make_procedure(mod_proc),
-                    Env);
+    add_procedure("+"   , add_proc);
+    add_procedure("-"   , sub_proc);
+    add_procedure("*"   , mul_proc);
+    add_procedure("/"   , div_proc);
+    add_procedure("%"   , mod_proc);
     
     add_procedure("nil?"     , is_nil_proc);
     add_procedure("null?"     , is_nil_proc);
