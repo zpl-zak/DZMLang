@@ -228,6 +228,11 @@ def_proc(integer_to_char)
     return(make_character((pair_get_a(Args))->uData.FIXNUM.Value));
 }
 
+def_proc(string_to_char)
+{
+    return(make_character(*((pair_get_a(Args))->uData.STRING.Value)));
+}
+
 def_proc(number_to_string)
 {
     TEMP_MEMORY Mem = begin_temp(&StringArena);
@@ -239,7 +244,10 @@ def_proc(number_to_string)
 
 def_proc(string_to_number)
 {
-    return(make_fixnum(atoi((char *)((pair_get_a(Args))->uData.STRING.Value))));
+    char * String = (char *)((pair_get_a(Args))->uData.STRING.Value);
+    char * EndPtr = 0;
+    s64 Number = strtoull(String, &EndPtr, 10);
+    return(make_fixnum(Number));
 }
 
 def_proc(symbol_to_string)
@@ -306,6 +314,7 @@ def_proc(is_greater_than)
     return True;
 }
 
+//TODO(zaklaus): MEMORY LEAK !!!
 def_proc(concat)
 {
     char *Result = 0;
@@ -788,6 +797,7 @@ init_builtins(OBJECT *Env)
     
     add_procedure("char->integer" , char_to_integer_proc);
     add_procedure("integer->char" , integer_to_char_proc);
+    add_procedure("string->char" , string_to_char_proc);
     add_procedure("number->string", number_to_string_proc);
     add_procedure("string->number", string_to_number_proc);
     add_procedure("symbol->string", symbol_to_string_proc);

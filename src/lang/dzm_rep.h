@@ -65,6 +65,8 @@ test_init(int argc, char** argv)
     }
     printf("DZMLang Interpreter; By ZaKlaus.\n");
     
+    init_defs(); 
+    
     test_load_file(argv[1]);
     
     fclose(Log);
