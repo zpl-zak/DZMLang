@@ -649,7 +649,7 @@ make_symbol(u8 *Value)
     OBJECT *Obj = alloc_object();
     OBJECT *Elem = SymbolTable;
     
-    while(!is_nil(Elem))
+    while(Elem != 0 && !is_nil(Elem))
     {
         if (!strcmp((char *)pair_get_a(Elem)->uData.SYMBOL.Value, (char *)Value))
         {
