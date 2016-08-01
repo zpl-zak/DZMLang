@@ -314,7 +314,6 @@ def_proc(is_greater_than)
     return True;
 }
 
-//TODO(zaklaus): MEMORY LEAK !!!
 def_proc(concat)
 {
     TEMP_MEMORY StringTemp = begin_temp(&StringArena);
