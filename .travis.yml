@@ -12,4 +12,4 @@ matrix:
             - g++-4.9
       env: COMPILER=g++-4.9
 script:
-  - make travis
+  - make
