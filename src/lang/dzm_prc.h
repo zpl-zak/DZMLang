@@ -317,13 +317,14 @@ def_proc(is_greater_than)
 //TODO(zaklaus): MEMORY LEAK !!!
 def_proc(concat)
 {
+    TEMP_MEMORY StringTemp = begin_temp(&StringArena);
     char *Result = 0;
     OBJECT *Text = pair_get_a(Args);
 concat_tailcall:
    
     if(is_string(Text))
     {
-        Result = (char *)malloc(strlen((char *)Text->uData.STRING.Value)+1);
+        Result = (char *)push_size(&StringArena, strlen((char *)Text->uData.STRING.Value)+1, default_arena_params());
         strcpy(Result, (char *)Text->uData.STRING.Value);
     }
     else if(is_pair(Text))
@@ -333,7 +334,7 @@ concat_tailcall:
     }
     else
     {
-        Result = (char *)malloc(2);
+        Result = (char *)push_size(&StringArena,2,default_arena_params());
         Result[0] = (char)Text->uData.CHARACTER.Value;
         Result[1] = 0;
     }
@@ -341,10 +342,10 @@ concat_tailcall:
     {
         Text = pair_get_a(Args);
         
-        concat_tailcall2:
+concat_tailcall2:
         if(is_string(Text))
         {
-            Result = (char *)realloc(Result, strlen(Result) + strlen((char *)Text->uData.STRING.Value)+1);
+            Result = (char *)push_copy(&StringArena, strlen(Result) + strlen((char *)Text->uData.STRING.Value)+1, Result, default_arena_params());
             strcat(Result, (char *)Text->uData.STRING.Value);
         }
         else if(is_nil(Text))
@@ -352,19 +353,20 @@ concat_tailcall:
             break;
         }
         else if(is_pair(Text))
-    {
-        Text = concat_proc(Text);
-        goto concat_tailcall2;
-    }
+        {
+            Text = concat_proc(Text);
+            goto concat_tailcall2;
+        }
         else
         {
             mi ResultEnd = strlen(Result);
-            Result = (char *)realloc(Result, strlen(Result) + 2);
+            Result = (char *)push_copy(&StringArena, strlen(Result) + 2, Result, default_arena_params());
             Result[ResultEnd] = (char)Text->uData.CHARACTER.Value;
             Result[ResultEnd+1] = 0;
         }
     }
     
+    end_temp(StringTemp);
     return(make_string((u8 *)Result));
 }
 

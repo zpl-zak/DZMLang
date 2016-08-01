@@ -236,7 +236,7 @@ init_mem(void)
 
 #define push_struct(Arena, type, ...) (type *)push_size(Arena, sizeof(type), ## __VA_ARGS__)
 #define push_array(Arena, Count, type, ...) (type *)push_size(Arena, Count*sizeof(type), ## __VA_ARGS__)
-#define push_copy(Arena, Size, Source, ...) (type *)copy(Size, Source, push_size(Arena, Size, ## __VA_ARGS__))
+#define push_copy(Arena, Size, Source, ...) copy(Size, Source, push_size(Arena, Size, ## __VA_ARGS__))
 #define push_type push_struct
 
 #define DPARAMS default_arena_params
