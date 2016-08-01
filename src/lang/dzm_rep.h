@@ -54,18 +54,15 @@ test_init(int argc, char** argv)
     set_log_output(Log);
     set_log_verbose(1);
     
+    init_defs();
+    test_load_file("stdlib.dzm");
+    
     if(argc < 2)
     {
-        init_defs();
-        
-        test_load_file("stdlib.dzm");
-        
         test_repl();
         return;
     }
     printf("DZMLang Interpreter; By ZaKlaus.\n");
-    
-    init_defs(); 
     
     test_load_file(argv[1]);
     
