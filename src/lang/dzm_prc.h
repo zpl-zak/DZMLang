@@ -2,6 +2,9 @@
 
 #if !defined(DZM_PRC_H)
 
+#include <ctime>
+#include <cmath>
+
 #define def_proc(Name) static inline OBJECT * Name##_proc(OBJECT *Args) 
 #define add_procedure(Name, Call)        \
 define_variable(make_symbol((u8 *)Name), \
@@ -237,7 +240,8 @@ def_proc(number_to_string)
 {
     TEMP_MEMORY Mem = begin_temp(&StringArena);
     char *Buffer = (char *)push_size(&StringArena, 66, default_arena_params());
-    sprintf(Buffer, "%" PRId64, (pair_get_a(Args))->uData.FIXNUM.Value);
+    if(is_fixnum(pair_get_a(Args))) sprintf(Buffer, "%" PRId64, (pair_get_a(Args))->uData.FIXNUM.Value);
+    else sprintf(Buffer, "%lf", (double)((pair_get_a(Args))->uData.REALNUM.Value));
     end_temp(Mem);
     return(make_string((u8 *)Buffer));
 }
@@ -262,54 +266,124 @@ def_proc(string_to_symbol)
 
 def_proc(is_number_equal)
 {
-    s32 Value = (pair_get_a(Args))->uData.FIXNUM.Value;
-    
-    while(!is_nil(Args = pair_get_b(Args)))
+    if(pair_get_a(Args)->Type == FIXNUM)
     {
-        if(Value != ((pair_get_a(Args))->uData.FIXNUM.Value))
+        s32 Value = (pair_get_a(Args))->uData.FIXNUM.Value;
+        
+        while(!is_nil(Args = pair_get_b(Args)))
         {
-            return False;
+            if(Value != ((pair_get_a(Args))->uData.FIXNUM.Value))
+            {
+                return False;
+            }
         }
+        return True;
     }
-    return True;
+    else if(pair_get_a(Args)->Type == REALNUM)
+    {
+        r32 Value = (pair_get_a(Args))->uData.REALNUM.Value;
+        
+        while(!is_nil(Args = pair_get_b(Args)))
+        {
+            if(Value != ((pair_get_a(Args))->uData.REALNUM.Value))
+            {
+                return False;
+            }
+        }
+        return True;
+    }
+    return(False);
 }
 
 def_proc(is_less_than)
 {
-    s32 Previous = (pair_get_a(Args))->uData.FIXNUM.Value;
-    s32 Next;
-    
-    while(!is_nil(Args = pair_get_b(Args)))
+    if(pair_get_a(Args)->Type == FIXNUM)
     {
-        Next = (pair_get_a(Args))->uData.FIXNUM.Value;
-        if(Previous < Next)
+        s32 Previous = (pair_get_a(Args))->uData.FIXNUM.Value;
+        s32 Next;
+        
+        while(!is_nil(Args = pair_get_b(Args)))
         {
-            Previous = Next;
+            Next = (pair_get_a(Args))->uData.FIXNUM.Value;
+            if(Previous < Next)
+            {
+                Previous = Next;
+            }
+            else
+            {
+                return False;
+            }
         }
-        else
-        {
-            return False;
-        }
+        return True;
     }
-    return True;
+    else if(pair_get_a(Args)->Type == REALNUM)
+    {
+        r32 Previous = (pair_get_a(Args))->uData.REALNUM.Value;
+        r32 Next;
+        
+        while(!is_nil(Args = pair_get_b(Args)))
+        {
+            Next = (pair_get_a(Args))->uData.REALNUM.Value;
+            if(Previous < Next)
+            {
+                Previous = Next;
+            }
+            else
+            {
+                return False;
+            }
+        }
+        return True;
+    }
+    else
+    {
+        return(False);
+    }
 }
 
 def_proc(is_greater_than)
 {
-    s32 Previous = (pair_get_a(Args))->uData.FIXNUM.Value;
-    s32 Next;
-    
-    while(!is_nil(Args = pair_get_b(Args)))
+    if(pair_get_a(Args)->Type == FIXNUM)
     {
-        Next = (pair_get_a(Args))->uData.FIXNUM.Value;
-        if(Previous > Next)
+        s32 Previous = (pair_get_a(Args))->uData.FIXNUM.Value;
+        s32 Next;
+        
+        while(!is_nil(Args = pair_get_b(Args)))
         {
-            Previous = Next;
+            Next = (pair_get_a(Args))->uData.FIXNUM.Value;
+            if(Previous > Next)
+            {
+                Previous = Next;
+            }
+            else
+            {
+                return False;
+            }
         }
-        else
+        return True;
+    }
+    else if(pair_get_a(Args)->Type == REALNUM)
+    {
+        r32 Previous = (pair_get_a(Args))->uData.REALNUM.Value;
+        r32 Next;
+        
+        while(!is_nil(Args = pair_get_b(Args)))
         {
-            return False;
+            Next = (pair_get_a(Args))->uData.REALNUM.Value;
+            if(Previous > Next)
+            {
+                Previous = Next;
+            }
+            else
+            {
+                return False;
+            }
         }
+        return True;
+    }
+    else
+    {
+        return(False);
     }
     return True;
 }
@@ -639,6 +713,26 @@ def_proc(write_string)
     FILE *Out;
     
     String = pair_get_a(Args);
+    if(!is_string(String) && (is_realnum(String) || is_fixnum(String)))
+    {
+        TEMP_MEMORY Temp = begin_temp(&StringArena);
+        
+        char *Buffer = (char *)push_size(&StringArena, 66, default_arena_params());
+        if(is_realnum(String))
+        {
+            sprintf(Buffer, "%lf", (double)String->uData.REALNUM.Value);
+        }
+        else sprintf(Buffer, "%" PRId64, String->uData.FIXNUM.Value);
+        
+        String = make_string((u8 *)Buffer);
+        
+        end_temp(Temp);
+    }
+    else if(!is_string(String))
+    {
+        LOG(ERR_WARN, "write-string expects 1 parameter to be: <STRING|REALNUM|FIXNUM>.");
+        return(Nil);
+    }
     Args = pair_get_b(Args);
     Out = is_nil(Args) ? stdout : (pair_get_a(Args))->uData.OUTPUT.Stream;
     fprintf(Out, "%s", (char *)String->uData.STRING.Value);
@@ -756,6 +850,94 @@ def_proc(error_reporting)
     return(OKSymbol);
 }
 
+def_proc(random)
+{
+    srand(time(0));
+    
+    s64 RandomValue = (s64)rand();
+    
+    if(!is_nil(pair_get_a(Args)))
+    {
+        RandomValue %= (pair_get_a(Args))->uData.FIXNUM.Value;
+    }
+    
+    return(make_fixnum(RandomValue));
+}
+
+def_proc(error)
+{
+    if(is_nil(pair_get_a(Args)))
+    {
+        LOG(ERR_WARN, "error is missing: <message>");
+        return(OKSymbol);
+    }
+    LOG(ERR_WARN, "Exception -> %s", (char *)pair_get_a(Args)->uData.STRING.Value);
+    return(OKSymbol);
+}
+
+def_proc(sin)
+{
+    if(pair_get_a(Args)->Type == REALNUM)
+    {
+        return(make_realnum(sin((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+    }
+    return(make_realnum(sin((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+}
+
+def_proc(cos)
+{
+    if(pair_get_a(Args)->Type == REALNUM)
+    {
+        return(make_realnum(cos((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+    }
+    return(make_realnum(cos((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+}
+
+def_proc(tan)
+{
+    if(pair_get_a(Args)->Type == REALNUM)
+    {
+        return(make_realnum(tan((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+    }
+    return(make_realnum(tan((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+}
+
+def_proc(asin)
+{
+    if(pair_get_a(Args)->Type == REALNUM)
+    {
+        return(make_realnum(asin((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+    }
+    return(make_realnum(asin((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+}
+
+def_proc(acos)
+{
+    if(pair_get_a(Args)->Type == REALNUM)
+    {
+        return(make_realnum(acos((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+    }
+    return(make_realnum(acos((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+}
+
+def_proc(atan)
+{
+    if(pair_get_a(Args)->Type == REALNUM)
+    {
+        return(make_realnum(atan((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+    }
+    return(make_realnum(atan((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+}
+
+def_proc(sqrt)
+{
+    if(pair_get_a(Args)->Type == REALNUM)
+    {
+        return(make_realnum(sqrt((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+    }
+    return(make_realnum(sqrt((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+}
+
 def_proc(log_verbose)
 {
     if(!is_nil(pair_get_a(Args)) && !is_boolean(pair_get_a(Args)))
@@ -807,6 +989,14 @@ init_builtins(OBJECT *Env)
     add_procedure("="        , is_number_equal_proc);
     add_procedure("<"        , is_less_than_proc);
     add_procedure(">"        , is_greater_than_proc);
+    
+    add_procedure("sin"         , sin_proc);
+    add_procedure("cos"         , cos_proc);
+    add_procedure("tan"         , tan_proc);
+    add_procedure("asin"        , asin_proc);
+    add_procedure("acos"        , acos_proc);
+    add_procedure("atan"        , atan_proc);
+    add_procedure("sqrt"        , sqrt_proc);
 
     add_procedure("cons"    , cons_proc);
     add_procedure("car"     , car_proc);
@@ -839,6 +1029,7 @@ init_builtins(OBJECT *Env)
     add_procedure("write-char"       , write_char_proc);
     add_procedure("write-string"     , write_string_proc);
     add_procedure("write"            , write_proc);
+    add_procedure("error"            , error_proc);
     
     add_procedure("concat"      , concat_proc);
     add_procedure("system"      , system_proc);
@@ -847,6 +1038,8 @@ init_builtins(OBJECT *Env)
     add_procedure("log-mem"        , log_mem_proc);
     add_procedure("error-reporting", error_reporting_proc);
     add_procedure("log-verbose"    , log_verbose_proc);
+    
+    add_procedure("random"         , random_proc);
 }
 
 #define DZM_PRC_H

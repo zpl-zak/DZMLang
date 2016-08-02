@@ -1,4 +1,6 @@
 (define number? integer?)
+(define list? pair?)
+(define nil '())
 
 (define (caar x) (car (car x)))
 (define (cadr x) (car (cdr x)))
@@ -47,6 +49,12 @@
         (iter (cdr a) (+ 1 count))))
   (iter items 0))
 
+(define (count-leaves x)
+  (cond ((null? x) 0)
+        ((not (pair? x)) 1)
+        (else (+ (count-leaves (car x))
+                 (count-leaves (cdr x))))))
+
 (define (append list1 list2)
   (if (null? list1)
       list2
@@ -59,6 +67,20 @@
         out))
   (iter l '()))
 
+(define (deep-reverse ls)
+  (define (iter ls acc)
+    (if (null? ls)
+        acc
+        (if (list? (car ls))
+            (iter (cdr ls) (cons (deep-reverse (car ls)) acc))
+            (iter (cdr ls) (cons (car ls) acc)))))
+  (iter ls '()))
+
+(define (flatten x)
+  (cond ((null? x) '())
+        ((pair? x) (append (flatten (car x)) (flatten (cdr x))))
+        (else (list x))))
+
 (define (reverse-string l)
 	(list->string (reverse (string->list l))))
 
@@ -68,12 +90,61 @@
         (cons (proc (car items))
               (map proc (cdr items)))))
 
+(define (tree-map proc tree)
+    (map (lambda (sub-tree)
+             (if (list? sub-tree)
+                 (tree-map proc sub-tree)
+                 (proc sub-tree)))
+             tree))
+
+(define (subsets ls)
+  (if (null? ls)
+      (list nil)
+      (let ((rest (subsets (cdr ls))))
+           (append rest (map (lambda (x)
+                               (cons (car ls) x))
+                             rest)))))
+
 (define (for-each f l)
   (if (null? l)
       #t
       (begin
         (f (car l))
         (for-each f (cdr l)))))
+
+(define (filter predicate sequence)
+  (cond ((null? sequence) nil)
+        ((predicate (car sequence))
+                    (cons (car sequence)
+                          (filter predicate
+                                  (cdr sequence))))
+                    (else (filter predicate
+                                  (cdr sequence)))))
+
+(define (accumulate op initial sequence)
+  (if (null? sequence)
+      initial
+      (op (car sequence)
+          (accumulate op
+                      initial
+                      (cdr sequence)))))
+
+(define (enumerate-interval low high)
+  (if (> low high)
+      nil
+      (cons low
+            (enumerate-interval
+              (+ low 1)
+              high))))
+(define range enumerate-interval)
+
+(define (enumerate-tree tree)
+  (cond ((null? tree) nil)
+        ((not (list? tree)) (list tree))
+        (else (append
+                (enumerate-tree (car tree))
+                (enumerate-tree (cdr tree))))))
+(define for enumerate-tree)
 
 (define (not x)
   (if x #f #t))
@@ -88,5 +159,20 @@
 		(car l)
 		(last (cdr l))))
 
+(define (no-more? l)
+  (if (null? (car (cdr l)))
+      #t
+      #f))
+
 (define (nth n l)
 	(last (take n l)))
+
+(define true #t)
+(define false #f)
+(define display write)
+(define display-string write-string)
+(define newline (lambda () (write-char #\newline)))
+
+
+;;; ADDITIONAL PROGRAMS
+(load "lib/math.dzm")

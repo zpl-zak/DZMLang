@@ -28,11 +28,6 @@ test_load_file(const char *Name)
 static inline void
 test_repl(void)
 {
-    printf("DZMLang REPL; By ZaKlaus.\nUse ^C to exit.\n");
-    printf("Version: %s\n", DZM_VERSION);
-    
-    //init_defs();
-    
     for(;;)
     {
         printf(": ");
@@ -59,12 +54,19 @@ test_init(int argc, char** argv)
     
     if(argc < 2)
     {
+        printf("DZMLang REPL; By ZaKlaus.\nUse ^C to exit.\n");
+        printf("Version: %s\n", DZM_VERSION);
         test_repl();
         return;
     }
     printf("DZMLang Interpreter; By ZaKlaus.\n");
     
-    test_load_file(argv[1]);
+    if(!strcmp(argv[1], "--repl"))
+    {
+        test_load_file(argv[2]);
+        test_repl();
+    }
+    else test_load_file(argv[1]);
     
     fclose(Log);
 }
