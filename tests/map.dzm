@@ -25,3 +25,44 @@
                  (square-tree sub-tree)
                  (square sub-tree)))
              tree))
+
+(define (salary-of-highest-paid-programmer
+            records)
+        (define (salary r) (cdr r))
+        (define (programmer? r) (eq? "programmer" (car r)))
+        (accumulate
+            max
+            0
+            (map salary
+                 (filter programmer? records))))
+             
+(define employees (list
+                      (list "programmer" 2480)
+                      (list "programmer" 560)
+                      (list "plumber" 220)))
+                  
+
+(define (point x y)
+ (let ((x x) 
+       (y y)
+      )
+     
+   (define (getx) x)
+
+   (define (gety) y)
+
+   (define (add p) 
+    (point 
+     (+ x (send 'getx p))
+     (+ y (send 'gety p))))
+
+   (define (type-of) 'point)
+     
+   (define (self message)
+     (cond ((eqv? message 'getx) getx)
+           ((eqv? message 'gety) gety)
+           ((eqv? message 'add)  add)
+           ((eqv? message 'type-of) type-of)
+	   (else (error "Undefined message" message))))
+     
+   self))

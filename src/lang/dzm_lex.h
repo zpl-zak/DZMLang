@@ -270,6 +270,11 @@ read(FILE *In)
             InvalidCodePath;
         }
     }
+    // NOTE(zaklaus): VARIADIC
+    else if(C == '.')
+    {
+        return(VarSymbol);
+    }
     // NOTE(zaklaus): STRING
     else if(C == '"')
     {

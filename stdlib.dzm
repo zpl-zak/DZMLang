@@ -32,14 +32,14 @@
 (define (cddddr x) (cdr (cdr (cdr (cdr x)))))
 
 (define (string->list l)
-	(if (nil? l)
-		'()
-		(cons (car l) (string->list (cdr l)))))
+  (if (nil? l)
+    '()
+    (cons (car l) (string->list (cdr l)))))
 
 (define (list->string l)
-	(if (nil? l)
-		'()
-		(concat (car l) (list->string (cdr l)))))
+  (if (nil? l)
+    '()
+    (concat (car l) (list->string (cdr l)))))
 (define conc concat)
 
 (define (length items)
@@ -82,7 +82,7 @@
         (else (list x))))
 
 (define (reverse-string l)
-	(list->string (reverse (string->list l))))
+  (list->string (reverse (string->list l))))
 
 (define (map proc items)
     (if (null? items)
@@ -146,18 +146,72 @@
                 (enumerate-tree (cdr tree))))))
 (define for enumerate-tree)
 
+(define (foldr func end lst)
+  (if (null? lst)
+      end
+      (func (car lst) (foldr func end (cdr lst)))))
+
+(define (foldl func accum lst)
+  (if (null? lst)
+      accum
+      (foldl func (func accum (car lst)) (cdr lst))))
+    
+(define fold foldl)
+(define reduce foldr)
+
+(define (unfold func init pred)
+  (if (pred init)
+      (cons init '())
+      (cons init (unfold func (func init) pred))))
+
+(define (max lst) 
+  (fold (lambda (old new)
+          (if (> old new)
+              old
+              new))
+            (car lst)
+            (cdr lst)))
+
+(define (min lst) 
+  (fold (lambda (old new)
+          (if (< old new)
+              old
+              new))
+            (car lst)
+            (cdr lst)))
+
+(define (id o) o)
+(define (flip f) (lambda (a b) (f b a)))
+
+(define (curry f a) (lambda (b) (apply f (cons a (list b)))))
+(define (compose f g) (lambda (a) (f (apply g a))))
+
+(define zero?              (curry = 0))
+(define positive?          (curry < 0))
+(define negative?          (curry > 0))
+(define (odd? num)         (= (mod num 2) 1))
+(define (even? num)        (= (mod num 2) 0))
+
+(define (send message obj params)
+  (let ((method (obj message)))
+       (cond ((procedure? method) (apply method params))
+             (else (error "Error in method lookup.")))))
+
+(define (new class params)
+  (apply class params))
+
 (define (not x)
   (if x #f #t))
 
 (define (take n l)
-	(if (or (nil? l) (= 0 n))
-		'()
-		(cons (car l) (take (- n 1) (cdr l)))))
+  (if (or (nil? l) (= 0 n))
+    '()
+    (cons (car l) (take (- n 1) (cdr l)))))
 
 (define (last l)
-	(if (nil? (cdr l))
-		(car l)
-		(last (cdr l))))
+  (if (nil? (cdr l))
+    (car l)
+    (last (cdr l))))
 
 (define (no-more? l)
   (if (null? (car (cdr l)))
@@ -165,7 +219,7 @@
       #f))
 
 (define (nth n l)
-	(last (take n l)))
+  (last (take n l)))
 
 (define true #t)
 (define false #f)

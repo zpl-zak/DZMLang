@@ -127,6 +127,8 @@ write(FILE *Out, OBJECT *Obj)
         
         case SYMBOL:
         {
+            if(Obj == VarSymbol)break;
+            
             if(!(Obj == OKSymbol))
             {
                 fprintf(Out, "%s", Obj->uData.SYMBOL.Value);
