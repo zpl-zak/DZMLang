@@ -487,7 +487,7 @@ lookup_variable_value(OBJECT *Var, OBJECT *Env)
         }
         Env = enclosing_env(Env);
     }
-    LOG(ERR_WARN, "Unbound variable");
+    LOG(ERR_WARN, "Unbound variable: %s", Var->uData.SYMBOL.Value);
     Var->Mark = 1;
     Unreachable(Nil);
 }

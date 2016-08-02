@@ -42,27 +42,50 @@
                       (list "plumber" 220)))
                   
 
-(define (point x y)
- (let ((x x) 
-       (y y)
+(define (point params)
+ (let ((x (car params)) 
+       (y (cdr params))
       )
      
    (define (getx) x)
 
    (define (gety) y)
+   
+   (define (test w) (* w w))
 
    (define (add p) 
     (point 
-     (+ x (send 'getx p))
-     (+ y (send 'gety p))))
+     (list (+ x ((p 'getx))))
+           (+ y ((p 'gety)))))
 
    (define (type-of) 'point)
      
    (define (self message)
-     (cond ((eqv? message 'getx) getx)
-           ((eqv? message 'gety) gety)
-           ((eqv? message 'add)  add)
-           ((eqv? message 'type-of) type-of)
+     (cond ((eq? message 'getx) getx)
+           ((eq? message 'gety) gety)
+           ((eq? message 'add)  add)
+           ((eq? message 'test) test)
+           ((eq? message 'type-of) type-of)
 	   (else (error "Undefined message" message))))
      
    self))
+ 
+ (define (color-point params)
+   (let ((super (new point (list (car params) (cdr params))))
+                (self 'nil))
+              (let ((color (nth 3 params)))
+                   
+                   (define (get-color) color)
+                   (define (type-of) 'color-point)
+                   
+                   (define (dispatch msg)
+                     (cond ((eq? msg 'get-color) get-color)
+                           ((eq? msg 'type-of) type-of)
+                           (else (super msg))))
+                         
+                         (set! self dispatch))
+                       self))
+ 
+ 
+ (define p (new point '(1 2)))
+ (define q (new point '(3 4)))

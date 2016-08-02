@@ -193,12 +193,10 @@
 (define (even? num)        (= (mod num 2) 0))
 
 (define (send message obj params)
-  (let ((method (obj message)))
-       (cond ((procedure? method) (apply method params))
-             (else (error "Error in method lookup.")))))
+  ((obj message) params))
 
 (define (new class params)
-  (apply class params))
+  (class params))
 
 (define (not x)
   (if x #f #t))
