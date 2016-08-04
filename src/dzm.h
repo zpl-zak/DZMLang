@@ -39,7 +39,7 @@ read_input(FILE *Stream)
 #else
 static inline void 
 read_input(FILE *Stream)
-{}
+{Stream=Stream;} //NOTE(zaklaus): or just -w-unused-param
 #endif
 
 typedef int8_t int8;
@@ -102,6 +102,8 @@ typedef uintptr_t umm;
 #else
 #define TRAP() volatile *(int *)0 = 0
 #endif
+
+#define IGNORE(x) x
 
 #ifdef DZM_SLOW
 #define zassert(Expression) if(!(Expression)) {TRAP();}
