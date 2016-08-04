@@ -17,6 +17,31 @@
 #include <string.h>
 #include <ctype.h>
 
+#if defined(__linux)
+#include <readline/readline.h>
+#include <readline/history.h>
+
+static inline void 
+read_input(FILE *Stream)
+{
+    
+    char *Buffer = readline("");
+    FILE *NewStream = Stream;
+    
+    if(Buffer[0] != 0)
+    {
+        add_history(Buffer);
+        NewStream = fmemopen((void *)Buffer, strlen(Buffer), "r");
+    }
+    
+    Stream = NewStream;
+}
+#else
+static inline void 
+read_input(FILE *Stream)
+{}
+#endif
+
 typedef int8_t int8;
 typedef int16_t int16;
 typedef int32_t int32;
@@ -68,6 +93,7 @@ typedef uintptr_t umm;
 #endif
 
 #include "../dzm_ver.h"
+
 
 #ifdef COMPILER_MSVC
 #define TRAP() *(int *)0 = 0
