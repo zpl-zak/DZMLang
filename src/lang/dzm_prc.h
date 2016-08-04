@@ -595,7 +595,7 @@ def_proc(read)
     FILE *In;
     OBJECT *Result;
     
-    In = is_nil(Args) ? stdin : (pair_get_a(Args))->uData.INPUT.Stream;
+    In = is_nil(Args) ? read_input(stdin) : (pair_get_a(Args))->uData.INPUT.Stream;
     Result = read(In);
     return((Result == 0) ? EOF_Obj : Result);
 }
@@ -618,7 +618,7 @@ def_proc(peek_char)
     FILE *In;
     s32 Result;
     
-    In = is_nil(Args) ? stdin : (pair_get_a(Args))->uData.INPUT.Stream;
+    In = is_nil(Args) ? read_input(stdin) : (pair_get_a(Args))->uData.INPUT.Stream;
     Result = peek(In);
     return((Result == EOF) ? EOF_Obj : make_character(Result));
 }
@@ -779,7 +779,7 @@ def_proc(read_char)
         return(make_character(Result));
     }
     
-    In = is_nil(Args) ? stdin : (pair_get_a(Args))->uData.INPUT.Stream;
+    In = is_nil(Args) ? read_input(stdin) : (pair_get_a(Args))->uData.INPUT.Stream;
     Result = getc(In);
     return((Result == EOF) ? EOF_Obj : make_character(Result));
 }
