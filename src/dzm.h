@@ -21,7 +21,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-static inline void 
+static inline FILE * 
 read_input(FILE *Stream)
 {
     
@@ -34,12 +34,14 @@ read_input(FILE *Stream)
         NewStream = fmemopen((void *)Buffer, strlen(Buffer), "r");
     }
     
-    Stream = NewStream;
+    return(NewStream);
 }
 #else
-static inline void 
+static inline FILE *
 read_input(FILE *Stream)
-{Stream=Stream;} //NOTE(zaklaus): or just -w-unused-param
+{
+    return(Stream);
+} 
 #endif
 
 typedef int8_t int8;

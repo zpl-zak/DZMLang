@@ -31,9 +31,7 @@ test_repl(void)
     for(;;)
     {
         printf(": ");
-        FILE *Stream = stdin;
-        read_input(Stream);
-        
+        FILE *Stream = read_input(stdin);
         write(stdout, eval(read(Stream), GlobalEnv));
         printf("\n");
     }
