@@ -211,61 +211,12 @@ alloc_object(void)
 }
 
 static inline OBJECT *
-make_object(u8 Type, void *Arg0=0, void *Arg1=0, void *Arg2=0)
+make_fixnum(s64 Value)
 {
     OBJECT *Obj = alloc_object();
-    Obj->Type = Type;
-    
-    switch(Type)
-    {
-        case FIXNUM:
-        {
-            Obj->uData.FIXNUM.Value = *((s64*)Arg0);
-        }break;
-        case REALNUM:
-        {
-            Obj->uData.REALNUM.Value = *((r64*)Arg0);
-        }break;
-        case CHARACTER:
-        {
-            Obj->uData.CHARACTER.Value = *((u8*)Arg0);
-        }break;
-        case STRING:
-        {
-            Obj->uData.STRING.Value = (u8 *)malloc(strlen((char *)Arg0) + 1);
-            string_copy(Obj->uData.STRING.Value, (u8 *)Arg0);
-        }break;
-        case PAIR:
-        {
-            Obj->uData.PAIR.A = (OBJECT *)Arg0;
-            Obj->uData.PAIR.B = (OBJECT *)Arg1;
-        }break;
-        case INPUT:
-        {
-            Obj->uData.INPUT.Stream = (FILE *)Arg0;
-        }break;
-        case OUTPUT:
-        {
-            Obj->uData.OUTPUT.Stream = (FILE *)Arg0;
-        }break;
-        case PROCEDURE:
-        {
-            Obj->uData.PROCEDURE.Fn = (OBJECT* (*)(OBJECT*))Arg0;
-            Obj->uData.PROCEDURE.Lazy = 0; // TODO(zaklaus): replace with variadic solution!
-        }break;
-        case COMPOUND:
-        {
-            Obj->uData.COMPOUND.Parameters = (OBJECT *)Arg0;
-            Obj->uData.COMPOUND.Body = (OBJECT *)Arg1;
-            Obj->uData.COMPOUND.Env = (OBJECT *)Arg2;
-        }break;
-        
-        default:
-        {}
-    }
+    Obj->Type = FIXNUM;
+    Obj->uData.FIXNUM.Value = Value;
     return(Obj);
-    Unreachable((OBJECT *)Arg0);
-    Unreachable((OBJECT *)Arg1);
 }
 
 static inline OBJECT *
