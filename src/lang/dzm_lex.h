@@ -236,7 +236,7 @@ read(FILE *In)
         {
             ungetc(C, In);
             if(!Real)
-                return(make_fixnum((s64)Num));
+                return(make_object(FIXNUM, (void *)(s64)Num));
             else
                 return(make_realnum(Num));
         }

@@ -35,7 +35,7 @@ add_proc(OBJECT *Args)
     }
     
     if(!Real)
-        return(make_fixnum((s64)Result));
+        return(make_object(FIXNUM, (void *)(s64)Result));
     else
         return(make_realnum(Result));
 }
@@ -71,7 +71,7 @@ sub_proc(OBJECT *Args)
     }
     
     if(!Real)
-        return(make_fixnum((s64)Result));
+        return(make_object(FIXNUM, (void *)(s64)Result));
     else
         return(make_realnum(Result));
 }
@@ -112,7 +112,7 @@ div_proc(OBJECT *Args)
         Args = pair_get_b(Args);
     }
     if(!Real)
-        return(make_fixnum((s64)Result));
+        return(make_object(FIXNUM, (void *)(s64)Result));
     else
         return(make_realnum(Result));
 }
@@ -140,7 +140,7 @@ mod_proc(OBJECT *Args)
         Result %= (pair_get_a(Args))->uData.FIXNUM.Value;
         Args = pair_get_b(Args);
     }
-    return(make_fixnum(Result));
+    return(make_object(FIXNUM, (void *)Result));
     
 }
 
@@ -162,7 +162,7 @@ mul_proc(OBJECT *Args)
         Args = pair_get_b(Args);
     }
     if(!Real)
-        return(make_fixnum((s64)Result));
+        return(make_object(FIXNUM, (void *)(s64)Result));
     else
         return(make_realnum(Result));
 }
@@ -223,7 +223,7 @@ def_proc(is_procedure)
 
 def_proc(char_to_integer)
 {
-    return(make_fixnum((pair_get_a(Args))->uData.CHARACTER.Value));
+    return(make_object(FIXNUM, (void *)(pair_get_a(Args))->uData.CHARACTER.Value));
 }
 
 def_proc(integer_to_char)
@@ -251,7 +251,7 @@ def_proc(string_to_number)
     char * String = (char *)((pair_get_a(Args))->uData.STRING.Value);
     char * EndPtr = 0;
     s64 Number = strtoull(String, &EndPtr, 10);
-    return(make_fixnum(Number));
+    return(make_object(FIXNUM, (void *)Number));
 }
 
 def_proc(symbol_to_string)
@@ -825,9 +825,9 @@ system_end:
 
 def_proc(arena_mem)
 {
-    return(make_pair(make_fixnum(
+    return(make_pair(make_object(FIXNUM, (void *)
         get_arena_size_remaining(GlobalArena, default_arena_params())),
-        make_fixnum(GlobalArena->Size)));
+        make_object(FIXNUM, (void *)GlobalArena->Size)));
     Unreachable(Args);
 }
 
@@ -861,7 +861,7 @@ def_proc(random)
         RandomValue %= (pair_get_a(Args))->uData.FIXNUM.Value;
     }
     
-    return(make_fixnum(RandomValue));
+    return(make_object(FIXNUM, (void *)RandomValue));
 }
 
 def_proc(error)
