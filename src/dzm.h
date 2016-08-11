@@ -1,4 +1,4 @@
-// (c) ZaKlaus 2016; MIT Licensed, see LICENSE;;
+// (c) ZaKlaus 2016; Apache 2 Licensed, see LICENSE;;
 
 #if !defined(DZM_H)
 
@@ -16,6 +16,33 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+
+#if defined(__linux)
+#include <readline/readline.h>
+#include <readline/history.h>
+
+static inline FILE * 
+read_input(FILE *Stream)
+{
+    
+    char *Buffer = readline("");
+    FILE *NewStream = Stream;
+    
+    if(Buffer[0] != 0)
+    {
+        add_history(Buffer);
+        NewStream = fmemopen((void *)Buffer, strlen(Buffer), "r");
+    }
+    
+    return(NewStream);
+}
+#else
+static inline FILE *
+read_input(FILE *Stream)
+{
+    return(Stream);
+} 
+#endif
 
 typedef int8_t int8;
 typedef int16_t int16;
@@ -69,6 +96,7 @@ typedef uintptr_t umm;
 
 #include "../dzm_ver.h"
 
+
 #ifdef COMPILER_MSVC
 #define TRAP() *(int *)0 = 0
 #elif COMPILER_LLVM
@@ -76,6 +104,8 @@ typedef uintptr_t umm;
 #else
 #define TRAP() volatile *(int *)0 = 0
 #endif
+
+#define IGNORE(x) x
 
 #ifdef DZM_SLOW
 #define zassert(Expression) if(!(Expression)) {TRAP();}

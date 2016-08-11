@@ -1,4 +1,4 @@
-// (c) ZaKlaus 2016; MIT Licensed, see LICENSE;;
+// (c) ZaKlaus 2016; Apache 2 Licensed, see LICENSE;;
 
 #if !defined(DZM_PRT_H)
 
@@ -127,6 +127,8 @@ write(FILE *Out, OBJECT *Obj)
         
         case SYMBOL:
         {
+            if(Obj == VarSymbol)break;
+            
             if(!(Obj == OKSymbol))
             {
                 fprintf(Out, "%s", Obj->uData.SYMBOL.Value);

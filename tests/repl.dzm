@@ -1,7 +1,4 @@
-(load "stdlib.dzm")
-
 (define n (env))
-(load "stdlib.dzm" n)
 (define (repl)
 	(write-char #\>)
 	(write-char #\space)

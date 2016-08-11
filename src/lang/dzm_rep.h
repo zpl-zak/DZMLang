@@ -1,4 +1,4 @@
-// (c) ZaKlaus 2016; MIT Licensed, see LICENSE;;
+// (c) ZaKlaus 2016; Apache 2 Licensed, see LICENSE;;
 
 #if !defined(DZM_REP_H)
 
@@ -28,15 +28,11 @@ test_load_file(const char *Name)
 static inline void
 test_repl(void)
 {
-    printf("DZMLang REPL; By ZaKlaus.\nUse ^C to exit.\n");
-    printf("Version: %s\n", DZM_VERSION);
-    
-    //init_defs();
-    
     for(;;)
     {
         printf(": ");
-        write(stdout, eval(read(stdin), GlobalEnv));
+        FILE *Stream = read_input(stdin);
+        write(stdout, eval(read(Stream), GlobalEnv));
         printf("\n");
     }
 }
@@ -54,20 +50,24 @@ test_init(int argc, char** argv)
     set_log_output(Log);
     set_log_verbose(1);
     
+    init_defs();
+    test_load_file("stdlib.dzm");
+    
     if(argc < 2)
     {
-        init_defs();
-        
-        test_load_file("stdlib.dzm");
-        
+        printf("DZMLang REPL; By ZaKlaus.\nUse ^C to exit.\n");
+        printf("Version: %s\n", DZM_VERSION);
         test_repl();
         return;
     }
     printf("DZMLang Interpreter; By ZaKlaus.\n");
     
-    init_defs(); 
-    
-    test_load_file(argv[1]);
+    if(!strcmp(argv[1], "--repl"))
+    {
+        test_load_file(argv[2]);
+        test_repl();
+    }
+    else test_load_file(argv[1]);
     
     fclose(Log);
 }

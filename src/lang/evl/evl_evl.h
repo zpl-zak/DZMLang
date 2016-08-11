@@ -1,7 +1,13 @@
-// (c) ZaKlaus 2016; MIT Licensed, see LICENSE;;
+// (c) ZaKlaus 2016; Apache 2 Licensed, see LICENSE;;
 
 static inline OBJECT *
 eval(OBJECT *Exp, OBJECT *Env);
+
+static inline b32
+is_variadic(OBJECT *Exp)
+{
+    return(is_tagged_list(Exp, VarSymbol));
+}
 
 static inline OBJECT *
 list_of_values(OBJECT *Exps, OBJECT *Env)

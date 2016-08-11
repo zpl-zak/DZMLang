@@ -17,8 +17,7 @@
         ((eq? op #\*) (* num-a num-b))
         ((eq? op #\/) (/ num-a num-b))
         ((eq? op #\%) (% num-a num-b))
-        (else 0)
-      ))))
+        (else 0)))))
   
   (write-char #\newline)
   

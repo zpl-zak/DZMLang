@@ -1,4 +1,4 @@
-// (c) ZaKlaus 2016; MIT Licensed, see LICENSE;;
+// (c) ZaKlaus 2016; Apache 2 Licensed, see LICENSE;;
 
 #if !defined(DZM_MDL_H)
 
@@ -67,6 +67,7 @@ struct OBJECT
         struct
         {
             OBJECT *(*Fn)(OBJECT *Args);
+            b32 Lazy;
         } PROCEDURE;
         
         struct
@@ -362,9 +363,11 @@ OBJECT *BeginSymbol;
 OBJECT *CondSymbol;
 OBJECT *ElseSymbol;
 OBJECT *LetSymbol;
+OBJECT *LetrecSymbol;
 OBJECT *AndSymbol;
 OBJECT *OrSymbol;
 OBJECT *IfSymbol;
+OBJECT *VarSymbol;
 
 OBJECT *EOF_Obj;
 
@@ -389,6 +392,7 @@ make_procedure(OBJECT *(*Fn)(OBJECT *Args))
     OBJECT *Obj = alloc_object();
     Obj->Type = PROCEDURE;
     Obj->uData.PROCEDURE.Fn = Fn;
+    Obj->uData.PROCEDURE.Lazy = 0;
     return(Obj);
 }
 
@@ -483,7 +487,7 @@ lookup_variable_value(OBJECT *Var, OBJECT *Env)
         }
         Env = enclosing_env(Env);
     }
-    LOG(ERR_WARN, "Unbound variable");
+    LOG(ERR_WARN, "Unbound variable: %s", Var->uData.SYMBOL.Value);
     Var->Mark = 1;
     Unreachable(Nil);
 }
@@ -609,8 +613,10 @@ init_defs(void)
     CondSymbol = make_symbol(UL_"cond");
     ElseSymbol = make_symbol(UL_"else");
     LetSymbol = make_symbol(UL_"let");
+    LetrecSymbol = make_symbol(UL_"letrec");
     AndSymbol = make_symbol(UL_"and");
     OrSymbol = make_symbol(UL_"or");
+    VarSymbol = make_symbol(UL_".");
     
     NilEnv = Nil;
     GlobalEnv = make_env();
@@ -657,9 +663,8 @@ make_symbol(u8 *Value)
         }
         Elem = pair_get_b(Elem);
     }
-    
     Obj->Type = SYMBOL;
-    Obj->uData.SYMBOL.Value = (u8 *)malloc(strlen((char *)Value) + 1);
+    Obj->uData.SYMBOL.Value = (u8 *)push_size(GlobalArena, strlen((char *)Value) + 1, default_arena_params());
     zassert(Obj->uData.SYMBOL.Value != 0);
     
     string_copy(Obj->uData.SYMBOL.Value, Value);

@@ -1,4 +1,4 @@
-// (c) ZaKlaus 2016; MIT Licensed, see LICENSE;;
+// (c) ZaKlaus 2016; Apache 2 Licensed, see LICENSE;;
 
 #if !defined(DZM_LEX_H)
 
@@ -269,6 +269,11 @@ read(FILE *In)
             LOG(ERR_WARN, "Symbol not followed by delimiter");
             InvalidCodePath;
         }
+    }
+    // NOTE(zaklaus): VARIADIC
+    else if(C == '.')
+    {
+        return(VarSymbol);
     }
     // NOTE(zaklaus): STRING
     else if(C == '"')
