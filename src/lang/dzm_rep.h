@@ -41,6 +41,13 @@ static inline void
 test_init(int argc, char** argv)
 {
     GlobalArena = (MEMORY_ARENA *)malloc(sizeof(MEMORY_ARENA));
+    
+    if(!GlobalArena)
+    {
+        printf("Memory initialization error!\n");
+        exit(-1);
+    }
+    
     initialize_arena(GlobalArena, MAX_VM_SIZE, malloc(MAX_VM_SIZE));
     
     init_mem();
