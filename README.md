@@ -7,7 +7,7 @@ Functional language written in C++.
 * Contains basic types: Chars, Numbers, Strings, Symbols, Procedures and compounds, Pairs, I/O handles.
 * Support for procedures added via simple API. (add_proc)
 * Basic I/O operations. (write-char, read-char, read, write, peek, open, close, ...)
-* Garbage Collector. (WIP)
+* ~~Garbage Collector. (WIP)~~
 * Standard Library. (WIP)
 * Uses R5RS language specification.
 * Compatible with various others scripts written for different interpreters. (TLC, SICP-esque interpreters)
