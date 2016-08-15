@@ -22,10 +22,7 @@ enum OBJECT_TYPE
 
 struct OBJECT
 {
-    OBJECT *Next;
-    OBJECT *Parent;
     u8 Type;
-    b32 Mark;
     union
     {
         struct
@@ -107,106 +104,12 @@ pair_get_b(OBJECT *Pair);
 static inline b32
 is_nil(OBJECT *Obj);
 
-static inline void
-free_special_object(OBJECT *Obj)
-{
-    switch(Obj->Type)
-    {
-        case SYMBOL:
-        case STRING:
-        {
-            if(Obj->uData.STRING.Value)
-            {
-                free(Obj->uData.STRING.Value);
-                Obj->uData.STRING.Value = 0;
-            }
-        }break;
-        
-        case PAIR:
-        {
-            // TODO(zaklaus): Decide what to do with pair-wise objects.
-        }break;
-        
-        default:
-        {
-            
-        }break;
-    }
-}
-
 static inline OBJECT *
 alloc_object(void)
 {
-    OBJECT *Obj = 0;
+    OBJECT *Obj = push_type(GlobalArena, OBJECT, align_noclear(sizeof(OBJECT)));
     
-    if(GlobalTable)
-    for(OBJECT *It = GlobalTable->Next;
-        It;
-        It = It->Next)
-    {
-        // NOTE(zaklaus): EXPERIMENTAL
-        /*{
-            OBJECT *StackObj = GlobalEnv;
-            b32 IsDead = 1;
-            while(StackObj != 0 && !is_nil(pair_get_a(StackObj)))
-            {
-                if(It == pair_get_a(StackObj))
-                {
-                    IsDead = 0;
-                    break;
-                }
-                StackObj = pair_get_b(StackObj);
-            }
-            
-            if(IsDead)
-            {
-                It->Mark = 1;
-            }
-        }*/
-        
-        if(It->Mark == 255)// && (It->Parent == Nil || It->Type == SYMBOL))
-        {
-            free_special_object(It);
-            It->Type = NIL;
-            
-            /*if(Obj->Parent == SymbolTable)
-            {
-                SymbolTable->Mark = 1;
-                SymbolTable = pair_get_b(SymbolTable);
-                Obj->Parent = Nil;
-            }*/
-            
-            if(!Obj)
-            {
-                Obj = It;
-                Obj->Mark = 0;
-            }
-        }    
-    }
-    
-    //OBJECT *Obj = malloc(sizeof(OBJECT));
-    
-    if(Obj == 0)
-    {
-        Obj = push_type(GlobalArena, OBJECT, align_noclear(sizeof(OBJECT)));
-        
-        if(GlobalTable == 0)
-        {
-            GlobalTable = Obj;
-            GlobalTable->Next = 0;
-        }
-        else
-        {
-            Obj->Next = GlobalTable;
-            GlobalTable = Obj;
-        }
-        
-        Obj->Mark = 0;
-        Obj->Parent = Nil;
-    }
-    
-    zassert(Obj != 0);
-    
+    zassert(Obj);
     return(Obj);
 }
 
@@ -253,8 +156,8 @@ make_pair(OBJECT *A, OBJECT *B)
 {
     OBJECT *Obj = alloc_object();
     Obj->Type = PAIR;
-    Obj->uData.PAIR.A = A; A->Parent = Obj;
-    Obj->uData.PAIR.B = B; B->Parent = Obj;
+    Obj->uData.PAIR.A = A;
+    Obj->uData.PAIR.B = B;
     return(Obj);
 }
 
@@ -479,7 +382,6 @@ lookup_variable_value(OBJECT *Var, OBJECT *Env)
         {
             if(Var == pair_get_a(Vars))
             {
-                (pair_get_a(Vars))->Mark = 1;
                 return(pair_get_a(Vals));
             }
             Vars = pair_get_b(Vars);
@@ -488,7 +390,6 @@ lookup_variable_value(OBJECT *Var, OBJECT *Env)
         Env = enclosing_env(Env);
     }
     LOG(ERR_WARN, "Unbound variable: %s", Var->uData.SYMBOL.Value);
-    Var->Mark = 1;
     Unreachable(Nil);
 }
 
@@ -516,7 +417,6 @@ set_variable_value(OBJECT *Var, OBJECT *Val, OBJECT *Env)
         }
         Env = enclosing_env(Env);
     }
-    Var->Mark = 1;
     LOG(ERR_WARN, "Unbound variable");
     InvalidCodePath;
 }
@@ -640,13 +540,13 @@ pair_get_b(OBJECT *Pair)
 static inline void
 pair_set_a(OBJECT *Pair, OBJECT *A)
 {
-    Pair->uData.PAIR.A = A; A->Parent = Pair;
+    Pair->uData.PAIR.A = A;
 }
 
 static inline void
 pair_set_b(OBJECT *Pair, OBJECT *B)
 {
-    Pair->uData.PAIR.B = B; B->Parent = Pair;
+    Pair->uData.PAIR.B = B;
 }
 
 static inline OBJECT *

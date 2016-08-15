@@ -10,7 +10,6 @@ write_pair(FILE *Out, OBJECT *Obj)
 {
     OBJECT *A = pair_get_a(Obj);
     OBJECT *B = pair_get_b(Obj);
-    Obj->Mark = 1;
     
     write(Out, A);
     if(is_pair(B))
@@ -161,8 +160,6 @@ write(FILE *Out, OBJECT *Obj)
     {
         LOG(ERR_INFO, "Free: %d, Total: %d", (int)get_arena_size_remaining(GlobalArena, default_arena_params()), (int)GlobalArena->Size);
     }
-    
-    Obj->Mark = 1;
 }
 
 #define DZM_PRT_H
