@@ -19,7 +19,7 @@ Functional language written in C++.
    * **NOTE**: ctime.exe is a time-tracking utility which measures build times for me. ctime.exe was developed by [Casey Muratori](https://twitter.com/cmuratori), more info about ctime.exe utility can be found here: [Youtube](https://www.youtube.com/watch?v=LdMHyGxfg6U).
 * On Linux
    * Make sure you have the latest stable version of GCC compiler installed.
-   * Make sure you have the latest version of libreadline6 and libreadline6-dev installed.
+   * Make sure you have the latest version of **libreadline6** and **libreadline6-dev** installed.
    * `make` in project folder.
 * On OSX
    * Project should compile fine on Clang and GCC. Unfortunately, I can't provide any assistance with OSX build.
