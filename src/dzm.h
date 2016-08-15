@@ -133,7 +133,7 @@ typedef uintptr_t umm;
 #define UL_ (u8 *)
 #define L_  (s8 *)
 
-#define MAX_VM_SIZE     4096 * 1024 * 32
+#define MAX_VM_SIZE     4096 * 1024
 
 static inline void
 zero_size(memory_index Size, void *Ptr)

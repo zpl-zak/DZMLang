@@ -3,8 +3,12 @@
 static inline OBJECT *
 make_lambda(OBJECT *Parameters, OBJECT *Body)
 {
-    return(make_pair(LambdaSymbol,
-                     make_pair(Parameters, Body)));
+    OBJECT *r = 0;
+    push_root(&r);
+    r = make_pair(Parameters, Body);
+    r = make_pair(LambdaSymbol, r);
+    pop_root();
+    return(r);
 }
 
 static inline b32
