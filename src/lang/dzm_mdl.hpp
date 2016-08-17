@@ -484,7 +484,7 @@ is_true(OBJECT *Obj)
     return(Obj == True);
 }
 
-#include "dzm_prc.h"
+#include "dzm_prc.hpp"
 
 static inline void
 init_defs(void)

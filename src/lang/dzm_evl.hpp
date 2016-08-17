@@ -2,14 +2,14 @@
 
 #if !defined(DZM_EVL_H)
 
-#include "evl/evl_lit.h"
-#include "evl/evl_ops.h"
-#include "evl/evl_cond.h"
-#include "evl/evl_app.h"
-#include "evl/evl_mod.h"
-#include "evl/evl_lbd.h"
-#include "evl/evl_apl.h"
-#include "evl/evl_evl.h"
+#include "evl/evl_lit.hpp"
+#include "evl/evl_ops.hpp"
+#include "evl/evl_cond.hpp"
+#include "evl/evl_app.hpp"
+#include "evl/evl_mod.hpp"
+#include "evl/evl_lbd.hpp"
+#include "evl/evl_apl.hpp"
+#include "evl/evl_evl.hpp"
 
 
 static inline OBJECT *

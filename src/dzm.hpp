@@ -94,7 +94,7 @@ typedef uintptr_t umm;
 #define COMPILER_LLVM 0
 #endif
 
-#include "../dzm_ver.h"
+#include "../dzm_ver.hpp"
 
 
 #ifdef COMPILER_MSVC
@@ -156,18 +156,18 @@ zero_size(memory_index Size, void *Ptr)
 #endif
 
 // == Memory Manager
-#include "dzm_mem.h"
+#include "dzm_mem.hpp"
 
 // == Util
-#include "dzm_utl.h"
-#include "dzm_log.h"
+#include "dzm_utl.hpp"
+#include "dzm_log.hpp"
 
 // == Interpreter
-#include "lang/dzm_mdl.h"
-#include "lang/dzm_lex.h"
-#include "lang/dzm_evl.h"
-#include "lang/dzm_prt.h"
-#include "lang/dzm_rep.h"
+#include "lang/dzm_mdl.hpp"
+#include "lang/dzm_lex.hpp"
+#include "lang/dzm_evl.hpp"
+#include "lang/dzm_prt.hpp"
+#include "lang/dzm_rep.hpp"
 
 #define DZM_H
 #endif

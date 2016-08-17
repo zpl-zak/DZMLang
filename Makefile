@@ -5,3 +5,7 @@ all:
 	$(CC) $(CCLINE) -lreadline
 win:
 	$(CC) $(CCLINE)
+clean:
+	rm dzm
+	rm dzm_log.txt
+
