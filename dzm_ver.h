@@ -3,7 +3,7 @@
 #if !defined(DZM_VER_H)
 
 #ifdef DZM_DEVEL
-#define DZM_VERSION_CHANNEL "DEV"
+#define DZM_VERSION_CHANNEL "DEV Snapshot: " __DATE__ " "  __TIME__
 #else
 #define DZM_VERSION_CHANNEL "STABLE"
 #endif
