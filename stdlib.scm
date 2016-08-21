@@ -227,4 +227,4 @@
 
 
 ;;; ADDITIONAL PROGRAMS
-(load "lib/math.dzm")
+(load "lib/math.scm")
