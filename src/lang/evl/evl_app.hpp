@@ -75,6 +75,7 @@ binding_argument(OBJECT *Binding)
 static inline OBJECT *
 bindings_parameters(OBJECT *Bindings)
 {
+	if(is_nil(Bindings)) return(Nil);
     OBJECT *r0 = binding_parameter(pair_get_a(Bindings));
     OBJECT *r1 = bindings_parameters(pair_get_b(Bindings));
     
@@ -86,6 +87,7 @@ bindings_parameters(OBJECT *Bindings)
 static inline OBJECT *
 bindings_arguments(OBJECT *Bindings)
 {
+	if(is_nil(Bindings)) return(Nil);
     OBJECT *r0 = binding_argument(pair_get_a(Bindings));
     OBJECT *r1 = bindings_arguments(pair_get_b(Bindings));
     return(is_nil(Bindings) ?
