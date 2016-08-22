@@ -107,6 +107,9 @@ typedef uintptr_t umm;
 #elif COMPILER_LLVM
 #define TRAP() __builtin_trap()
 #else
+#ifdef __APPLE__
+#define TRAP() __builtin_trap()
+#else
 #define TRAP() volatile *(int *)0 = 0
 #endif
 
