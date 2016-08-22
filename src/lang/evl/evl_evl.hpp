@@ -18,9 +18,8 @@ list_of_values(OBJECT *Exps, OBJECT *Env)
     }
     else
     {
-        OBJECT *r0 = eval(first_operand(Exps), Env);
-        OBJECT *r1 = list_of_values(rest_operands(Exps), Env);
-        return(MAKE1(PAIR, r0, r1));
+        return(make_pair(eval(first_operand(Exps), Env),
+                         list_of_values(rest_operands(Exps), Env)));
     }
 }
 

@@ -3,7 +3,7 @@
 static inline OBJECT *
 make_begin(OBJECT *Exp)
 {
-    return(MAKE1(PAIR, BeginSymbol, Exp));
+    return(make_pair(BeginSymbol, Exp));
 }
 
 static inline b32

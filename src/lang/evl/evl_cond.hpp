@@ -3,12 +3,10 @@
 static inline OBJECT *
 make_if(OBJECT *Predicate, OBJECT *Consequent, OBJECT *Alternative)
 {
-    OBJECT *r3 = MAKE1(PAIR, Alternative, Nil);
-    OBJECT *r2 = MAKE1(PAIR, Consequent, r3);
-    OBJECT *r1 = MAKE1(PAIR, Predicate, r2);
-    OBJECT *r0 = MAKE1(PAIR, IfSymbol, r1);
-    
-    return(r0);
+    return(make_pair(IfSymbol,
+                     make_pair(Predicate,
+                               make_pair(Consequent,
+                                         make_pair(Alternative, Nil)))));
 }
 
 static inline b32

@@ -114,81 +114,71 @@ alloc_object(void)
 }
 
 static inline OBJECT *
-make_object(u8 Type, void *Arg0=0, void *Arg1=0, void *Arg2=0, void *Arg3=0)
+make_fixnum(s64 Value)
 {
     OBJECT *Obj = alloc_object();
-    Obj->Type = Type;
-    switch(Type)
-    {
-        case FIXNUM:
-        {
-            Obj->uData.FIXNUM.Value = (s64) *((s64*)Arg0);
-        }break;
-        
-        case REALNUM:
-        {
-            Obj->uData.REALNUM.Value = (r64) *((r64*)Arg0);
-        }break;
-        
-        case CHARACTER:
-        {
-            Obj->uData.CHARACTER.Value = (u8) *((u8*)Arg0);
-        }break;
-        
-        case STRING:
-        {
-            Obj->uData.STRING.Value = (u8 *)malloc(strlen((char *)((u8 *)*((u8**)Arg0))) + 1);
-            zassert(Obj->uData.STRING.Value != NULL);
-            string_copy(Obj->uData.STRING.Value, ((u8 *)*((u8**)Arg0)));
-        }break;
-        
-        case SYMBOL: // TODO(zaklaus): Refactor this!
-        {
-            Obj->uData.SYMBOL.Value = (u8 *)malloc(strlen((char *)((u8 *)*((u8**)Arg0))) + 1);
-            zassert(Obj->uData.SYMBOL.Value != NULL);
-            string_copy(Obj->uData.SYMBOL.Value, ((u8 *)*((u8**)Arg0)));
-        }break;
-        
-        case PAIR:
-        {
-            Obj->uData.PAIR.A = (OBJECT*)*((OBJECT**)Arg0);
-            Obj->uData.PAIR.B = (OBJECT*)*((OBJECT**)Arg1);
-        }break;
-        
-        case PROCEDURE:
-        {
-            Obj->uData.PROCEDURE.Fn = (OBJECT* (*)(OBJECT*))*((OBJECT* (**)(OBJECT*))Arg0);
-            Obj->uData.PROCEDURE.Lazy = 0;
-        }break;
-        
-        case COMPOUND:
-        {
-            Obj->uData.COMPOUND.Parameters = (OBJECT*)*((OBJECT**)Arg0);
-            Obj->uData.COMPOUND.Body = (OBJECT*)*((OBJECT**)Arg1);
-            Obj->uData.COMPOUND.Env = (OBJECT*)*((OBJECT**)Arg2);
-        }break;
-        
-        case INPUT:
-        {
-            Obj->uData.INPUT.Stream = (FILE *)*((FILE **)Arg0);
-        }break;
-        
-        case OUTPUT:
-        {
-            Obj->uData.OUTPUT.Stream = (FILE *)*((FILE **)Arg0);
-        }break;
-    }
+    Obj->Type = FIXNUM;
+    Obj->uData.FIXNUM.Value = Value;
     return(Obj);
-    Unreachable((OBJECT *)Arg0);
-    Unreachable((OBJECT *)Arg1);
-    Unreachable((OBJECT *)Arg2);
-    Unreachable((OBJECT *)Arg3);
 }
 
-static inline b32
-is_type(OBJECT *Obj, u8 Type)
+static inline OBJECT *
+make_realnum(real64 Value)
 {
-    return(Obj->Type == Type);
+    OBJECT *Obj = alloc_object();
+    Obj->Type = REALNUM;
+    Obj->uData.REALNUM.Value = Value;
+    return(Obj);
+}
+
+static inline OBJECT *
+make_character(u8 Value)
+{
+    OBJECT *Obj = alloc_object();
+    Obj->Type = CHARACTER;
+    Obj->uData.CHARACTER.Value = Value;
+    return(Obj);
+}
+
+static inline OBJECT *
+make_string(u8 *Value)
+{
+    OBJECT *Obj = alloc_object();
+    Obj->Type = STRING;
+    Obj->uData.STRING.Value = (u8 *)malloc(strlen((char *)Value) + 1);
+    zassert(Obj->uData.STRING.Value != NULL);
+    string_copy(Obj->uData.STRING.Value, Value);
+    return(Obj);
+}
+
+static inline OBJECT *
+make_pair(OBJECT *A, OBJECT *B)
+{
+    OBJECT *Obj = alloc_object();
+    Obj->Type = PAIR;
+    Obj->uData.PAIR.A = A;
+    Obj->uData.PAIR.B = B;
+    return(Obj);
+}
+
+static inline OBJECT *
+make_input(FILE *In)
+{
+    OBJECT *Obj = alloc_object();
+    
+    Obj->Type = INPUT;
+    Obj->uData.INPUT.Stream = In;
+    return(Obj);
+}
+
+static inline OBJECT *
+make_output(FILE *Out)
+{
+    OBJECT *Obj = alloc_object();
+    
+    Obj->Type = OUTPUT;
+    Obj->uData.OUTPUT.Stream = Out;
+    return(Obj);
 }
 
 static inline b32
@@ -349,7 +339,7 @@ first_frame(OBJECT *Env)
 static inline OBJECT *
 make_frame(OBJECT *Vars, OBJECT *Vals)
 {
-    return(MAKE1(PAIR, Vars, Vals));
+    return(make_pair(Vars, Vals));
 }
 
 static inline OBJECT *
@@ -367,18 +357,14 @@ frame_values(OBJECT *Frame)
 static inline void
 add_binding_to_frame(OBJECT *Var, OBJECT *Val, OBJECT *Frame)
 {
-    OBJECT *r = pair_get_a(Frame);
-    pair_set_a(Frame, MAKE1(PAIR, Var, r));
-    
-    r = pair_get_b(Frame);
-    pair_set_b(Frame, MAKE1(PAIR, Val, r));
+    pair_set_a(Frame, make_pair(Var, pair_get_a(Frame)));
+    pair_set_b(Frame, make_pair(Val, pair_get_b(Frame)));
 }
 
 static inline OBJECT *
 extend_env(OBJECT *Vars, OBJECT *Vals, OBJECT *Base)
 {
-    OBJECT *r = make_frame(Vars, Vals);
-    return(MAKE1(PAIR, r, Base));
+    return(make_pair(make_frame(Vars, Vals), Base));
 }
 
 static inline OBJECT *
@@ -583,7 +569,7 @@ make_symbol(u8 *Value)
     
     string_copy(Obj->uData.SYMBOL.Value, Value);
     
-    SymbolTable = MAKE1(PAIR,Obj, SymbolTable);
+    SymbolTable = make_pair(Obj, SymbolTable);
     
     return(Obj);
 }
