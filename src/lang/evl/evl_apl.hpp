@@ -15,8 +15,9 @@ prepare_apply_operands(OBJECT *Args)
     }
     else
     {
-        return(make_pair(pair_get_a(Args),
-                         prepare_apply_operands(pair_get_b(Args))));
+        OBJECT *r0 = pair_get_a(Args);
+        OBJECT *r1 = prepare_apply_operands(pair_get_b(Args));
+        return(MAKE1(PAIR, r0, r1));
     }
 }
 

@@ -35,9 +35,9 @@ add_proc(OBJECT *Args)
     }
     
     if(!Real)
-        return(make_fixnum((s64)Result));
+        return(make_object(FIXNUM, (void *)&Result));
     else
-        return(make_realnum(Result));
+        return(MAKE(REALNUM, Result));
 }
 
 static inline OBJECT *
@@ -71,9 +71,9 @@ sub_proc(OBJECT *Args)
     }
     
     if(!Real)
-        return(make_fixnum((s64)Result));
+        return(make_object(FIXNUM, (void *)&Result));
     else
-        return(make_realnum(Result));
+        return(MAKE(REALNUM, Result));
 }
 
 static inline OBJECT *
@@ -112,9 +112,9 @@ div_proc(OBJECT *Args)
         Args = pair_get_b(Args);
     }
     if(!Real)
-        return(make_fixnum((s64)Result));
+        return(make_object(FIXNUM, (void *)&Result));
     else
-        return(make_realnum(Result));
+        return(MAKE(REALNUM, Result));
 }
 
 static inline OBJECT *
@@ -140,7 +140,7 @@ mod_proc(OBJECT *Args)
         Result %= (pair_get_a(Args))->uData.FIXNUM.Value;
         Args = pair_get_b(Args);
     }
-    return(make_fixnum(Result));
+    return (make_object(FIXNUM, (void *)&Result));
     
 }
 
@@ -162,9 +162,9 @@ mul_proc(OBJECT *Args)
         Args = pair_get_b(Args);
     }
     if(!Real)
-        return(make_fixnum((s64)Result));
+        return(make_object(FIXNUM, (void *)&Result));
     else
-        return(make_realnum(Result));
+        return(MAKE(REALNUM, Result));
 }
 
 // NOTE(zaklaus): Existence checks
@@ -223,17 +223,17 @@ def_proc(is_procedure)
 
 def_proc(char_to_integer)
 {
-    return(make_fixnum((pair_get_a(Args))->uData.CHARACTER.Value));
+    return (make_object(FIXNUM, (void *)&((pair_get_a(Args))->uData.CHARACTER.Value)));
 }
 
 def_proc(integer_to_char)
 {
-    return(make_character((pair_get_a(Args))->uData.FIXNUM.Value));
+    return(MAKE(CHARACTER, (pair_get_a(Args))->uData.FIXNUM.Value));
 }
 
 def_proc(string_to_char)
 {
-    return(make_character(*((pair_get_a(Args))->uData.STRING.Value)));
+    return(MAKE(CHARACTER, *((pair_get_a(Args))->uData.STRING.Value)));
 }
 
 def_proc(number_to_string)
@@ -243,7 +243,8 @@ def_proc(number_to_string)
     if(is_fixnum(pair_get_a(Args))) sprintf(Buffer, "%" PRId64, (pair_get_a(Args))->uData.FIXNUM.Value);
     else sprintf(Buffer, "%lf", (double)((pair_get_a(Args))->uData.REALNUM.Value));
     end_temp(Mem);
-    return(make_string((u8 *)Buffer));
+    u8 * r = (u8 *)Buffer;
+    return(MAKE(STRING, r));
 }
 
 def_proc(string_to_number)
@@ -251,17 +252,17 @@ def_proc(string_to_number)
     char * String = (char *)((pair_get_a(Args))->uData.STRING.Value);
     char * EndPtr = 0;
     s64 Number = strtoull(String, &EndPtr, 10);
-    return(make_fixnum(Number));
+    return (make_object(FIXNUM, (void *)&Number));
 }
 
 def_proc(symbol_to_string)
 {
-    return(make_string((pair_get_a(Args))->uData.SYMBOL.Value));
+    return(MAKE(STRING, (pair_get_a(Args))->uData.SYMBOL.Value));
 }
 
 def_proc(string_to_symbol)
 {
-    return(make_symbol((pair_get_a(Args))->uData.STRING.Value));
+    return(MAKE(SYMBOL, (pair_get_a(Args))->uData.STRING.Value));
 }
 
 def_proc(is_number_equal)
@@ -440,7 +441,9 @@ concat_tailcall2:
     }
     
     end_temp(StringTemp);
-    return(make_string((u8 *)Result));
+    
+    u8 *r = (u8 *)Result;
+    return(MAKE(STRING, r));
 }
 
 def_proc(cons)
@@ -452,7 +455,7 @@ def_proc(cons)
 def_proc(car)
 {
     if(is_string(pair_get_a(Args)))
-        return(make_character(pair_get_a(Args)->uData.STRING.Value[0]));
+        return(MAKE(CHARACTER, pair_get_a(Args)->uData.STRING.Value[0]));
     else
         return(pair_get_a(pair_get_a(Args)));
 }
@@ -460,9 +463,10 @@ def_proc(car)
 def_proc(cdr)
 {
     if(is_string(pair_get_a(Args)) &&
-       (strlen((char *)pair_get_a(Args)->uData.STRING.Value) > 1))
-        return(make_string(pair_get_a(Args)->uData.STRING.Value+1));
-    else if(is_pair(pair_get_a(Args)))
+       (strlen((char *)pair_get_a(Args)->uData.STRING.Value) > 1)) {
+       u8 *r = (pair_get_a(Args)->uData.STRING.Value+1);
+        return(MAKE(STRING, r));
+    } else if(is_pair(pair_get_a(Args)))
         return(pair_get_b(pair_get_a(Args)));
     else
         return(Nil);
@@ -620,7 +624,7 @@ def_proc(peek_char)
     
     In = is_nil(Args) ? read_input(stdin) : (pair_get_a(Args))->uData.INPUT.Stream;
     Result = peek(In);
-    return((Result == EOF) ? EOF_Obj : make_character(Result));
+    return((Result == EOF) ? EOF_Obj : MAKE(CHARACTER, Result));
 }
 
 def_proc(open_input)
@@ -635,7 +639,7 @@ def_proc(open_input)
         LOG(ERR_WARN, "Could not load file \"%s\"\n", Filename);
         InvalidCodePath;
     }
-    return(make_input(In));
+    return(MAKE(INPUT, In));
 }
 
 def_proc(close_input)
@@ -668,7 +672,7 @@ def_proc(open_output)
         LOG(ERR_WARN, "Could not load file \"%s\"\n", Filename);
         InvalidCodePath;
     }
-    return(make_output(In));
+    return(MAKE(OUTPUT, In));
 }
 
 def_proc(close_output)
@@ -724,7 +728,8 @@ def_proc(write_string)
         }
         else sprintf(Buffer, "%" PRId64, String->uData.FIXNUM.Value);
         
-        String = make_string((u8 *)Buffer);
+        u8 *r = (u8 *)Buffer;
+        String = MAKE(STRING, r);
         
         end_temp(Temp);
     }
@@ -761,7 +766,8 @@ def_proc(read_string)
     char *String = (char *)push_size(&StringArena, Size + 1, default_arena_params());
     fread(String, Size, 1, In);
     String[Size] = 0;
-    Result = make_string((u8 *)String);
+    u8 *r = (u8 *)String;
+    Result = MAKE(STRING, r);
     
     end_temp(Temp);
     
@@ -776,12 +782,12 @@ def_proc(read_char)
     if(is_string(pair_get_a(Args)))
     {
         Result = *(pair_get_a(Args)->uData.STRING.Value);
-        return(make_character(Result));
+        return(MAKE(CHARACTER, Result));
     }
     
     In = is_nil(Args) ? read_input(stdin) : (pair_get_a(Args))->uData.INPUT.Stream;
     Result = getc(In);
-    return((Result == EOF) ? EOF_Obj : make_character(Result));
+    return((Result == EOF) ? EOF_Obj : MAKE(CHARACTER, Result));
 }
 
 def_proc(system)
@@ -825,9 +831,9 @@ system_end:
 
 def_proc(arena_mem)
 {
-    return(make_pair(make_fixnum(
-        get_arena_size_remaining(GlobalArena, default_arena_params())),
-        make_fixnum(GlobalArena->Size)));
+    mi SizeRemaining = get_arena_size_remaining(GlobalArena, default_arena_params());
+    return(make_object(PAIR, make_object(FIXNUM, (void *)&SizeRemaining),
+        make_object(FIXNUM, (void *)&GlobalArena->Size)));
     Unreachable(Args);
 }
 
@@ -861,7 +867,7 @@ def_proc(random)
         RandomValue %= (pair_get_a(Args))->uData.FIXNUM.Value;
     }
     
-    return(make_fixnum(RandomValue));
+    return (make_object(FIXNUM, (void *)&RandomValue));
 }
 
 def_proc(error)
@@ -879,63 +885,77 @@ def_proc(sin)
 {
     if(pair_get_a(Args)->Type == REALNUM)
     {
-        return(make_realnum(sin((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        r64 r = sin((double)(pair_get_a(Args)->uData.REALNUM.Value));
+        return(make_object(REALNUM, (void *)&r));
     }
-    return(make_realnum(sin((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    s64 r = sin((double)(pair_get_a(Args)->uData.FIXNUM.Value));
+    return(MAKE(FIXNUM, r));
 }
 
 def_proc(cos)
 {
     if(pair_get_a(Args)->Type == REALNUM)
     {
-        return(make_realnum(cos((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        r64 r = cos((double)(pair_get_a(Args)->uData.REALNUM.Value));
+        return(make_object(REALNUM, (void *)&r));
     }
-    return(make_realnum(cos((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    s64 r = cos((double)(pair_get_a(Args)->uData.FIXNUM.Value));
+    return(MAKE(FIXNUM, r));
 }
 
 def_proc(tan)
 {
     if(pair_get_a(Args)->Type == REALNUM)
     {
-        return(make_realnum(tan((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        r64 r = tan((double)(pair_get_a(Args)->uData.REALNUM.Value));
+        return(make_object(REALNUM, (void *)&r));
     }
-    return(make_realnum(tan((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    s64 r = tan((double)(pair_get_a(Args)->uData.FIXNUM.Value));
+    return(MAKE(FIXNUM, r));
 }
 
 def_proc(asin)
 {
     if(pair_get_a(Args)->Type == REALNUM)
     {
-        return(make_realnum(asin((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        r64 r = asin((double)(pair_get_a(Args)->uData.REALNUM.Value));
+        return(make_object(REALNUM, (void *)&r));
     }
-    return(make_realnum(asin((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    s64 r = asin((double)(pair_get_a(Args)->uData.FIXNUM.Value));
+    return(MAKE(FIXNUM, r));
 }
 
 def_proc(acos)
 {
     if(pair_get_a(Args)->Type == REALNUM)
     {
-        return(make_realnum(acos((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        r64 r = acos((double)(pair_get_a(Args)->uData.REALNUM.Value));
+        return(make_object(REALNUM, (void *)&r));
     }
-    return(make_realnum(acos((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    s64 r = acos((double)(pair_get_a(Args)->uData.FIXNUM.Value));
+    return(MAKE(FIXNUM, r));
 }
 
 def_proc(atan)
 {
     if(pair_get_a(Args)->Type == REALNUM)
     {
-        return(make_realnum(atan((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        r64 r = atan((double)(pair_get_a(Args)->uData.REALNUM.Value));
+        return(make_object(REALNUM, (void *)&r));
     }
-    return(make_realnum(atan((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    s64 r = atan((double)(pair_get_a(Args)->uData.FIXNUM.Value));
+    return(MAKE(FIXNUM, r));
 }
 
 def_proc(sqrt)
 {
     if(pair_get_a(Args)->Type == REALNUM)
     {
-        return(make_realnum(sqrt((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        r64 r = sqrt((double)(pair_get_a(Args)->uData.REALNUM.Value));
+        return(make_object(REALNUM, (void *)&r));
     }
-    return(make_realnum(sqrt((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    s64 r = sqrt((double)(pair_get_a(Args)->uData.FIXNUM.Value));
+    return(MAKE(FIXNUM, r));
 }
 
 def_proc(log_verbose)
