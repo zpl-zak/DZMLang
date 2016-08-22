@@ -96,6 +96,11 @@ typedef uintptr_t umm;
 
 #include "../dzm_ver.hpp"
 
+#define MAKE(Type, Value) make_object(Type, (void *)&Value)
+#define MAKE1(Type, Value, Value1) make_object(Type, (void *)&Value, (void *)&Value1)
+#define MAKE2(Type, Value, Value1, Value2) make_object(Type, (void *)&Value, (void *)&Value1, (void *)&Value2)
+#define MAKE3(Type, Value, Value1, Value2, Value3) make_object(Type, (void *)&Value, (void *)&Value1, (void *)&Value2, (void *)&Value3)
+
 
 #ifdef COMPILER_MSVC
 #define TRAP() *(int *)0 = 0
