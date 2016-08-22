@@ -1,4 +1,5 @@
 #define DZM_ELEVATED
+#define DZM_DEVEL
 
 #include "dzm.hpp"
 

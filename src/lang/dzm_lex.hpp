@@ -94,8 +94,7 @@ read_character(FILE *In)
             {
                 eat_expected_string(In, "pace");
                 peek_expected_delimiter(In);
-                u8 r = ' ';
-                return(MAKE(CHARACTER, r));
+                return(make_character(' '));
             }
         }break;
         
@@ -105,13 +104,12 @@ read_character(FILE *In)
             {
                 eat_expected_string(In, "ewline");
                 peek_expected_delimiter(In);
-                u8 r = '\n';
-                return(MAKE(CHARACTER, r));
+                return(make_character('\n'));
             }
         }break;
     }
     peek_expected_delimiter(In);
-    return(MAKE(CHARACTER, C));
+    return(make_character(C));
 }
 
 static inline OBJECT *
@@ -156,13 +154,13 @@ read_pair(FILE *In)
             push_log("Pair does not end with ')'", ERR_WARN);
             InvalidCodePath;
         }
-        return(MAKE1(PAIR, A,B));
+        return(make_pair(A,B));
     }
     else
     {
         ungetc(C, In);
         B = read_pair(In);
-        return(MAKE1(PAIR, A,B));
+        return(make_pair(A,B));
     }
 }
 
@@ -237,12 +235,10 @@ read(FILE *In)
         if(is_delimiter(C))
         {
             ungetc(C, In);
-            if(!Real){
-                s64 sNum = (s64)Num;
-                return (make_object(FIXNUM, (void *)&sNum));
-            }
+            if(!Real)
+                return(make_fixnum((s64)Num));
             else
-                return(MAKE(REALNUM, Num));
+                return(make_realnum(Num));
         }
         else
         {
@@ -302,7 +298,7 @@ read(FILE *In)
             Buffer[Idx++] = C;
         }
         Buffer[Idx] = 0;
-        return(MAKE(STRING, Buffer));
+        return(make_string(Buffer));
     }
     // NOTE(zaklaus): PAIR/NIL
     else if(C == '(')
@@ -312,9 +308,7 @@ read(FILE *In)
     else if(C == '\'')
     {
         //raise(SIGABRT);
-        OBJECT *r0 = read(In);
-        OBJECT *r = MAKE1(PAIR, r0, Nil);
-        return(MAKE1(PAIR, QuoteSymbol, r));
+        return(make_pair(QuoteSymbol, make_pair(read(In), Nil)));
     }
     else if(C == EOF)
     {
