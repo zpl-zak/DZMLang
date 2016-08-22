@@ -102,16 +102,15 @@ typedef uintptr_t umm;
 #define MAKE3(Type, Value, Value1, Value2, Value3) make_object(Type, (void *)&Value, (void *)&Value1, (void *)&Value2, (void *)&Value3)
 
 
-#ifdef COMPILER_MSVC
+#if defined(COMPILER_MSVC)
 #define TRAP() *(int *)0 = 0
-#elif COMPILER_LLVM
-#define TRAP() __builtin_trap()
-#else
-#ifdef __APPLE__
+#elif defined(COMPILER_LLVM) || defined(__APPLE__)
 #define TRAP() __builtin_trap()
 #else
 #define TRAP() volatile *(int *)0 = 0
 #endif
+
+
 
 #define IGNORE(x) x
 
