@@ -49,6 +49,21 @@
         (iter (cdr a) (+ 1 count))))
   (iter items 0))
 
+(define (attach-tag type-tag contents)
+  (cons type-tag contents))
+
+(define (type-tag x)
+  (if (pair? x)
+      (car x)
+      (error "Bad tagged entity: TYPE-TAG" x)))
+
+(define (contents x)
+  (if (pair? x)
+      (cdr x)
+      (error "Bad tagged entity: CONTENT" x)))
+
+
+
 (define (count-leaves x)
   (cond ((null? x) 0)
         ((not (pair? x)) 1)
@@ -128,6 +143,7 @@
           (accumulate op
                       initial
                       (cdr sequence)))))
+(define acc accumulate)
 
 (define (enumerate-interval low high)
   (if (> low high)
@@ -219,12 +235,31 @@
 (define (nth n l)
   (last (take n l)))
 
+(define (remove n l)
+  (filter (lambda (x) (not (eq? x n)))
+          l))
+
+(define (memq n x)
+  (cond ((null? x) #f)
+        ((eq? n (car x)) x)
+        (else (memq n (cdr x)))))
+
+(define (apply-generic op args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc
+          (apply proc (map contents args))
+          (error
+           "No method for these types:
+             APPLY-GENERIC"
+           (list op type-tags))))))
+
 (define true #t)
 (define false #f)
 (define display write)
 (define display-string write-string)
 (define newline (lambda () (write-char #\newline)))
 
-
 ;;; ADDITIONAL PROGRAMS
 (load "lib/math.scm")
+(load "lib/set.scm")

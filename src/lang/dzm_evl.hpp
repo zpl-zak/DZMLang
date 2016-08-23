@@ -24,10 +24,6 @@ tailcall:
     {
         return(Exp);
     }
-    else if(is_variadic(Exp))
-    {
-        return(VarSymbol);
-    }
     else if(is_variable(Exp))
     {
         return(lookup_variable_value(Exp, Env));
@@ -128,7 +124,6 @@ tailcall:
     {
         Procedure = eval(op(Exp), Env);
         Arguments = list_of_values(operands(Exp), Env);
-        //Exp->Mark = 1;
 
         if(is_procedure(Procedure) &&
            Procedure->uData.PROCEDURE.Fn == apply_proc)
@@ -136,7 +131,6 @@ tailcall:
             Procedure = apply_operator(Arguments);
             Arguments = apply_operands(Arguments);
         }
-        
         if(is_procedure(Procedure) &&
            Procedure->uData.PROCEDURE.Fn == eval_proc)
         {
@@ -144,11 +138,9 @@ tailcall:
             Env = eval_env(Arguments);
             goto tailcall;
         }
-        
         if(is_procedure(Procedure))
         {
             OBJECT *Res = (Procedure->uData.PROCEDURE.Fn)(Arguments);
-            
             return(Res);
         }
         else if(is_compound(Procedure))

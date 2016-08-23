@@ -378,14 +378,23 @@ lookup_variable_value(OBJECT *Var, OBJECT *Env)
         Frame = first_frame(Env);
         Vars = frame_variables(Frame);
         Vals = frame_values(Frame);
+        
         while(!is_nil(Vars))
         {
             if(Var == pair_get_a(Vars))
             {
-                return(pair_get_a(Vals));
+                 if(!is_nil(pair_get_b(Vals)) && is_nil(pair_get_b(Vars)))
+                 {
+                      return(Vals);
+                 }
+                 return(pair_get_a(Vals));
             }
             Vars = pair_get_b(Vars);
             Vals = pair_get_b(Vals);
+        }
+        if(!is_nil(Vals))
+        {
+             
         }
         Env = enclosing_env(Env);
     }

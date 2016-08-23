@@ -15,6 +15,54 @@ Env);
 if(is_nil(pair_get_a(Args)))                           \
 LOG(LOG_WARN, o " " "is missing required arguments")
 
+def_proc(inc)
+{
+     OBJECT *Arg0 = pair_get_a(Args);
+     OBJECT *Obj = Arg0;
+
+     if(is_realnum(Arg0))
+     {
+          Obj = make_realnum(Arg0->uData.REALNUM.Value + 1.0);
+     }
+     else if(is_fixnum(Arg0))
+     {
+          Obj = make_fixnum(Arg0->uData.FIXNUM.Value + 1);
+     }
+     else if(is_character(Arg0))
+     {
+          Obj = make_character(Arg0->uData.CHARACTER.Value + 1);
+     }
+     else if(is_string(Arg0))
+     {
+          Obj = make_string(Arg0->uData.STRING.Value + 1);
+     }
+     return(Obj);
+}
+
+def_proc(dec)
+{
+     OBJECT *Arg0 = pair_get_a(Args);
+     OBJECT *Obj = Arg0;
+
+     if(is_realnum(Arg0))
+     {
+          Obj = make_realnum(Arg0->uData.REALNUM.Value - 1.0);
+     }
+     else if(is_fixnum(Arg0))
+     {
+          Obj = make_fixnum(Arg0->uData.FIXNUM.Value - 1);
+     }
+     else if(is_character(Arg0))
+     {
+          Obj = make_character(Arg0->uData.CHARACTER.Value - 1);
+     }
+     else if(is_string(Arg0))
+     {
+          Obj = make_string(Arg0->uData.STRING.Value - 1);
+     }
+     return(Obj);
+}
+
 // NOTE(zaklaus): Arithmetic operators
 static inline OBJECT *
 add_proc(OBJECT *Args)
@@ -293,6 +341,98 @@ def_proc(is_number_equal)
         return True;
     }
     return(False);
+}
+
+def_proc(is_less_than_or_equal)
+{
+     if(pair_get_a(Args)->Type == FIXNUM)
+     {
+          s32 Previous = (pair_get_a(Args))->uData.FIXNUM.Value;
+          s32 Next;
+        
+          while(!is_nil(Args = pair_get_b(Args)))
+          {
+               Next = (pair_get_a(Args))->uData.FIXNUM.Value;
+               if(Previous <= Next)
+               {
+                    Previous = Next;
+               }
+               else
+               {
+                    return False;
+               }
+          }
+          return True;
+     }
+     else if(pair_get_a(Args)->Type == REALNUM)
+     {
+          r32 Previous = (pair_get_a(Args))->uData.REALNUM.Value;
+          r32 Next;
+        
+          while(!is_nil(Args = pair_get_b(Args)))
+          {
+               Next = (pair_get_a(Args))->uData.REALNUM.Value;
+               if(Previous <= Next)
+               {
+                    Previous = Next;
+               }
+               else
+               {
+                    return False;
+               }
+          }
+          return True;
+     }
+     else
+     {
+          return(False);
+     }
+}
+
+def_proc(is_greater_than_or_equal)
+{
+     if(pair_get_a(Args)->Type == FIXNUM)
+     {
+          s32 Previous = (pair_get_a(Args))->uData.FIXNUM.Value;
+          s32 Next;
+        
+          while(!is_nil(Args = pair_get_b(Args)))
+          {
+               Next = (pair_get_a(Args))->uData.FIXNUM.Value;
+               if(Previous >= Next)
+               {
+                    Previous = Next;
+               }
+               else
+               {
+                    return False;
+               }
+          }
+          return True;
+     }
+     else if(pair_get_a(Args)->Type == REALNUM)
+     {
+          r32 Previous = (pair_get_a(Args))->uData.REALNUM.Value;
+          r32 Next;
+        
+          while(!is_nil(Args = pair_get_b(Args)))
+          {
+               Next = (pair_get_a(Args))->uData.REALNUM.Value;
+               if(Previous >= Next)
+               {
+                    Previous = Next;
+               }
+               else
+               {
+                    return False;
+               }
+          }
+          return True;
+     }
+     else
+     {
+          return(False);
+     }
 }
 
 def_proc(is_less_than)
@@ -962,6 +1102,10 @@ def_proc(log_verbose)
 static inline void
 init_builtins(OBJECT *Env)
 {
+
+     add_procedure("inc", inc_proc);
+     add_procedure("dec", dec_proc);
+
     add_procedure("+"   , add_proc);
     add_procedure("-"   , sub_proc);
     add_procedure("*"   , mul_proc);
@@ -989,6 +1133,8 @@ init_builtins(OBJECT *Env)
     add_procedure("="        , is_number_equal_proc);
     add_procedure("<"        , is_less_than_proc);
     add_procedure(">"        , is_greater_than_proc);
+    add_procedure(">="        , is_greater_than_or_equal_proc);
+    add_procedure("<="        , is_less_than_or_equal_proc);
     
     add_procedure("sin"         , sin_proc);
     add_procedure("cos"         , cos_proc);
