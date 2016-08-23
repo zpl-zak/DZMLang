@@ -21,4 +21,4 @@
       (cond ((eq? arg 'how-many-calls?) count)
             ((eq? arg 'reset-counter) (set! count 0))
             (else (begin (set! count (+ count 1))
-                         (f arg)))))))
+                         (apply f arg)))))))

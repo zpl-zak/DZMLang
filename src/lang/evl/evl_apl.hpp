@@ -9,6 +9,11 @@ apply_operator(OBJECT *Exp)
 static inline OBJECT *
 prepare_apply_operands(OBJECT *Args)
 {
+     
+     if(!is_pair(pair_get_a(Args)))
+     {
+          return(make_pair(pair_get_a(Args), Nil));
+     }
     if(is_nil(pair_get_b(Args)))
     {
         return(pair_get_a(Args));
