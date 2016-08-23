@@ -1078,6 +1078,17 @@ def_proc(sqrt)
     return(make_realnum(sqrt((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
 }
 
+def_proc(exit)
+{
+     s32 ErrorCode = 0;
+     if(!is_nil(pair_get_a(Args)))
+     {
+          ErrorCode = pair_get_a(Args)->uData.FIXNUM.Value;
+     }
+
+     exit((int)ErrorCode);
+}
+
 def_proc(log_verbose)
 {
     if(!is_nil(pair_get_a(Args)) && !is_boolean(pair_get_a(Args)))
@@ -1143,6 +1154,8 @@ init_builtins(OBJECT *Env)
     add_procedure("acos"        , acos_proc);
     add_procedure("atan"        , atan_proc);
     add_procedure("sqrt"        , sqrt_proc);
+
+    add_procedure("exit"        , exit_proc);
 
     add_procedure("cons"    , cons_proc);
     add_procedure("car"     , car_proc);
