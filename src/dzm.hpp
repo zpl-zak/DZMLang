@@ -97,9 +97,9 @@ typedef uintptr_t umm;
 #include "../dzm_ver.hpp"
 
 
-#ifdef COMPILER_MSVC
+#if defined(COMPILER_MSVC) && defined(_WIN32)
 #define TRAP() *(int *)0 = 0
-#elif COMPILER_LLVM
+#elif defined(COMPILER_LLVM) || defined(__APPLE__)
 #define TRAP() __builtin_trap()
 #else
 #define TRAP() volatile *(int *)0 = 0
