@@ -127,6 +127,13 @@
         (f (car l))
         (for-each f (cdr l)))))
 
+(define (repeat f n)
+  (if (null? n)
+      #t
+      (begin
+        (f)
+        (repeat f (cdr n)))))
+
 (define (filter predicate sequence)
   (cond ((null? sequence) nil)
         ((predicate (car sequence))
@@ -209,12 +216,15 @@
 (define (even? num)        (= (mod num 2) 0))
 
 (define (send message obj params)
-  (if (null? params)
-      ((obj message))
-      (apply (obj message) params)))
+  (cond
+   ((or (null? obj) (null? message)) '())
+   ((null? params) (apply (obj message)))
+   (else (apply (obj message) params))))
 
-(define (new-object class params)
-  (class params))
+(define (new class params)
+  (cond
+   ((null? params) (class))
+   (else (apply class params))))
 
 (define (not x)
   (if x #f #t))
@@ -228,6 +238,11 @@
   (if (nil? (cdr l))
     (car l)
     (last (cdr l))))
+
+(define (last-pair l)
+  (if (nil? (cdr l))
+      l
+      (last-pair (cdr l))))
 
 (define (no-more? l)
   (if (null? (car (cdr l)))
@@ -281,14 +296,34 @@
                  (else (set-front-ptr! (cdr front-ptr)))))
          (define (print-queue) front-ptr)
          (define (dispatch m)
-           (cond ((eq? m 'empty-queue) empty-queue?)
-                 ((eq? m 'front-queue) front-queue)
-                 ((eq? m 'insert-queue!) insert-queue!)
-                 ((eq? m 'delete-queue!) delete-queue!)
-                 ((eq? m 'print-queue) print-queue)
+           (cond ((eq? m 'empty) empty-queue?)
+                 ((eq? m 'front) front-queue)
+                 ((eq? m 'insert!) insert-queue!)
+                 ((eq? m 'delete!) delete-queue!)
+                 ((eq? m 'print) print-queue)
+                 ((eq? m 'type-of) (lambda() 'queue))
                  (else (error "undefined operation -- QUEUE" m))))
          dispatch))
 
+;;; SET
+
+(define (make-set)
+  (let ((set '()))
+    (define (insert! x)
+      (if (null? set) (set! set (list x))
+          (insert-iter x set)))
+    (define (insert-iter x l)
+      (cond ((null? l) (list x))
+            ((= x (car l)) #t)
+            ((< x (car l)) (set! set (cons x l)))
+            (else (set! set (cons (car l) (insert-iter x (cdr l)))))))
+    (define (get) set)
+    (define (self m)
+      (cond ((eq? m 'insert!) insert!)
+            ((eq? m 'get) get)
+            ((eq? m 'type-of) (lambda() 'set))
+            (else (no-msg))))
+      self))
 
 ;;; TABLE
 
@@ -349,12 +384,14 @@
              (for-each (lambda (record) 
                          (print-record record level)) 
                        (cdr table)))) 
-       (print-table the-table 0)) 
+       (print-table the-table 0))
+
      (define (dispatch m) 
        (cond ((eq? m 'lookup) lookup) 
              ((eq? m 'insert!) insert!) 
              ((eq? m 'print) print) 
              ((eq? m 'the-table) the-table)
+             ((eq? m 'type-of) (lambda() 'table))
              (else (error "Undefined method" m)))) 
      dispatch))
 ;;; GENERIC

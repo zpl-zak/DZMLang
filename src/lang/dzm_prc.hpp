@@ -314,219 +314,193 @@ def_proc(string_to_symbol)
 
 def_proc(is_number_equal)
 {
+     OBJECT *R = False;
     if(pair_get_a(Args)->Type == FIXNUM)
     {
-        s32 Value = (pair_get_a(Args))->uData.FIXNUM.Value;
-        
+        s64 Value = (pair_get_a(Args))->uData.FIXNUM.Value;
         while(!is_nil(Args = pair_get_b(Args)))
         {
-            if(Value != ((pair_get_a(Args))->uData.FIXNUM.Value))
-            {
-                return False;
-            }
+             if(is_fixnum(pair_get_a(Args)))
+             {
+                  R = (Value == pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+             }
+             if(is_realnum(pair_get_a(Args)))
+             {
+                  R = ((r64)Value == pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+             }
         }
-        return True;
     }
     else if(pair_get_a(Args)->Type == REALNUM)
     {
-        r32 Value = (pair_get_a(Args))->uData.REALNUM.Value;
-        
+        r64 Value = (pair_get_a(Args))->uData.REALNUM.Value;
         while(!is_nil(Args = pair_get_b(Args)))
         {
-            if(Value != ((pair_get_a(Args))->uData.REALNUM.Value))
-            {
-                return False;
-            }
+             if(is_fixnum(pair_get_a(Args)))
+             {
+                  R = (Value == (r64)pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+             }
+             if(is_realnum(pair_get_a(Args)))
+             {
+                  R = (Value == pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+             }
+             if(R == False) return(R);
         }
-        return True;
     }
-    return(False);
-}
-
-def_proc(is_less_than_or_equal)
-{
-     if(pair_get_a(Args)->Type == FIXNUM)
-     {
-          s32 Previous = (pair_get_a(Args))->uData.FIXNUM.Value;
-          s32 Next;
-        
-          while(!is_nil(Args = pair_get_b(Args)))
-          {
-               Next = (pair_get_a(Args))->uData.FIXNUM.Value;
-               if(Previous <= Next)
-               {
-                    Previous = Next;
-               }
-               else
-               {
-                    return False;
-               }
-          }
-          return True;
-     }
-     else if(pair_get_a(Args)->Type == REALNUM)
-     {
-          r32 Previous = (pair_get_a(Args))->uData.REALNUM.Value;
-          r32 Next;
-        
-          while(!is_nil(Args = pair_get_b(Args)))
-          {
-               Next = (pair_get_a(Args))->uData.REALNUM.Value;
-               if(Previous <= Next)
-               {
-                    Previous = Next;
-               }
-               else
-               {
-                    return False;
-               }
-          }
-          return True;
-     }
-     else
-     {
-          return(False);
-     }
+    return(R);
 }
 
 def_proc(is_greater_than_or_equal)
 {
+     OBJECT* R = 0;
      if(pair_get_a(Args)->Type == FIXNUM)
      {
-          s32 Previous = (pair_get_a(Args))->uData.FIXNUM.Value;
-          s32 Next;
-        
+          s64 Value = (pair_get_a(Args))->uData.FIXNUM.Value;
           while(!is_nil(Args = pair_get_b(Args)))
           {
-               Next = (pair_get_a(Args))->uData.FIXNUM.Value;
-               if(Previous >= Next)
+               if(is_fixnum(pair_get_a(Args)))
                {
-                    Previous = Next;
+                    R = (Value >= pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
                }
-               else
+               if(is_realnum(pair_get_a(Args)))
                {
-                    return False;
+                    R = ((r64)Value >= pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
                }
+               if(R == False) return(R);
           }
-          return True;
      }
      else if(pair_get_a(Args)->Type == REALNUM)
      {
-          r32 Previous = (pair_get_a(Args))->uData.REALNUM.Value;
-          r32 Next;
-        
+          r64 Value = (pair_get_a(Args))->uData.REALNUM.Value;
           while(!is_nil(Args = pair_get_b(Args)))
           {
-               Next = (pair_get_a(Args))->uData.REALNUM.Value;
-               if(Previous >= Next)
+               if(is_fixnum(pair_get_a(Args)))
                {
-                    Previous = Next;
+                    R = (Value >= (r64)pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
                }
-               else
+               if(is_realnum(pair_get_a(Args)))
                {
-                    return False;
+                    R = (Value >= pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
                }
+               if(R == False) return(R);
           }
-          return True;
      }
-     else
-     {
-          return(False);
-     }
-}
-
-def_proc(is_less_than)
-{
-    if(pair_get_a(Args)->Type == FIXNUM)
-    {
-        s32 Previous = (pair_get_a(Args))->uData.FIXNUM.Value;
-        s32 Next;
-        
-        while(!is_nil(Args = pair_get_b(Args)))
-        {
-            Next = (pair_get_a(Args))->uData.FIXNUM.Value;
-            if(Previous < Next)
-            {
-                Previous = Next;
-            }
-            else
-            {
-                return False;
-            }
-        }
-        return True;
-    }
-    else if(pair_get_a(Args)->Type == REALNUM)
-    {
-        r32 Previous = (pair_get_a(Args))->uData.REALNUM.Value;
-        r32 Next;
-        
-        while(!is_nil(Args = pair_get_b(Args)))
-        {
-            Next = (pair_get_a(Args))->uData.REALNUM.Value;
-            if(Previous < Next)
-            {
-                Previous = Next;
-            }
-            else
-            {
-                return False;
-            }
-        }
-        return True;
-    }
-    else
-    {
-        return(False);
-    }
+     return(R);
 }
 
 def_proc(is_greater_than)
 {
-    if(pair_get_a(Args)->Type == FIXNUM)
-    {
-        s32 Previous = (pair_get_a(Args))->uData.FIXNUM.Value;
-        s32 Next;
-        
-        while(!is_nil(Args = pair_get_b(Args)))
-        {
-            Next = (pair_get_a(Args))->uData.FIXNUM.Value;
-            if(Previous > Next)
-            {
-                Previous = Next;
-            }
-            else
-            {
-                return False;
-            }
-        }
-        return True;
-    }
-    else if(pair_get_a(Args)->Type == REALNUM)
-    {
-        r32 Previous = (pair_get_a(Args))->uData.REALNUM.Value;
-        r32 Next;
-        
-        while(!is_nil(Args = pair_get_b(Args)))
-        {
-            Next = (pair_get_a(Args))->uData.REALNUM.Value;
-            if(Previous > Next)
-            {
-                Previous = Next;
-            }
-            else
-            {
-                return False;
-            }
-        }
-        return True;
-    }
-    else
-    {
-        return(False);
-    }
-    return True;
+     OBJECT* R = 0;
+     if(pair_get_a(Args)->Type == FIXNUM)
+     {
+          s64 Value = (pair_get_a(Args))->uData.FIXNUM.Value;
+          while(!is_nil(Args = pair_get_b(Args)))
+          {
+               if(is_fixnum(pair_get_a(Args)))
+               {
+                    R = (Value > pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+               }
+               if(is_realnum(pair_get_a(Args)))
+               {
+                    R = ((r64)Value > pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+               }
+               if(R == False) return(R);
+          }
+     }
+     else if(pair_get_a(Args)->Type == REALNUM)
+     {
+          r64 Value = (pair_get_a(Args))->uData.REALNUM.Value;
+          while(!is_nil(Args = pair_get_b(Args)))
+          {
+               if(is_fixnum(pair_get_a(Args)))
+               {
+                    R = (Value > (r64)pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+               }
+               if(is_realnum(pair_get_a(Args)))
+               {
+                    R = (Value > pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+               }
+               if(R == False) return(R);
+          }
+     }
+     return(R);
 }
+
+def_proc(is_less_than)
+{
+     OBJECT* R = 0;
+     if(pair_get_a(Args)->Type == FIXNUM)
+     {
+          s64 Value = (pair_get_a(Args))->uData.FIXNUM.Value;
+          while(!is_nil(Args = pair_get_b(Args)))
+          {
+               if(is_fixnum(pair_get_a(Args)))
+               {
+                    R = (Value < pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+               }
+               if(is_realnum(pair_get_a(Args)))
+               {
+                    R = ((r64)Value < pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+               }
+               if(R == False) return(R);
+          }
+     }
+     else if(pair_get_a(Args)->Type == REALNUM)
+     {
+          r64 Value = (pair_get_a(Args))->uData.REALNUM.Value;
+          while(!is_nil(Args = pair_get_b(Args)))
+          {
+               if(is_fixnum(pair_get_a(Args)))
+               {
+                    R = (Value < (r64)pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+               }
+               if(is_realnum(pair_get_a(Args)))
+               {
+                    R = (Value < pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+               }
+               if(R == False) return(R);
+          }
+     }
+     return(R);
+}
+
+def_proc(is_less_than_or_equal)
+{
+     OBJECT* R = 0;
+     if(pair_get_a(Args)->Type == FIXNUM)
+     {
+          s64 Value = (pair_get_a(Args))->uData.FIXNUM.Value;
+          while(!is_nil(Args = pair_get_b(Args)))
+          {
+               if(is_fixnum(pair_get_a(Args)))
+               {
+                    R = (Value <= pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+               }
+               if(is_realnum(pair_get_a(Args)))
+               {
+                    R = ((r64)Value <= pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+               }
+               if(R == False) return(R);
+          }
+     }
+     else if(pair_get_a(Args)->Type == REALNUM)
+     {
+          r64 Value = (pair_get_a(Args))->uData.REALNUM.Value;
+          while(!is_nil(Args = pair_get_b(Args)))
+          {
+               if(is_fixnum(pair_get_a(Args)))
+               {
+                    R = (Value <= (r64)pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+               }
+               if(is_realnum(pair_get_a(Args)))
+               {
+                    R = (Value <= pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+               }
+               if(R == False) return(R);
+          }
+     }
+     return(R);
+}
+
 
 def_proc(concat)
 {
