@@ -87,7 +87,16 @@ read_character(FILE *In)
             push_log("Incomplete char literal", ERR_WARN);
             InvalidCodePath;
         }break;
-        
+
+    case 't':
+    {
+         if(peek(In) == 'a')
+         {
+              eat_expected_string(In, "ab");
+              peek_expected_delimiter(In);
+              return(make_character('\t'));
+         }
+    }break;
         case 's':
         {
             if(peek(In) == 'p')

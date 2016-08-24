@@ -3,9 +3,6 @@
 #if !defined(DZM_PRT_H)
 
 static inline void
-write(FILE *Out, OBJECT *Obj);
-
-static inline void
 write_pair(FILE *Out, OBJECT *Obj)
 {
     OBJECT *A = pair_get_a(Obj);
@@ -29,7 +26,7 @@ write_pair(FILE *Out, OBJECT *Obj)
 }
 
 static inline void
-write(FILE *Out, OBJECT *Obj)
+write(FILE *Out, OBJECT *Obj, b32 StripQuotes)
 {
     if(Obj == 0)
     {
@@ -55,22 +52,30 @@ write(FILE *Out, OBJECT *Obj)
         case CHARACTER:
         {
             u8 C = Obj->uData.CHARACTER.Value;
-            fprintf(Out, "#\\");
+            if(!StripQuotes)fprintf(Out, "#\\");
             switch(C)
             {
                 case '\n':
                 {
-                    fprintf(Out, "newline");
+                     if(!StripQuotes)fprintf(Out, "newline");
+                     else fprintf(Out, "\n");
                 }break;
                 
                 case ' ':
                 {
-                    fprintf(Out, "space");
+                     if(!StripQuotes)fprintf(Out, "space");
+                     else fprintf(Out, " ");
                 }break;
+
+            case '\t':
+            {
+                 if(!StripQuotes)fprintf(Out, "tab");
+                 else fprintf(Out, "\t");
+            }break;
                 
                 default:
                 {
-                    fprintf(Out, "%c", C);
+                     fprintf(Out, "%c", C);
                 }break;
             }
         }break;
@@ -78,7 +83,7 @@ write(FILE *Out, OBJECT *Obj)
         case STRING:
         {
             u8 *Str = Obj->uData.STRING.Value;
-            fprintf(Out, "%c", '"');
+            if(!StripQuotes)fprintf(Out, "%c", '"');
             
             while(*Str != 0)
             {
@@ -109,7 +114,7 @@ write(FILE *Out, OBJECT *Obj)
                 }
                 Str++;
             }
-            fprintf(Out, "%c", '"');
+            if(!StripQuotes)fprintf(Out, "%c", '"');
         }break;
         
         case NIL:

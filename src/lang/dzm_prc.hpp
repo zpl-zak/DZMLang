@@ -748,7 +748,8 @@ def_proc(write)
     Exp = pair_get_a(Args);
     Args = pair_get_b(Args);
     Out = is_nil(Args) ? stdout : (pair_get_a(Args))->uData.OUTPUT.Stream;
-    write(Out, Exp);
+    b32 StripQuotes = is_nil(Args) ? 1 : is_nil(pair_get_b(Args)) ? 1 : (pair_get_a(pair_get_b(Args)))->uData.BOOLEAN.Value;
+    write(Out, Exp, StripQuotes);
     fflush(Out);
     return(OKSymbol);
 }

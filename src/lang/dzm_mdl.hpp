@@ -383,6 +383,7 @@ lookup_variable_value(OBJECT *Var, OBJECT *Env)
         {
             if(Var == pair_get_a(Vars))
             {
+                 if(is_nil(Vals))return(Nil);
                  if(!is_nil(pair_get_b(Vals)) && is_nil(pair_get_b(Vars)))
                  {
                       return(Vals);
@@ -391,10 +392,6 @@ lookup_variable_value(OBJECT *Var, OBJECT *Env)
             }
             Vars = pair_get_b(Vars);
             Vals = pair_get_b(Vals);
-        }
-        if(!is_nil(Vals))
-        {
-             
         }
         Env = enclosing_env(Env);
     }
@@ -476,7 +473,7 @@ static inline OBJECT *
 read(FILE *In);
 
 static inline void
-write(FILE *Out, OBJECT *Obj);
+write(FILE *Out, OBJECT *Obj, b32 StripQuotes = 0);
 
 static inline s32
 peek(FILE *In);

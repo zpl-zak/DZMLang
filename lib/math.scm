@@ -83,7 +83,7 @@
         (expt-iter b
                    (- counter 1)
                    (* b product))))
-  (expt-iter b n 1))
+  (expt-iter b (if (null? n) 2 n) 1))
 
 (define (factorial n) 
   (define (fact-iter product counter max-count)
