@@ -351,6 +351,16 @@
                    (cdr record))) 
              '())) 
        (fold-left lookup-record (cdr the-table) keys)) 
+     
+     (define (update! keys value) 
+       (define (update-record record-list key) 
+         (if (not (null? record-list))
+             (let ((record (associate key record-list))) 
+               (if (null? record)
+                   '()
+                   (set-cdr! record value))) 
+             '())) 
+       (fold-left update-record (cdr the-table) keys)) 
   
      (define (insert! keys value) 
        (define (descend table key) 
@@ -387,7 +397,8 @@
        (print-table the-table 0))
 
      (define (dispatch m) 
-       (cond ((eq? m 'lookup) lookup) 
+       (cond ((eq? m 'lookup) lookup)
+             ((eq? m 'update!) update!)
              ((eq? m 'insert!) insert!) 
              ((eq? m 'print) print) 
              ((eq? m 'the-table) the-table)
