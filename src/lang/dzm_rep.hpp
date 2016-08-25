@@ -58,7 +58,7 @@ test_init(int argc, char** argv)
     set_log_verbose(1);
     
     init_defs();
-    test_load_file("stdlib.scm");
+    test_load_file("std/stdlib.scm");
     
     if(argc < 2)
     {

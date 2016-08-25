@@ -1,7 +1,7 @@
 #define DZM_ELEVATED
 #define DZM_DEVEL
 
-#include "dzm.hpp"
+#include "src/dzm.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
