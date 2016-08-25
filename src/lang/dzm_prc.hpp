@@ -894,7 +894,7 @@ def_proc(read_char)
         return(make_character(Result));
     }
     
-    In = is_nil(Args) ? read_input(stdin) : (pair_get_a(Args))->uData.INPUT.Stream;
+    In = is_nil(Args) ? stdin : (pair_get_a(Args))->uData.INPUT.Stream;
     Result = getc(In);
     return((Result == EOF) ? EOF_Obj : make_character(Result));
 }
