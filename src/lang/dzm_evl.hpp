@@ -153,7 +153,7 @@ tailcall:
         }
         else
         {
-            LOG(ERR_WARN, "Unknown procedure type");
+            LOG(ERR_WARN, "Unknown procedure type: %s", Exp->uData.SYMBOL.Value);
             InvalidCodePath;
         }
     }
