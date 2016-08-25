@@ -94,8 +94,13 @@ write(FILE *Out, OBJECT *Obj, b32 StripQuotes)
                 {
                     case '\n':
                     {
-                        fprintf(Out, "\\n");
+                        fprintf(Out, "\n");
                     }break;
+                    
+                    case '\t':
+                    {
+						fprintf(Out, "\t");
+					}break;
                     
                     case '\\':
                     {
