@@ -878,27 +878,21 @@ def_proc(read_string)
     FILE *In;
     OBJECT *Result;
     
-    if(is_nil(pair_get_a(Args)))
-    {
-        LOG(ERR_WARN, "read-string expects 1 parameter to be: INPUT stream.");
-        return(OKSymbol);
-    }
-    
-    In = (pair_get_a(Args))->uData.INPUT.Stream;
-    
-    fseek(In, 0, SEEK_END);
-    s32 Size = ftell(In);
-    rewind(In);
-    
-    TEMP_MEMORY Temp = begin_temp(&StringArena);
-    char *String = (char *)push_size(&StringArena, Size + 1, default_arena_params());
-    fread(String, Size, 1, In);
-    String[Size] = 0;
+    In = (is_nil(pair_get_a(Args))) ? stdin : (pair_get_a(Args))->uData.INPUT.Stream;
+    char *String = (char *)StringArena.Base;
+    fgets(String, StringArena.Size, In);
     Result = make_string((u8 *)String);
-    
-    end_temp(Temp);
+    StringArena.Used = 0;
     
     return((Result == 0) ? EOF_Obj : Result);
+}
+
+static inline u8 *
+trim_string(u8 *String);
+
+def_proc(trim)
+{
+     return(make_string(trim_string(pair_get_a(Args)->uData.STRING.Value)));
 }
 
 def_proc(read_char)
@@ -1135,6 +1129,7 @@ init_builtins(OBJECT *Env)
     add_procedure("string->number", string_to_number_proc);
     add_procedure("symbol->string", symbol_to_string_proc);
     add_procedure("string->symbol", string_to_symbol_proc);
+    add_procedure("trim-string", trim_proc);
       
     add_procedure("="        , is_number_equal_proc);
     add_procedure("<"        , is_less_than_proc);

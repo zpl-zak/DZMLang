@@ -26,6 +26,19 @@ peek(FILE *In)
     return(C);
 }
 
+static inline u8 *
+trim_string(u8 *String)
+{
+     u8 *Char = String;
+     u32 Size = strlen((char *)String);
+
+     while(isspace(Char[Size-1])) Char[--Size] = 0;
+     while(*Char && isspace(*Char)) ++Char, --Size;
+
+     memmove(String, Char, Size+1);
+     return(String);
+}
+
 static inline void
 eat_whitespace(FILE *In)
 {
