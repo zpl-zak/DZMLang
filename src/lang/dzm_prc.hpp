@@ -284,6 +284,24 @@ def_proc(string_to_char)
     return(make_character(*((pair_get_a(Args))->uData.STRING.Value)));
 }
 
+def_proc(char_to_symbol)
+{
+     TEMP_MEMORY Mem = begin_temp(&StringArena);
+     char *Buffer = (char *)push_size(&StringArena, 2, default_arena_params());
+     sprintf(Buffer, "%c", pair_get_a(Args)->uData.CHARACTER.Value);
+     end_temp(Mem);
+     return(make_symbol((u8 *)Buffer));
+}
+
+def_proc(char_to_string)
+{
+     TEMP_MEMORY Mem = begin_temp(&StringArena);
+     char *Buffer = (char *)push_size(&StringArena, 2, default_arena_params());
+     sprintf(Buffer, "%c", pair_get_a(Args)->uData.CHARACTER.Value);
+     end_temp(Mem);
+     return(make_string((u8 *)Buffer));
+}
+
 def_proc(number_to_string)
 {
     TEMP_MEMORY Mem = begin_temp(&StringArena);
@@ -1109,6 +1127,8 @@ init_builtins(OBJECT *Env)
     add_procedure("procedure?", is_procedure_proc);
     
     add_procedure("char->integer" , char_to_integer_proc);
+    add_procedure("char->string" , char_to_string_proc);
+    add_procedure("char->symbol" , char_to_symbol_proc);
     add_procedure("integer->char" , integer_to_char_proc);
     add_procedure("string->char" , string_to_char_proc);
     add_procedure("number->string", number_to_string_proc);
