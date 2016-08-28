@@ -909,6 +909,10 @@ def_proc(read_char)
     
     In = is_nil(Args) ? stdin : (pair_get_a(Args))->uData.INPUT.Stream;
     Result = getc(In);
+#if _WIN32_
+    getc(In); // Consume '\r'
+#endif
+    getc(In); // Consume '\n'
     return((Result == EOF) ? EOF_Obj : make_character(Result));
 }
 
