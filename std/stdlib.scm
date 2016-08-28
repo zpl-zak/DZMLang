@@ -397,6 +397,21 @@
      dispatch))
 ;;; GENERIC
 
+(define (char-lowercase x)
+  (if (and (>= (char->integer x) 65) (<= (char->integer x) 90))
+      (integer->char (+ (char->integer x) 32))
+      x))
+
+(define (char-uppercase x)
+  (if (and (>= (char->integer x) 97) (<= (char->integer x) 122))
+      (integer->char (- (char->integer x) 32))
+      x))
+
+(define (char-flipcase x)
+  (if (and (>= (char->integer x) 65) (<= (char->integer x) 90))
+      (char-lowercase x)
+      (char-uppercase x)))
+
 (define op-table (make-table eq?))
 (define get (op-table 'lookup))
 (define put (op-table 'insert!))
