@@ -29,6 +29,7 @@ peek(FILE *In)
 static inline u8 *
 trim_string(u8 *String)
 {
+     if(String == 0 || *String == 0) return(String);
      u8 *Char = String;
      u32 Size = strlen((char *)String);
 
