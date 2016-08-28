@@ -892,6 +892,7 @@ trim_string(u8 *String);
 
 def_proc(trim)
 {
+     if(!is_string(pair_get_a(Args))) return(pair_get_a(Args));
      return(make_string(trim_string(pair_get_a(Args)->uData.STRING.Value)));
 }
 
