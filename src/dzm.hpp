@@ -20,6 +20,7 @@
 #if defined(__linux)
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <unistd.h>
 
 static inline FILE * 
 read_input(FILE *Stream)
@@ -41,7 +42,11 @@ static inline FILE *
 read_input(FILE *Stream)
 {
     return(Stream);
-} 
+}
+#if defined(_WIN32_)
+#include <Windows.h>
+#endif
+
 #endif
 
 typedef int8_t int8;
@@ -143,6 +148,15 @@ zero_size(memory_index Size, void *Ptr)
     {
         *Byte++ = 0;
     }
+}
+
+void sleepcp(int milliseconds) // cross-platform sleep function from Bart Grzybicki (http://stackoverflow.com/questions/4184468/sleep-for-milliseconds)
+{
+#ifdef WIN32
+     Sleep(milliseconds);
+#else
+     usleep(milliseconds * 1000);
+#endif // win32
 }
 
 #define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))

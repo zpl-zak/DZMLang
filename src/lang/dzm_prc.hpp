@@ -4,6 +4,7 @@
 
 #include <ctime>
 #include <cmath>
+#include <pthread.h>
 
 #define def_proc(Name) static inline OBJECT * Name##_proc(OBJECT *Args) 
 #define add_procedure(Name, Call)        \
@@ -1102,6 +1103,47 @@ def_proc(log_verbose)
     return(OKSymbol);
 }
 
+void
+*exec_unit(void *Ptr)
+{
+     OBJECT *Obj = (OBJECT *)Ptr;
+     eval(Obj, GlobalEnv);
+     return(0);
+}
+
+def_proc(parallel_exec)
+{
+     mi ThreadCount = 0;
+     TEMP_MEMORY TempThreadPool = begin_temp(&TempArena);
+
+     while(!is_nil(pair_get_a(Args)))
+     {
+          ++ThreadCount;
+          pthread_t *Thread = (pthread_t *)push_size(&TempArena, sizeof(pthread_t), default_arena_params());
+          pthread_create(Thread, 0, exec_unit, (void *)pair_get_a(Args));
+          Args = pair_get_b(Args);
+     }
+
+     for(mi Idx=0; Idx<ThreadCount; Idx++)
+     {
+          pthread_t *Thread = (pthread_t *)(TempArena.Base + (sizeof(pthread_t) * Idx));
+          pthread_join(*Thread, 0);
+     }
+
+     end_temp(TempThreadPool);
+     return(OKSymbol);
+}
+
+def_proc(sleep)
+{
+     if(!is_nil(pair_get_a(Args)))
+     {
+          sleepcp((int)pair_get_a(Args)->uData.FIXNUM.Value);
+     }
+     return(OKSymbol);
+     Unreachable(Args);
+}
+
 static inline void
 init_builtins(OBJECT *Env)
 {
@@ -1141,6 +1183,9 @@ init_builtins(OBJECT *Env)
     add_procedure(">"        , is_greater_than_proc);
     add_procedure(">="        , is_greater_than_or_equal_proc);
     add_procedure("<="        , is_less_than_or_equal_proc);
+
+    add_procedure("parallel-exec", parallel_exec_proc);
+    add_procedure("sleep", sleep_proc);
     
     add_procedure("sin"         , sin_proc);
     add_procedure("cos"         , cos_proc);

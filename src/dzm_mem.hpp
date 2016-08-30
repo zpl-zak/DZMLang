@@ -227,11 +227,13 @@ copy(mi Size, void *SourceInit, void *DestInit)
 
 // NOTE(zaklaus): Initialize and only use with TEMP_MEMORY!!!
 MEMORY_ARENA StringArena;
+MEMORY_ARENA TempArena;
 
 void
 init_mem(void)
 {
     initialize_arena(&StringArena, Megabytes(64), malloc(Megabytes(64)));
+    initialize_arena(&TempArena, Megabytes(32), malloc(Megabytes(32)));
 }
 
 #define push_struct(Arena, type, ...) (type *)push_size(Arena, sizeof(type), ## __VA_ARGS__)
