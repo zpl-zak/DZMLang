@@ -422,6 +422,7 @@
 (define display-string write-string)
 (define newline (lambda () (write #\newline)))
 (define (no-msg) (error "Message not found!"))
+(define spawn parallel-exec)
 
 ;;; ADDITIONAL PROGRAMS
 (load "std/math.scm")
