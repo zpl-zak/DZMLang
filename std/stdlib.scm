@@ -178,7 +178,7 @@
   (if (null? lst)
       accum
       (foldl func (func accum (car lst)) (cdr lst))))
-    
+
 (define fold foldl)
 (define reduce foldr)
 
@@ -187,7 +187,7 @@
       (cons init '())
       (cons init (unfold func (func init) pred))))
 
-(define (max lst) 
+(define (max lst)
   (fold (lambda (old new)
           (if (> old new)
               old
@@ -195,7 +195,7 @@
             (car lst)
             (cdr lst)))
 
-(define (min lst) 
+(define (min lst)
   (fold (lambda (old new)
           (if (< old new)
               old
@@ -327,73 +327,73 @@
 
 ;;; TABLE
 
-(define (fold-left op init seq) 
-   (define (iter ans rest) 
-     (if (null? rest) 
-         ans 
-         (iter (op ans (car rest)) 
-               (cdr rest)))) 
-   (iter init seq)) 
-  
- (define (make-table same-key?) 
-   (define (associate key records) 
-     (cond ((null? records) '()) 
-           ((same-key? key (caar records)) (car records)) 
-           (else (associate key (cdr records))))) 
-  
-   (let ((the-table (list '*table*))) 
-     (define (lookup keys) 
-       (define (lookup-record record-list key) 
+(define (fold-left op init seq)
+   (define (iter ans rest)
+     (if (null? rest)
+         ans
+         (iter (op ans (car rest))
+               (cdr rest))))
+   (iter init seq))
+
+ (define (make-table same-key?)
+   (define (associate key records)
+     (cond ((null? records) '())
+           ((same-key? key (caar records)) (car records))
+           (else (associate key (cdr records)))))
+
+   (let ((the-table (list '*table*)))
+     (define (lookup keys)
+       (define (lookup-record record-list key)
          (if (not (null? record-list))
-             (let ((record (associate key record-list))) 
+             (let ((record (associate key record-list)))
                (if (null? record)
                    '()
-                   (cdr record))) 
-             '())) 
-       (fold-left lookup-record (cdr the-table) keys)) 
-     
-     (define (insert! keys value) 
-       (define (descend table key) 
-         (let ((record (associate key (cdr table)))) 
+                   (cdr record)))
+             '()))
+       (fold-left lookup-record (cdr the-table) keys))
+
+     (define (insert! keys value)
+       (define (descend table key)
+         (let ((record (associate key (cdr table))))
            (if (not (null? record))
-               record 
-               (let ((new (cons (list key) 
-                                (cdr table)))) 
-                 (set-cdr! table new) 
-                 (car new))))) 
-       (set-cdr! (fold-left descend the-table keys) 
-                 value)) 
-  
-     (define (print) 
-       (define (indent tabs) 
-         (for-each (lambda (x) (display #\tab)) (range 0 tabs))) 
-  
-       (define (print-record rec level) 
-         (indent level) 
-         (display (car rec)) 
-         (display ": ") 
-         (if (list? (cdr rec)) 
-             (begin (newline) 
-                    (print-table rec (+ level 1))) 
-             (begin (display (cdr rec)) 
-                    (newline)))) 
-       (define (print-table table level) 
-         (if (null? (cdr table)) 
-             (begin (display "-no entries-") 
-                    (newline)) 
-             (for-each (lambda (record) 
-                         (print-record record level)) 
-                       (cdr table)))) 
+               record
+               (let ((new (cons (list key)
+                                (cdr table))))
+                 (set-cdr! table new)
+                 (car new)))))
+       (set-cdr! (fold-left descend the-table keys)
+                 value))
+
+     (define (print)
+       (define (indent tabs)
+         (for-each (lambda (x) (display #\tab)) (range 0 tabs)))
+
+       (define (print-record rec level)
+         (indent level)
+         (display (car rec))
+         (display ": ")
+         (if (list? (cdr rec))
+             (begin (newline)
+                    (print-table rec (+ level 1)))
+             (begin (display (cdr rec))
+                    (newline))))
+       (define (print-table table level)
+         (if (null? (cdr table))
+             (begin (display "-no entries-")
+                    (newline))
+             (for-each (lambda (record)
+                         (print-record record level))
+                       (cdr table))))
        (print-table the-table 0))
 
-     (define (dispatch m) 
+     (define (dispatch m)
        (cond ((eq? m 'lookup) lookup)
              ((eq? m 'update!) insert!)
-             ((eq? m 'insert!) insert!) 
-             ((eq? m 'print) print) 
+             ((eq? m 'insert!) insert!)
+             ((eq? m 'print) print)
              ((eq? m 'the-table) the-table)
              ((eq? m 'type-of) (lambda() 'table))
-             (else (error "Undefined method" m)))) 
+             (else (error "Undefined method" m))))
      dispatch))
 ;;; GENERIC
 
@@ -422,7 +422,38 @@
 (define display-string write-string)
 (define newline (lambda () (write #\newline)))
 (define (no-msg) (error "Message not found!"))
+
 (define spawn parallel-exec)
+(define (make-serializer)
+  (let ((mutex (make-mutex)))
+    (define (serialized-p p args)
+      (begin
+        (mutex 'acquire)
+        (let ((val (apply p args)))
+          (begin
+            (mutex 'release)
+            val))))
+    serialized-p))
+
+(define (make-mutex)
+  (let ((cell (list #f)))
+    (define (the-mutex m)
+      (cond ((eq? m 'acquire)
+             (if (eq? (test-and-set! cell) #t)
+                 (the-mutex 'acquire)
+                 #f))
+            ((eq? m 'release) (clear! cell))))
+    the-mutex))
+
+(define (clear! cell)
+  (set-car! cell false)
+  #t)
+
+(define (test-and-set! lock)
+  (let ((initial (car lock)))
+    (begin
+      (set-car! lock #t)
+      (if (eq? initial #t) #t #f))))
 
 ;;; ADDITIONAL PROGRAMS
 (load "std/math.scm")

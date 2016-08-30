@@ -55,3 +55,10 @@
             ((eq? m 'type-of) type-of)
             (else (super m))))
     self))
+
+(define mjoe 10)
+(define mser (make-serializer))
+(define (msett x y)
+  (begin
+    (sleep y)
+    (set! mjoe x)))
