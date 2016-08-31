@@ -144,10 +144,15 @@ write(FILE *Out, OBJECT *Obj, b32 StripQuotes)
             }
         }break;
         
-        case COMPOUND :
+        case COMPOUND:
+        {
+             fprintf(Out, "#<BUILTIN>");
+        }break;
+
         case PROCEDURE:
         {
             fprintf(Out, "#<PROCEDURE>");
+            //write_pair(Out, *(Obj->uData.PROCEDURE.Fn));
         }break;
         
         case INPUT:

@@ -395,33 +395,8 @@
              ((eq? m 'type-of) (lambda() 'table))
              (else (error "Undefined method" m))))
      dispatch))
-;;; GENERIC
 
-(define (char-lowercase x)
-  (if (and (>= (char->integer x) 65) (<= (char->integer x) 90))
-      (integer->char (+ (char->integer x) 32))
-      x))
-
-(define (char-uppercase x)
-  (if (and (>= (char->integer x) 97) (<= (char->integer x) 122))
-      (integer->char (- (char->integer x) 32))
-      x))
-
-(define (char-flipcase x)
-  (if (and (>= (char->integer x) 65) (<= (char->integer x) 90))
-      (char-lowercase x)
-      (char-uppercase x)))
-
-(define op-table (make-table eq?))
-(define get (op-table 'lookup))
-(define put (op-table 'insert!))
-
-(define true #t)
-(define false #f)
-(define display write)
-(define display-string write-string)
-(define newline (lambda () (write #\newline)))
-(define (no-msg) (error "Message not found!"))
+;;; MULTI-THREADING
 
 (define spawn parallel-exec)
 (define (make-serializer)
@@ -449,11 +424,162 @@
   (set-car! cell false)
   #t)
 
+(define (make-semaphore maximum-clients) 
+  (let ((access-mutex (make-mutex)) 
+        (exceeded-mutex (make-mutex)) 
+        (clients 0)) 
+    (define (the-semaphore message) 
+      (cond ((eq? message 'acquire) 
+             (access-mutex 'acquire) 
+             (cond ((> clients maximum-clients) 
+                    (access-mutex 'release) 
+                    (exceeded-mutex 'acquire) 
+                    (the-semaphore 'acquire)) 
+                   (else 
+                    (set! clients (+ clients 1)) 
+                    (if (= clients maximum-clients) 
+                        (exceeded-mutex 'acquire)) 
+                    (access-mutex 'release)))) 
+            ((eq? message 'release) 
+             (access-mutex 'acquire) 
+             (set! clients (- clients 1)) 
+             (exceeded-mutex 'release) 
+             (access-mutex 'release)))) 
+    the-semaphore)) 
+
 (define (test-and-set! lock)
   (let ((initial (car lock)))
     (begin
       (set-car! lock #t)
       (if (eq? initial #t) #t #f))))
+
+;;; GENERIC
+
+(define (char-lowercase x)
+  (if (and (>= (char->integer x) 65) (<= (char->integer x) 90))
+      (integer->char (+ (char->integer x) 32))
+      x))
+
+(define (char-uppercase x)
+  (if (and (>= (char->integer x) 97) (<= (char->integer x) 122))
+      (integer->char (- (char->integer x) 32))
+      x))
+
+(define (char-flipcase x)
+  (if (and (>= (char->integer x) 65) (<= (char->integer x) 90))
+      (char-lowercase x)
+      (char-uppercase x)))
+
+(define op-table (make-table eq?))
+(define get (op-table 'lookup))
+(define put (op-table 'insert!))
+
+(define true #t)
+(define false #f)
+(define display write)
+(define display-string write-string)
+(define newline (lambda () (write #\newline)))
+(define (no-msg) (error "Message not found!"))
+(define (display-line x)
+  (begin
+    (newline)
+    (display x)))
+
+;;; STREAM
+
+(define stream-null? null?)
+(define the-empty-stream '())
+
+(define (stream-ref s n)
+  (if (= n 0)
+      (stream-car s)
+      (stream-ref (stream-cdr s) (- n 1))))
+
+(define (stream-map proc s)
+  (if (stream-null? s)
+      '()
+      (cons-stream 
+       (proc (stream-car s))
+       $(stream-map proc (stream-cdr s)))))
+
+(define (stream-for-each proc s)
+  (if (stream-null? s)
+      'done
+      (begin 
+        (proc (stream-car s))
+        (stream-for-each proc 
+                         (stream-cdr s)))))
+
+(define (streams-map proc s1 s2)
+  (if ((or (stream-null? s1) (stream-null? s2)))
+      0
+      (cons-stream
+       (proc (stream-car s1) (stream-car s2))
+       $(add-streams (stream-cdr s1) (stream-cdr s2)))))
+
+(define (add-streams s1 s2)
+  (streams-map + s1 s2))
+
+(define (scale-stream s f)
+  (stream-map
+   (lambda (x) (* x f))
+   s))
+
+(define (display-stream s)
+  (stream-for-each (lambda (x) (display x) (display " ")) s))
+
+(define (cons-stream a b)
+  (cons a (delay b)))
+
+(define (stream-car stream)
+  (car stream))
+
+(define (stream-cdr stream)
+  ((apply (cdr stream))))
+
+(define (delay exp)
+  (lambda () exp))
+
+(define (force exp)
+  (exp))
+
+(define (stream-enumerate-interval low high)
+  (if (> low high)
+      '()
+      (cons-stream
+       low
+       (stream-enumerate-interval (+ low 1)
+                                  high))))
+(define stream-range stream-enumerate-interval)
+
+(define (stream-filter pred stream)
+  (cond ((stream-null? stream) 
+         '())
+        ((pred (stream-car stream))
+         (cons-stream 
+          (stream-car stream)
+          (stream-filter 
+           pred
+           (stream-cdr stream))))
+        (else (stream-filter 
+               pred 
+               (stream-cdr stream)))))
+
+(define (memo-proc proc)
+  (let ((already-run? false) (result false))
+    (lambda ()
+      (if (not already-run?)
+          (begin (set! result (proc))
+                 (set! already-run? true)
+                 result)
+          result))))
+
+(define (integers-starting-from n)
+  (cons-stream
+   n
+   $(integers-starting-from (+ n 1))))
+
+(define integers (integers-starting-from 1))
 
 ;;; ADDITIONAL PROGRAMS
 (load "std/math.scm")

@@ -334,6 +334,10 @@ read(FILE *In)
         //raise(SIGABRT);
         return(make_pair(QuoteSymbol, make_pair(read(In), Nil)));
     }
+    else if(C == '$')
+    {
+         return(make_pair(LambdaSymbol, make_pair(Nil, make_pair(read(In), Nil))));
+    }
     else if(C == EOF)
     {
         return(0);
