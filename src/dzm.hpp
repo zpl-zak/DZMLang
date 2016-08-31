@@ -150,7 +150,7 @@ zero_size(memory_index Size, void *Ptr)
     }
 }
 
-void sleepcp(int milliseconds) // cross-platform sleep function from Bart Grzybicki (http://stackoverflow.com/questions/4184468/sleep-for-milliseconds)
+void sleepcp(int milliseconds) // cross-platform sleep function by Bart Grzybicki (http://stackoverflow.com/questions/4184468/sleep-for-milliseconds)
 {
 #ifdef WIN32
      Sleep(milliseconds);
