@@ -259,7 +259,9 @@ OBJECT *True;
 
 OBJECT *QuoteSymbol;
 OBJECT *DefineSymbol;
+OBJECT *ShortDefineSymbol;
 OBJECT *OKSymbol;
+OBJECT *ShortSetSymbol;
 OBJECT *SetSymbol;
 OBJECT *LambdaSymbol;
 OBJECT *BeginSymbol;
@@ -511,8 +513,10 @@ init_defs(void)
     SymbolTable = Nil;
     QuoteSymbol = make_symbol(UL_"quote");
     DefineSymbol = make_symbol(UL_"define");
+    ShortDefineSymbol = make_symbol(UL_"%");
     OKSymbol = make_symbol(UL_"\0");
     SetSymbol = make_symbol(UL_"set!");
+    ShortSetSymbol = make_symbol(UL_"!");
     IfSymbol = make_symbol(UL_"if");
     LambdaSymbol = make_symbol(UL_"lambda");
     BeginSymbol = make_symbol(UL_"begin");

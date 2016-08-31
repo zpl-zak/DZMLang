@@ -3,13 +3,15 @@
 static inline b32
 is_assignment(OBJECT *Exp)
 {
-    return(is_tagged_list(Exp, SetSymbol));
+    return(is_tagged_list(Exp, SetSymbol) ||
+           is_tagged_list(Exp, ShortSetSymbol));
 }
 
 static inline b32
 is_definition(OBJECT *Exp)
 {
-    return(is_tagged_list(Exp, DefineSymbol));
+    return(is_tagged_list(Exp, DefineSymbol) ||
+           is_tagged_list(Exp, ShortDefineSymbol));
 }
 
 static inline OBJECT *
