@@ -43,6 +43,45 @@ def_proc(connect)
      return(True);
 }
 
+def_proc(listen)
+{
+     struct sockaddr_in serv_addr;
+     int portno = pair_get_a(pair_get_b(pair_get_b(Args)))->uData.FIXNUM.Value;
+     int maxconn = pair_get_a(pair_get_b(Args))->uData.FIXNUM.Value;
+     int sockId = pair_get_a(Args)->uData.SOCKET.SocketId;
+     bzero((char *)&serv_addr, sizeof(serv_addr));
+     serv_addr.sin_family = AF_INET;
+     serv_addr.sin_addr.s_addr = INADDR_ANY;
+     serv_addr.sin_port = htons(portno);
+
+     if(bind(sockId,
+                (struct sockaddr *)&serv_addr,
+                sizeof(serv_addr)) < 0)
+     {
+          return(False);
+     }
+     listen(sockId, maxconn);
+     return(True);
+}
+
+def_proc(accept)
+{
+     struct sockaddr_in cli_addr;
+     socklen_t clilen;
+     int clientId = 0;
+     int sockId = pair_get_a(Args)->uData.SOCKET.SocketId;
+     clilen = sizeof(cli_addr);
+     if((clientId = accept(sockId,
+             (struct sockaddr *)&cli_addr,
+                           &clilen)) < 0)
+     {
+          return(False);
+     }
+     OBJECT *Sock = make_socket();
+     Sock->uData.SOCKET.SocketId = clientId;
+     return(Sock);
+}
+
 def_proc(socket_write)
 {
      OBJECT *Send = pair_get_a(pair_get_b(Args));
@@ -104,14 +143,18 @@ install_net_module(OBJECT *Env)
        make-socket ()
        connect (socket, ip, port)
        write (socket, object)
-       write-raw (socket, string, size) '<== how about binary data?'
+       write-raw (socket, size, string) '<== how about binary data?'
        close (socket)
        read (socket)
-       read-raw ???
+       listen (socket, maxconn, port) //TODO(zaklaus): Bind to IP option?
+       accept (socket)
+       read-raw (socket, size)
       */
 
      add_procedure("make-socket", make_socket_proc);
      add_procedure("socket?", is_socket_proc);
+     add_procedure("socket-accept", accept_proc);
+     add_procedure("socket-listen", listen_proc);
      add_procedure("socket-connect", connect_proc);
      add_procedure("socket-write", socket_write_proc);
      add_procedure("socket-read", socket_read_proc);

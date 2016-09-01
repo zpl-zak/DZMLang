@@ -1136,6 +1136,18 @@ def_proc(parallel_exec)
      return(OKSymbol);
 }
 
+def_proc(thread)
+{
+     OBJECT *ThreadList = Nil;
+     while(!is_nil(pair_get_a(Args)))
+     {
+          pthread_t *Thread = (pthread_t *)push_size(GlobalArena, sizeof(pthread_t), default_arena_params());
+          pthread_create(Thread, 0, exec_unit, (void *)pair_get_a(Args));
+          ThreadList = make_pair(make_fixnum((s64)Thread), ThreadList);
+          Args = pair_get_b(Args);
+     }
+     return(ThreadList);
+}
 def_proc(sleep)
 {
      if(!is_nil(pair_get_a(Args)))
@@ -1145,6 +1157,21 @@ def_proc(sleep)
      return(OKSymbol);
      Unreachable(Args);
 }
+
+def_proc(thread_join)
+{
+     pthread_t *Thread = (pthread_t *)(pair_get_a(Args)->uData.FIXNUM.Value);
+     return(make_fixnum(pthread_join(*Thread, 0)));
+}
+
+/*
+def_proc(thread_exit)
+{
+     int errcode = (is_fixnum(pair_get_a(Args))) ? pair_get_a(Args)->uData.FIXNUM.Value : 0;
+     pthread_exit((void *)errcode);
+     return(OKSymbol);
+}
+*/
 
 static inline void
 init_builtins(OBJECT *Env)
@@ -1188,6 +1215,8 @@ init_builtins(OBJECT *Env)
 
     add_procedure("parallel-exec", parallel_exec_proc);
     add_procedure("sleep", sleep_proc);
+    add_procedure("make-thread", thread_proc);
+    add_procedure("thread-join", thread_join_proc);
     
     add_procedure("sin"         , sin_proc);
     add_procedure("cos"         , cos_proc);
