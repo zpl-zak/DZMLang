@@ -17,6 +17,7 @@ enum OBJECT_TYPE
     COMPOUND,
     INPUT,
     OUTPUT,
+    SOCKET,
     EOF_ID,
 };
 
@@ -78,6 +79,11 @@ struct OBJECT
         {
             FILE *Stream;
         } INPUT;
+
+        struct
+        {
+             s32 SocketId;
+        } SOCKET;
 
         struct
         {
@@ -181,6 +187,17 @@ make_output(FILE *Out)
     return(Obj);
 }
 
+static inline OBJECT *
+make_socket()
+{
+     OBJECT *Obj = alloc_object();
+     Obj->Type = SOCKET;
+
+     int sockId = socket(AF_INET, SOCK_STREAM, 0);
+     Obj->uData.SOCKET.SocketId = sockId;
+     return(Obj);
+}
+
 static inline b32
 is_fixnum(OBJECT *Obj)
 {
@@ -251,6 +268,12 @@ static inline b32
 is_eof_obj(OBJECT *Obj)
 {
     return(Obj->Type == EOF_ID);
+}
+
+static inline b32
+is_socket(OBJECT *Obj)
+{
+     return(Obj->Type == SOCKET);
 }
 
 // == GLOBAL VARS

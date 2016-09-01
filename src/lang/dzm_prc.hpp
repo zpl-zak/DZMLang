@@ -16,6 +16,8 @@ Env);
 if(is_nil(pair_get_a(Args)))                           \
 LOG(LOG_WARN, o " " "is missing required arguments")
 
+#include "prc/prc_net.h"
+
 def_proc(inc)
 {
      OBJECT *Arg0 = pair_get_a(Args);
@@ -1239,6 +1241,8 @@ init_builtins(OBJECT *Env)
     add_procedure("log-verbose"    , log_verbose_proc);
     
     add_procedure("random"         , random_proc);
+
+    install_net_module(Env);
 }
 
 #define DZM_PRC_H

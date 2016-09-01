@@ -1,5 +1,5 @@
 CC=g++
-CCFLAGS=-Wno-unused-result -std=gnu++11 -Wall -Wextra -Werror
+CCFLAGS=-Wno-unused-result -Wno-unused-parameter -std=gnu++11 -Wall -Wextra -Werror
 CCLINE=$(CCFLAGS) app.cpp -o dzm
 CCLIBS=-lm -lpthread
 all: ctime

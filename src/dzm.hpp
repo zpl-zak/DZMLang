@@ -22,6 +22,11 @@
 #include <readline/history.h>
 #include <unistd.h>
 
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+
 static inline FILE * 
 read_input(FILE *Stream)
 {
