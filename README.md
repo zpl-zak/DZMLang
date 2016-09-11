@@ -14,7 +14,7 @@ Functional language written in C++.
 
 ## Build Instructions
 * On Windows
-   * Install latest version of MinGW GCC compiler
+   * Install the latest version of MinGW GCC compiler
    * Use build.bat to compile project
 * On Linux and Mac OS X
    * Make sure you have the latest stable version of G++/clang++ compiler installed.
