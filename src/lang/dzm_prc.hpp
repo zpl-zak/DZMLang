@@ -16,7 +16,7 @@ Env);
 if(is_nil(pair_get_a(Args)))                           \
 LOG(LOG_WARN, o " " "is missing required arguments")
 
-#include "prc/prc_net.h"
+#include "prc/prc_net.hpp"
 
 def_proc(inc)
 {

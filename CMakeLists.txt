@@ -12,7 +12,7 @@ set(SOURCE_FILES
     src/lang/evl/evl_lit.hpp
     src/lang/evl/evl_mod.hpp
     src/lang/evl/evl_ops.hpp
-    src/lang/prc/prc_net.h
+        src/lang/prc/prc_net.hpp
     src/lang/dzm_evl.hpp
     src/lang/dzm_lex.hpp
     src/lang/dzm_mdl.hpp
