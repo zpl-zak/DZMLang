@@ -77,7 +77,8 @@ def_proc(accept)
      {
           return(False);
      }
-     OBJECT *Sock = make_socket();
+    OBJECT *Sock = alloc_object();
+    Sock->Type = SOCKET;
      Sock->uData.SOCKET.SocketId = clientId;
      return(Sock);
 }
