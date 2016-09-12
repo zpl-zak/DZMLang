@@ -24,7 +24,7 @@ def_proc(connect)
 {
      struct hostent *server;
      struct sockaddr_in serv_addr;
-     int portno = pair_get_a(pair_get_b(pair_get_b(Args)))->uData.FIXNUM.Value;
+    int portno = (int) pair_get_a(pair_get_b(pair_get_b(Args)))->uData.FIXNUM.Value;
 
      server = gethostbyname((char *)(pair_get_a(pair_get_b(Args))->uData.STRING.Value));
      bzero((char *)&serv_addr, sizeof(serv_addr));
@@ -46,9 +46,9 @@ def_proc(connect)
 def_proc(listen)
 {
      struct sockaddr_in serv_addr;
-     int portno = pair_get_a(pair_get_b(pair_get_b(Args)))->uData.FIXNUM.Value;
-     int maxconn = pair_get_a(pair_get_b(Args))->uData.FIXNUM.Value;
-     int sockId = pair_get_a(Args)->uData.SOCKET.SocketId;
+    int portno = (int) pair_get_a(pair_get_b(pair_get_b(Args)))->uData.FIXNUM.Value;
+    int maxconn = (int) pair_get_a(pair_get_b(Args))->uData.FIXNUM.Value;
+    int sockId = (int) pair_get_a(Args)->uData.SOCKET.SocketId;
      bzero((char *)&serv_addr, sizeof(serv_addr));
      serv_addr.sin_family = AF_INET;
      serv_addr.sin_addr.s_addr = INADDR_ANY;
@@ -87,7 +87,7 @@ def_proc(socket_write)
      OBJECT *Send = pair_get_a(pair_get_b(Args));
      OBJECT *Sock = pair_get_a(Args);
 
-     int n = write(Sock->uData.SOCKET.SocketId, (char *)Send, sizeof(OBJECT));
+    int n = (int) write(Sock->uData.SOCKET.SocketId, (char *) Send, sizeof(OBJECT));
      return(make_fixnum((s64)n));
 }
 
@@ -97,7 +97,7 @@ def_proc(socket_read)
      OBJECT *Sock = pair_get_a(Args);
      OBJECT *Recv = alloc_object();
 
-     int n = read(Sock->uData.SOCKET.SocketId, (char *)Recv, sizeof(OBJECT));
+    int n = (int) read(Sock->uData.SOCKET.SocketId, (char *) Recv, sizeof(OBJECT));
      return(make_pair(Recv, make_fixnum((s64)n)));
 }
 
@@ -116,8 +116,8 @@ def_proc(socket_read_raw)
 
      TEMP_MEMORY BufMemory = begin_temp(&StringArena);
 
-     int n = read(Sock->uData.SOCKET.SocketId, (char *)(StringArena.Base),
-                  (int)(Size->uData.FIXNUM.Value));
+    int n = (int) read(Sock->uData.SOCKET.SocketId, (char *) (StringArena.Base),
+                       (size_t) (Size->uData.FIXNUM.Value));
 
      StringArena.Base[n] = 0; //NOTE(zaklaus): You have to trim the string afterwards, we won't do it implicitly here, as we don't know what you are expecting from the output.
      end_temp(BufMemory);
@@ -131,26 +131,14 @@ def_proc(socket_write_raw)
      OBJECT *Size = pair_get_a(pair_get_b(Args));
      OBJECT *Base = pair_get_a(pair_get_b(pair_get_b(Args)));
 
-     int n = write(Sock->uData.SOCKET.SocketId, (char *)(Base->uData.STRING.Value),
-                  (int)(Size->uData.FIXNUM.Value));
+    int n = (int) write(Sock->uData.SOCKET.SocketId, (char *) (Base->uData.STRING.Value),
+                        (size_t) (Size->uData.FIXNUM.Value));
 
      return(make_fixnum((s64)n));
 }
 static inline void
 install_net_module(OBJECT *Env)
 {
-     /* TODO(zaklaus):
-       make-socket ()
-       connect (socket, ip, port)
-       write (socket, object)
-       write-raw (socket, size, string) '<== how about binary data?'
-       close (socket)
-       read (socket)
-       listen (socket, maxconn, port) //TODO(zaklaus): Bind to IP option?
-       accept (socket)
-       read-raw (socket, size)
-      */
-
      add_procedure("make-socket", make_socket_proc);
      add_procedure("socket?", is_socket_proc);
      add_procedure("socket-accept", accept_proc);

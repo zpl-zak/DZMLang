@@ -6,8 +6,8 @@ static inline b32
 is_delimiter(s32 C)
 {
     return(isspace(C) || C == EOF ||
-           C == '('   || C == ')' ||
-           C == '"'   || C == ';');
+           C == '(' || C == ')' ||
+           C == '"' || C == ';' || C == '\'');
 }
 
 static inline b32
@@ -133,7 +133,7 @@ read_character(FILE *In)
         }break;
     }
     peek_expected_delimiter(In);
-    return(make_character(C));
+    return (make_character((u8) C));
 }
 
 static inline OBJECT *
@@ -323,6 +323,26 @@ read(FILE *In)
         }
         Buffer[Idx] = 0;
         return(make_string(Buffer));
+    }
+        // NOTE(zaklaus): Char
+    else if (C == '`') {
+        u32 Idx = 0;
+
+        while ((C = getc(In)) != '`') {
+            if (C == '\\') {
+                C = getc(In);
+                if (C == 'n') {
+                    C = '\n';
+                }
+            }
+            if (C == EOF) {
+                LOG(ERR_WARN, "Non-terminated character literal\n");
+                InvalidCodePath;
+            }
+            Buffer[Idx++] = C;
+        }
+        Buffer[Idx] = 0;
+        return (make_character(*Buffer));
     }
     // NOTE(zaklaus): PAIR/NIL
     else if(C == '(')
