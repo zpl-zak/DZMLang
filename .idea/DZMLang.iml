@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module type="CPP_MODULE" version="4">
+<module version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/app.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/dzm_log.hpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/dzm.hpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/dzm_utl.hpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/dzm_mem.hpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/lang/dzm_lex.hpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/lang/dzm_rep.hpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/lang/dzm_prt.hpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/lang/prc/prc_net.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/lang/dzm_evl.hpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/lang/dzm_mdl.hpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/lang/dzm_prc.hpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/lang/dzm_rep.hpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/lang/dzm_lex.hpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/lang/dzm_prt.hpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/lang/prc/prc_net.hpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/lang/dzm_mdl.hpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/lang/dzm_evl.hpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/lang/evl/evl_cond.hpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/lang/evl/evl_mod.hpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/lang/evl/evl_app.hpp" isTestSource="false" />
@@ -23,6 +20,9 @@
       <sourceFolder url="file://$MODULE_DIR$/src/lang/evl/evl_evl.hpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/lang/evl/evl_lbd.hpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/lang/evl/evl_ops.hpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/dzm_log.hpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/dzm.hpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/dzm_mem.hpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/ctime.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/dzm_ver.hpp" isTestSource="false" />
     </content>
