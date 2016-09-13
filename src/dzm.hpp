@@ -17,7 +17,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#if defined(__linux)
+#if defined(__linux) || defined(__APPLE__)
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <unistd.h>
@@ -27,10 +27,11 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
+
 static inline FILE * 
 read_input(FILE *Stream)
 {
-    
+    #if defined(__linux) 
     char *Buffer = readline("");
     FILE *NewStream = Stream;
     
@@ -41,6 +42,9 @@ read_input(FILE *Stream)
     }
     
     return(NewStream);
+    #else
+    return(Stream);
+    #endif
 }
 #else
 static inline FILE *
