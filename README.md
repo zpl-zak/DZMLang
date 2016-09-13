@@ -14,8 +14,7 @@ Functional language written in C++.
 
 ## Build Instructions
 * On Windows
-   * Install the latest version of MinGW GCC compiler
-   * Use build.bat to compile project
+   * Windows is not officially supported yet. Check issue #31.
 * On Linux and Mac OS X
    * Make sure you have the latest stable version of G++/clang++ compiler installed.
    * Make sure you have the latest version of **libreadline6** and **libreadline6-dev** installed (if applicable).
