@@ -15,6 +15,7 @@ def_proc(make_socket) {
         return (Nil);
     }
     return (Obj);
+    Unreachable(Args);
 }
 
 def_proc(connect) {
