@@ -1,16 +1,24 @@
 (define (newton-sqrt x)
   (define (good-enough? guess)
-    (< (abs (- (square guess) x)) 0.001))
+    (< (abs (- (square guess) x)) 0.0001))
   (define (improve guess)
-    (average guess (/ x guess)))
+    (average-2 guess (/ x guess)))
   (define (sqrt-iter guess)
     (if (good-enough? guess)
         guess
         (sqrt-iter (improve guess))))
   (sqrt-iter 1.0))
 
-(define (average x y)
+(define (average-2 x y)
     (/ (+ x y) 2))
+
+(define (average x)
+  (begin
+    (define (average-iter l)
+      (if (nil? l)
+          0
+          (+ (car l) (average-iter (cdr l)))))
+      (/ (average-iter x) (length x) 1.0)))
 
 (define (square x) (* x x))
 
@@ -41,7 +49,7 @@
 (define (equal-rat? x y)
   (= (* (numer x) (denom y))
      (* (numer y) (denom x))))
- 
+
  (define (gcd a b)
   (if (= b 0)
       a
@@ -76,7 +84,7 @@
       (- x)
       x))
 
-(define (expt b n) 
+(define (expt b n)
   (define (expt-iter b counter product)
     (if (= counter 0)
         product
@@ -85,7 +93,7 @@
                    (* b product))))
   (expt-iter b (if (null? n) 2 n) 1))
 
-(define (factorial n) 
+(define (factorial n)
   (define (fact-iter product counter max-count)
     (if (> counter max-count)
         product
@@ -95,21 +103,21 @@
   (fact-iter 1 1 n))
 
 (define (fast-expt b n)
-  (cond ((= n 0) 
+  (cond ((= n 0)
          1)
-        ((even? n) 
+        ((even? n)
          (square (fast-expt b (/ n 2))))
-        (else 
+        (else
          (* b (fast-expt b (- n 1))))))
-  
+
 (define (smallest-divisor n)
   (define (find-divisor n test-divisor)
-    (cond ((> (square test-divisor) n) 
+    (cond ((> (square test-divisor) n)
            n)
-          ((divides? test-divisor n) 
+          ((divides? test-divisor n)
            test-divisor)
-          (else (find-divisor 
-                 n 
+          (else (find-divisor
+                 n
                  (+ test-divisor 1)))))
   (find-divisor n 2))
 
@@ -123,14 +131,14 @@
 (define (expmod base exp m)
   (cond ((= exp 0) 1)
         ((even? exp)
-         (remainder 
+         (remainder
           (square (expmod base (/ exp 2) m))
           m))
         (else
-         (remainder 
+         (remainder
           (* base (expmod base (- exp 1) m))
           m))))
-      
+
 (define (fermat-test n)
   (define (try-it a)
     (= (expmod a n n) a))
@@ -138,7 +146,7 @@
 
 (define (fast-prime? n times)
   (cond ((= times 0) true)
-        ((fermat-test n) 
+        ((fermat-test n)
          (fast-prime? n (- times 1)))
         (else false)))
 
@@ -161,19 +169,19 @@
          (sum term (next a) next b))))
 
 (define (search f neg-point pos-point)
-  (let ((midpoint 
+  (let ((midpoint
          (average neg-point pos-point)))
     (if (close-enough? neg-point pos-point)
         midpoint
         (let ((test-value (f midpoint)))
-          (cond 
+          (cond
            ((positive? test-value)
             (search f neg-point midpoint))
            ((negative? test-value)
             (search f midpoint pos-point))
            (else midpoint))))))
 
-(define (close-enough? x y) 
+(define (close-enough? x y)
   (< (abs (- x y)) 0.001))
 
 (define (negative? x) (if (< x 0.0)
@@ -185,20 +193,20 @@
 (define (half-interval-method f a b)
   (let ((a-value (f a))
         (b-value (f b)))
-    (cond ((and (negative? a-value) 
+    (cond ((and (negative? a-value)
                 (positive? b-value))
            (search f a b))
-          ((and (negative? b-value) 
+          ((and (negative? b-value)
                 (positive? a-value))
            (search f b a))
           (else
            (error "Values are not of opposite sign" a b)))))
-       
+
 (define tolerance 0.00001)
 
 (define (fixed-point f first-guess)
   (define (close-enough? v1 v2)
-    (< (abs (- v1 v2)) 
+    (< (abs (- v1 v2))
        tolerance))
   (define (try guess)
     (let ((next (f guess)))
@@ -363,30 +371,30 @@
   ((get 'make 'rational) n d))
 
 (define (install-complex-package)
-  ;; imported procedures from rectangular 
+  ;; imported procedures from rectangular
   ;; and polar packages
   (define (make-from-real-imag x y)
-    ((get 'make-from-real-imag 
-          'rectangular) 
+    ((get 'make-from-real-imag
+          'rectangular)
      x y))
   (define (make-from-mag-ang r a)
-    ((get 'make-from-mag-ang 'polar) 
+    ((get 'make-from-mag-ang 'polar)
      r a))
   ;; internal procedures
   (define (add-complex z1 z2)
-    (make-from-real-imag 
+    (make-from-real-imag
      (+ (real-part z1) (real-part z2))
      (+ (imag-part z1) (imag-part z2))))
   (define (sub-complex z1 z2)
-    (make-from-real-imag 
+    (make-from-real-imag
      (- (real-part z1) (real-part z2))
      (- (imag-part z1) (imag-part z2))))
   (define (mul-complex z1 z2)
-    (make-from-mag-ang 
+    (make-from-mag-ang
      (* (magnitude z1) (magnitude z2))
      (+ (angle z1) (angle z2))))
   (define (div-complex z1 z2)
-    (make-from-mag-ang 
+    (make-from-mag-ang
      (/ (magnitude z1) (magnitude z2))
      (- (angle z1) (angle z2))))
   ;; interface to rest of the system
@@ -410,4 +418,3 @@
        (lambda (r a)
          (tag (make-from-mag-ang r a))))
   'done)
-

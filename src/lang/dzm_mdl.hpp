@@ -536,7 +536,7 @@ init_defs(void)
     SymbolTable = Nil;
     QuoteSymbol = make_symbol(UL_"quote");
     DefineSymbol = make_symbol(UL_"define");
-    ShortDefineSymbol = make_symbol(UL_"%");
+    ShortDefineSymbol = make_symbol(UL_"?");
     OKSymbol = make_symbol(UL_"\0");
     SetSymbol = make_symbol(UL_"set!");
     ShortSetSymbol = make_symbol(UL_"!");

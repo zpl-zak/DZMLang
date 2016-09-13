@@ -366,7 +366,7 @@
 
      (define (print)
        (define (indent tabs)
-         (for-each (lambda (x) (display #\tab)) (range 0 tabs)))
+         (for-each (lambda (x) (display "-")) (range 0 tabs)))
 
        (define (print-record rec level)
          (indent level)
