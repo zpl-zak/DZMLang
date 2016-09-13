@@ -19,7 +19,9 @@ Functional language written in C++.
 * On Linux and Mac OS X
    * Make sure you have the latest stable version of G++/clang++ compiler installed.
    * Make sure you have the latest version of **libreadline6** and **libreadline6-dev** installed (if applicable).
-   * `make` in project folder.
+   * Make directory build and move into it.
+   * `cmake ../` inside of the directory
+   * `make` the project.
 
 ## Credits
 *  **Hal Abelson's, Jerry Sussman's and Julie Sussman's Structure and Interpretation of Computer Programs** (MIT Press, 1984; ISBN 0-262-01077-1; known as SICP) book.
