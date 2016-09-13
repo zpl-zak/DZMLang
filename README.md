@@ -19,7 +19,7 @@ Functional language written in C++.
 * On Linux and Mac OS X
    * Make sure you have the latest stable version of G++/clang++ compiler installed.
    * Make sure you have the latest version of **libreadline6** and **libreadline6-dev** installed (if applicable).
-   * Make directory build and move into it.
+   * `mkdir build` and `cd build` into it.
    * `cmake ../` inside of the directory
    * `make` the project.
 
