@@ -1,6 +1,15 @@
-(define (newton-sqrt x)
+(define sqrt-guess 0.0001)
+
+(define (set-sqrt-guess! x)
+  (define (iter a b)
+    (if (= b 0)
+        a
+        (iter (/ a 10) (- b 1))))
+  (! sqrt-guess (iter 1.0 x)))
+
+(define (sqrt-2 x)
   (define (good-enough? guess)
-    (< (abs (- (square guess) x)) 0.0001))
+    (< (abs (- (square guess) x)) sqrt-guess))
   (define (improve guess)
     (average-2 guess (/ x guess)))
   (define (sqrt-iter guess)
@@ -8,6 +17,17 @@
         guess
         (sqrt-iter (improve guess))))
   (sqrt-iter 1.0))
+
+(define (sqrt-n e x)
+  (define (good? guess)
+    (< (abs (- (expt guess e) x)) sqrt-guess))
+  (define (improve guess exp)
+    (* (/ 1.0 e) (+ (/ x (expt guess (- e 1))) (* (- e 1) guess))))
+  (define (sqrt-iter guess exp)
+    (if (good? guess)
+        guess
+        (sqrt-iter (improve guess exp))))
+  (sqrt-iter x e))
 
 (define (average-2 x y)
     (/ (+ x y) 2))
