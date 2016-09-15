@@ -5,6 +5,7 @@ Functional language written in C++.
 ## Contains
 * Working interpreter. (Lexer, Evaluator, Printer)
 * Contains basic types: Chars, Numbers, Strings, Symbols, Procedures and compounds, Pairs, I/O handles.
+* More advanced data types implemented directly in standard library. (sets, queues, tables, classes, ...)
 * Support for procedures added via simple API. (add_proc)
 * Basic I/O operations. (write-char, read-char, read, write, peek, open, close, ...)
 * ~~Garbage Collector. (WIP)~~
