@@ -32,9 +32,7 @@ Env);
 if(is_nil(pair_get_a(Args)))                           \
 LOG(LOG_WARN, o " " "is missing required arguments")
 
-#ifndef WIN32
 #include "prc/prc_net.hpp"
-#endif
 
 #include "prc/prc_thd.hpp"
 
@@ -1243,9 +1241,7 @@ init_builtins(OBJECT *Env)
 
     install_thd_module(Env);
 
-#ifndef WIN32
     install_net_module(Env);
-#endif
 }
 
 #define DZM_PRC_H

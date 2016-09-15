@@ -15,7 +15,7 @@ set(SOURCE_FILES
 add_executable(dzm ${SOURCE_FILES})
 
 if(WIN32)
-
+  target_link_libraries(dzm Ws2_32.lib)
 else()
-target_link_libraries(dzm pthread readline m)
+  target_link_libraries(dzm pthread readline m)
 endif()

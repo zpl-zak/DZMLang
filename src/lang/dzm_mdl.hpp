@@ -206,11 +206,25 @@ make_output(FILE *Out)
 static inline OBJECT *
 make_socket()
 {
+#ifdef WIN32
+	static b32 WSARuns = 0;
+	if (!WSARuns)
+	{
+		WSARuns = 1;
+		WSADATA wsaData;
+		int startUpResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+		if (startUpResult != NO_ERROR)
+		{
+			LOG(ERR_WARN, "Could not start WindowsSocket.");
+			return (Nil);
+		}
+	}
+#endif
      OBJECT *Obj = alloc_object();
      Obj->Type = MDL_SOCKET;
 
      int sockId = socket(AF_INET, SOCK_STREAM, 0);
-     Obj->uData.MDL_SOCKET.SocketId = sockId;
+	 Obj->uData.MDL_SOCKET.SocketId = sockId;
      return(Obj);
 }
 

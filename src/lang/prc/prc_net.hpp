@@ -20,6 +20,7 @@ def_proc(is_socket) {
     return (is_socket(pair_get_a(Args)) ? True : False);
 }
 
+
 def_proc(make_socket) {
     OBJECT *Obj = make_socket();
 
@@ -99,21 +100,37 @@ def_proc(socket_write) {
     {
         while(!is_nil(Send))
         {
+#ifdef WIN32
+			n += send(Sock->uData.MDL_SOCKET.SocketId, (char *)Send, sizeof(OBJECT), NULL);
+#else
             n += write(Sock->uData.MDL_SOCKET.SocketId, (char *) Send, sizeof(OBJECT));
+#endif
             if(is_string(Send) || is_symbol(Send))
             {
+#ifdef WIN32
+				n += send(Sock->uData.MDL_SOCKET.SocketId, (char *)Send->uData.MDL_STRING.Value, strlen((char *)Send->uData.MDL_STRING.Value) + 1, NULL);
+#else
                 n += write(Sock->uData.MDL_SOCKET.SocketId, (char *) Send->uData.MDL_STRING.Value, strlen((char *)Send->uData.MDL_STRING.Value)+1);
+#endif
             }
             Send = pair_get_b(Send);
         }
     }
     else
     {
+#ifdef WIN32
+		n = send(Sock->uData.MDL_SOCKET.SocketId, (char *)Send, sizeof(OBJECT), NULL);
+#else
         n = write(Sock->uData.MDL_SOCKET.SocketId, (char *) Send, sizeof(OBJECT));
-        if(is_string(Send) || is_symbol(Send))
+#endif
+		if(is_string(Send) || is_symbol(Send))
         {
-            n += write(Sock->uData.MDL_SOCKET.SocketId, (char *) Send->uData.MDL_STRING.Value, strlen((char *)Send->uData.MDL_STRING.Value)+1);
-        }
+#ifdef WIN32
+			n += send(Sock->uData.MDL_SOCKET.SocketId, (char *)Send->uData.MDL_STRING.Value, strlen((char *)Send->uData.MDL_STRING.Value) + 1, NULL);
+#else
+			n += write(Sock->uData.MDL_SOCKET.SocketId, (char *) Send->uData.MDL_STRING.Value, strlen((char *)Send->uData.MDL_STRING.Value)+1);
+#endif
+		}
     }
 
     return (make_fixnum((s64) n));
@@ -125,15 +142,23 @@ def_proc(socket_read) {
     OBJECT *Recv = alloc_object();
     OBJECT *Ret = Recv;
 
-    int n = (int) read(Sock->uData.MDL_SOCKET.SocketId, (char *) Recv, sizeof(OBJECT));
+#ifdef WIN32
+	int n = (int)recv(Sock->uData.MDL_SOCKET.SocketId, (char *)Recv, sizeof(OBJECT), NULL);
+#else
+	int n = (int) read(Sock->uData.MDL_SOCKET.SocketId, (char *) Recv, sizeof(OBJECT));
+#endif
 
     if(is_pair(Recv))
     {
         while(0)
         {
             Recv = alloc_object();
+#ifdef WIN32
+			n += (int)recv(Sock->uData.MDL_SOCKET.SocketId, (char *)Recv, sizeof(OBJECT), NULL);
+#else
             n += (int) read(Sock->uData.MDL_SOCKET.SocketId, (char *) Recv, sizeof(OBJECT));
-        }
+#endif
+		}
     }
 
     return (make_pair(Ret, make_fixnum((s64) n)));
@@ -141,9 +166,12 @@ def_proc(socket_read) {
 
 def_proc(socket_close) {
     OBJECT *Sock = pair_get_a(Args);
-
+#ifdef WIN32
+	closesocket(Sock->uData.MDL_SOCKET.SocketId);
+#else
     close(Sock->uData.MDL_SOCKET.SocketId);
-    return (OKSymbol);
+#endif
+	return (OKSymbol);
 }
 
 def_proc(socket_read_raw) {
@@ -151,9 +179,13 @@ def_proc(socket_read_raw) {
     OBJECT *Size = pair_get_a(pair_get_b(Args));
 
     TEMP_MEMORY BufMemory = begin_temp(&StringArena);
-
+#ifdef WIN32
+	int n = (int)recv(Sock->uData.MDL_SOCKET.SocketId, (char *)(StringArena.Base),
+		(size_t)(Size->uData.MDL_FIXNUM.Value), NULL);
+#else
     int n = (int) read(Sock->uData.MDL_SOCKET.SocketId, (char *) (StringArena.Base),
                        (size_t) (Size->uData.MDL_FIXNUM.Value));
+#endif
 
     StringArena.Base[n] = 0; //NOTE(zaklaus): You have to trim the string afterwards, we won't do it implicitly here, as we don't know what you are expecting from the output.
     end_temp(BufMemory);
@@ -166,8 +198,13 @@ def_proc(socket_write_raw) {
     OBJECT *Size = pair_get_a(pair_get_b(Args));
     OBJECT *Base = pair_get_a(pair_get_b(pair_get_b(Args)));
 
+#ifdef WIN32
+	int n = (int)send(Sock->uData.MDL_SOCKET.SocketId, (char *)(Base->uData.MDL_STRING.Value),
+		(size_t)(Size->uData.MDL_FIXNUM.Value), NULL);
+#else
     int n = (int) write(Sock->uData.MDL_SOCKET.SocketId, (char *) (Base->uData.MDL_STRING.Value),
                         (size_t) (Size->uData.MDL_FIXNUM.Value));
+#endif
 
     return (make_fixnum((s64) n));
 }

@@ -71,6 +71,7 @@ read_input(FILE *Stream)
 #endif
 
 #ifdef WIN32
+#include <WS2tcpip.h>
 #include <Windows.h>
 #endif
 
