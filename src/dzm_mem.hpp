@@ -180,10 +180,9 @@ push_string0(MEMORY_ARENA *Arena, u32 Length, char *Source)
 static inline TEMP_MEMORY
 begin_temp(MEMORY_ARENA *Arena)
 {
-    TEMP_MEMORY Result = {
-        .Arena = Arena,
-        .Used = Arena->Used
-    };
+	TEMP_MEMORY Result;
+	Result.Arena = Arena;
+	Result.Used = Arena->Used;
     
     ++Arena->TempCount;
     
