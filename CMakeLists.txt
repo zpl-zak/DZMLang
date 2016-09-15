@@ -20,5 +20,10 @@ endif()
 
 add_executable(dzm ${SOURCE_FILES})
 
-target_link_libraries(dzm pthread readline m)
 
+
+if(WIN32)
+
+else()
+target_link_libraries(dzm pthread readline m)
+endif()

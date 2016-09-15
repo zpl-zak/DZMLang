@@ -18,7 +18,9 @@ Env);
 if(is_nil(pair_get_a(Args)))                           \
 LOG(LOG_WARN, o " " "is missing required arguments")
 
+#ifndef WIN32
 #include "prc/prc_net.hpp"
+#endif
 
 def_proc(inc)
 {
@@ -1136,7 +1138,8 @@ def_proc(parallel_exec)
      {
           ++ThreadCount;
 #ifdef WIN32
-
+		  HANDLE Thread = (HANDLE*)push_size(&TempArena, sizeof(HANDLE), default_arena_params());
+		  Thread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)exec_unit, (LPVOID*)pair_get_a(Args), 0, 0);
 #else
           pthread_t *Thread = (pthread_t *)push_size(&TempArena, sizeof(pthread_t), default_arena_params());
           pthread_create(Thread, 0, exec_unit, (void *)pair_get_a(Args));
@@ -1147,7 +1150,8 @@ def_proc(parallel_exec)
      for(mi Idx=0; Idx<ThreadCount; Idx++)
      {
 #ifdef WIN32
-
+		 HANDLE Thread = (HANDLE*)(TempArena.Base + (sizeof(HANDLE) * Idx));
+		 WaitForSingleObject(Thread, INFINITE);
 #else
 		 pthread_t *Thread = (pthread_t *)(TempArena.Base + (sizeof(pthread_t) * Idx));
           pthread_join(*Thread, 0);
@@ -1164,12 +1168,14 @@ def_proc(thread)
      while(!is_nil(pair_get_a(Args)))
      {
 #ifdef WIN32
-
+		 HANDLE Thread = (HANDLE*)push_size(&TempArena, sizeof(HANDLE), default_arena_params());
+		 Thread = CreateThread(0, 0, (LPTHREAD_START_ROUTINE)exec_unit, (LPVOID*)pair_get_a(Args), 0, 0);
 #else
           pthread_t *Thread = (pthread_t *)push_size(GlobalArena, sizeof(pthread_t), default_arena_params());
           pthread_create(Thread, 0, exec_unit, (void *)pair_get_a(Args));
+		  
 #endif
-          ThreadList = make_pair(make_fixnum((s64)Thread), ThreadList);
+		  ThreadList = make_pair(make_fixnum((s64)Thread), ThreadList);
           Args = pair_get_b(Args);
      }
      return(ThreadList);
@@ -1187,7 +1193,8 @@ def_proc(sleep)
 def_proc(thread_join)
 {
 #ifdef WIN32
-
+	 HANDLE *Thread = (HANDLE *)(pair_get_a(Args)->uData.MDL_FIXNUM.Value);
+	 return(make_fixnum((s64)WaitForSingleObject(Thread, INFINITE)));
 #else
      pthread_t *Thread = (pthread_t *)(pair_get_a(Args)->uData.MDL_FIXNUM.Value);
      return(make_fixnum(pthread_join(*Thread, 0)));
@@ -1301,7 +1308,9 @@ init_builtins(OBJECT *Env)
     
     add_procedure("random"         , random_proc);
 
+#ifndef WIN32
     install_net_module(Env);
+#endif
 }
 
 #define DZM_PRC_H
