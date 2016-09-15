@@ -124,8 +124,6 @@ typedef uintptr_t umm;
 #define TRAP() volatile *(int *)0 = 0
 #endif
 
-#define IGNORE(x) x
-
 #ifdef DZM_SLOW
 #define zassert(Expression) if(!(Expression)) {TRAP();}
 #else

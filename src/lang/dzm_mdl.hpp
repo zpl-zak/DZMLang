@@ -4,21 +4,21 @@
 
 enum OBJECT_TYPE
 {
-    UNKNOWN,
-    FIXNUM,
-    REALNUM,
-    BOOLEAN,
-    CHARACTER,
-    STRING,
-    NIL,
-    PAIR,
-    SYMBOL,
-    PROCEDURE,
-    COMPOUND,
-    INPUT,
-    OUTPUT,
-    SOCKET,
-    EOF_ID,
+    MDL_UNKNOWN,
+    MDL_FIXNUM,
+    MDL_REALNUM,
+    MDL_BOOLEAN,
+    MDL_CHARACTER,
+    MDL_STRING,
+    MDL_NIL,
+    MDL_PAIR,
+    MDL_SYMBOL,
+    MDL_PROCEDURE,
+    MDL_COMPOUND,
+    MDL_INPUT,
+    MDL_OUTPUT,
+    MDL_SOCKET,
+    MDL_EOF_ID,
 };
 
 struct OBJECT
@@ -29,66 +29,66 @@ struct OBJECT
         struct
         {
             s64 Value;
-        } FIXNUM;
+        } MDL_FIXNUM;
         
         struct
         {
             real64 Value;
-        } REALNUM;
+        } MDL_REALNUM;
         
         struct
         {
             b32 Value;
-        } BOOLEAN;
+        } MDL_BOOLEAN;
         
         struct
         {
             u8  Value;
-        } CHARACTER;
+        } MDL_CHARACTER;
         
         struct
         {
             u8 *Value;
-        } STRING;
+        } MDL_STRING;
         
         struct
         {
             OBJECT *A;
             OBJECT *B;
-        } PAIR;
+        } MDL_PAIR;
         
         struct
         {
             u8 *Value;
-        } SYMBOL;
+        } MDL_SYMBOL;
         
         struct
         {
             OBJECT *(*Fn)(OBJECT *Args);
             b32 Lazy;
-        } PROCEDURE;
+        } MDL_PROCEDURE;
         
         struct
         {
             OBJECT *Parameters;
             OBJECT *Body;
             OBJECT *Env;
-        } COMPOUND;
+        } MDL_COMPOUND;
         
         struct
         {
             FILE *Stream;
-        } INPUT;
+        } MDL_INPUT;
 
         struct
         {
              s32 SocketId;
-        } SOCKET;
+        } MDL_SOCKET;
 
         struct
         {
             FILE *Stream;
-        } OUTPUT;
+        } MDL_OUTPUT;
     } uData;
 };
 
@@ -123,8 +123,8 @@ static inline OBJECT *
 make_fixnum(s64 Value)
 {
     OBJECT *Obj = alloc_object();
-    Obj->Type = FIXNUM;
-    Obj->uData.FIXNUM.Value = Value;
+    Obj->Type = MDL_FIXNUM;
+    Obj->uData.MDL_FIXNUM.Value = Value;
     return(Obj);
 }
 
@@ -132,8 +132,8 @@ static inline OBJECT *
 make_realnum(real64 Value)
 {
     OBJECT *Obj = alloc_object();
-    Obj->Type = REALNUM;
-    Obj->uData.REALNUM.Value = Value;
+    Obj->Type = MDL_REALNUM;
+    Obj->uData.MDL_REALNUM.Value = Value;
     return(Obj);
 }
 
@@ -141,8 +141,8 @@ static inline OBJECT *
 make_character(u8 Value)
 {
     OBJECT *Obj = alloc_object();
-    Obj->Type = CHARACTER;
-    Obj->uData.CHARACTER.Value = Value;
+    Obj->Type = MDL_CHARACTER;
+    Obj->uData.MDL_CHARACTER.Value = Value;
     return(Obj);
 }
 
@@ -150,10 +150,10 @@ static inline OBJECT *
 make_string(u8 *Value)
 {
     OBJECT *Obj = alloc_object();
-    Obj->Type = STRING;
-    Obj->uData.STRING.Value = (u8 *)malloc(strlen((char *)Value) + 1);
-    zassert(Obj->uData.STRING.Value != NULL);
-    string_copy(Obj->uData.STRING.Value, Value);
+    Obj->Type = MDL_STRING;
+    Obj->uData.MDL_STRING.Value = (u8 *)malloc(strlen((char *)Value) + 1);
+    zassert(Obj->uData.MDL_STRING.Value != NULL);
+    string_copy(Obj->uData.MDL_STRING.Value, Value);
     return(Obj);
 }
 
@@ -161,9 +161,9 @@ static inline OBJECT *
 make_pair(OBJECT *A, OBJECT *B)
 {
     OBJECT *Obj = alloc_object();
-    Obj->Type = PAIR;
-    Obj->uData.PAIR.A = A;
-    Obj->uData.PAIR.B = B;
+    Obj->Type = MDL_PAIR;
+    Obj->uData.MDL_PAIR.A = A;
+    Obj->uData.MDL_PAIR.B = B;
     return(Obj);
 }
 
@@ -172,8 +172,8 @@ make_input(FILE *In)
 {
     OBJECT *Obj = alloc_object();
     
-    Obj->Type = INPUT;
-    Obj->uData.INPUT.Stream = In;
+    Obj->Type = MDL_INPUT;
+    Obj->uData.MDL_INPUT.Stream = In;
     return(Obj);
 }
 
@@ -182,8 +182,8 @@ make_output(FILE *Out)
 {
     OBJECT *Obj = alloc_object();
     
-    Obj->Type = OUTPUT;
-    Obj->uData.OUTPUT.Stream = Out;
+    Obj->Type = MDL_OUTPUT;
+    Obj->uData.MDL_OUTPUT.Stream = Out;
     return(Obj);
 }
 
@@ -191,89 +191,89 @@ static inline OBJECT *
 make_socket()
 {
      OBJECT *Obj = alloc_object();
-     Obj->Type = SOCKET;
+     Obj->Type = MDL_SOCKET;
 
      int sockId = socket(AF_INET, SOCK_STREAM, 0);
-     Obj->uData.SOCKET.SocketId = sockId;
+     Obj->uData.MDL_SOCKET.SocketId = sockId;
      return(Obj);
 }
 
 static inline b32
 is_fixnum(OBJECT *Obj)
 {
-    return(Obj->Type == FIXNUM);
+    return(Obj->Type == MDL_FIXNUM);
 }
 
 static inline b32
 is_realnum(OBJECT *Obj)
 {
-    return(Obj->Type == REALNUM);
+    return(Obj->Type == MDL_REALNUM);
 }
 
 static inline b32
 is_boolean(OBJECT *Obj)
 {
-    return(Obj->Type == BOOLEAN);
+    return(Obj->Type == MDL_BOOLEAN);
 }
 
 static inline b32
 is_input(OBJECT *Obj)
 {
-    return(Obj->Type == INPUT);
+    return(Obj->Type == MDL_INPUT);
 }
 
 static inline b32
 is_output(OBJECT *Obj)
 {
-    return(Obj->Type == OUTPUT);
+    return(Obj->Type == MDL_OUTPUT);
 }
 
 static inline b32
 is_eof_id(OBJECT *Obj)
 {
-    return(Obj->Type == EOF_ID);
+    return(Obj->Type == MDL_EOF_ID);
 }
 
 static inline b32
 is_character(OBJECT *Obj)
 {
-    return(Obj->Type == CHARACTER);
+    return(Obj->Type == MDL_CHARACTER);
 }
 
 static inline b32
 is_string(OBJECT *Obj)
 {
-    return(Obj->Type == STRING);
+    return(Obj->Type == MDL_STRING);
 }
 
 static inline b32
 is_nil(OBJECT *Obj)
 {
-    return(Obj->Type == NIL);
+    return(Obj->Type == MDL_NIL);
 }
 
 static inline b32
 is_pair(OBJECT *Obj)
 {
-    return(Obj->Type == PAIR);
+    return(Obj->Type == MDL_PAIR);
 }
 
 static inline b32
 is_symbol(OBJECT *Obj)
 {
-    return(Obj->Type == SYMBOL);
+    return(Obj->Type == MDL_SYMBOL);
 }
 
 static inline b32
 is_eof_obj(OBJECT *Obj)
 {
-    return(Obj->Type == EOF_ID);
+    return(Obj->Type == MDL_EOF_ID);
 }
 
 static inline b32
 is_socket(OBJECT *Obj)
 {
-     return(Obj->Type == SOCKET);
+     return(Obj->Type == MDL_SOCKET);
 }
 
 // == GLOBAL VARS
@@ -318,9 +318,9 @@ static inline OBJECT *
 make_procedure(OBJECT *(*Fn)(OBJECT *Args))
 {
     OBJECT *Obj = alloc_object();
-    Obj->Type = PROCEDURE;
-    Obj->uData.PROCEDURE.Fn = Fn;
-    Obj->uData.PROCEDURE.Lazy = 0;
+    Obj->Type = MDL_PROCEDURE;
+    Obj->uData.MDL_PROCEDURE.Fn = Fn;
+    Obj->uData.MDL_PROCEDURE.Lazy = 0;
     return(Obj);
 }
 
@@ -330,23 +330,23 @@ make_compound(OBJECT *Parameters, OBJECT *Body, OBJECT *Env)
 {
     OBJECT *Obj = alloc_object();
     
-    Obj->Type = COMPOUND;
-    Obj->uData.COMPOUND.Parameters = Parameters;
-    Obj->uData.COMPOUND.Body = Body;
-    Obj->uData.COMPOUND.Env = Env;
+    Obj->Type = MDL_COMPOUND;
+    Obj->uData.MDL_COMPOUND.Parameters = Parameters;
+    Obj->uData.MDL_COMPOUND.Body = Body;
+    Obj->uData.MDL_COMPOUND.Env = Env;
     return(Obj);
 }
 
 static inline b32
 is_procedure(OBJECT *Obj)
 {
-    return(Obj->Type == PROCEDURE);
+    return(Obj->Type == MDL_PROCEDURE);
 }
 
 static inline b32
 is_compound(OBJECT *Obj)
 {
-    return(Obj->Type == COMPOUND);
+    return(Obj->Type == MDL_COMPOUND);
 }
 
 static inline OBJECT *
@@ -420,7 +420,7 @@ lookup_variable_value(OBJECT *Var, OBJECT *Env)
         }
         Env = enclosing_env(Env);
     }
-    LOG(ERR_WARN, "Unbound variable: %s", Var->uData.SYMBOL.Value);
+    LOG(ERR_WARN, "Unbound variable: %s", Var->uData.MDL_SYMBOL.Value);
     Unreachable(Nil);
 }
 
@@ -515,7 +515,6 @@ is_true(OBJECT *Obj)
     return(Obj == True);
 }
 
-#include "dzm_srl.hpp"
 #include "dzm_prc.hpp"
 
 static inline void
@@ -524,15 +523,15 @@ init_defs(void)
     PrintMemUsage = 0;
     
     False = alloc_object();
-    False->Type = BOOLEAN;
-    False->uData.BOOLEAN.Value = 0;
+    False->Type = MDL_BOOLEAN;
+    False->uData.MDL_BOOLEAN.Value = 0;
     
     True = alloc_object();
-    True->Type = BOOLEAN;
-    True->uData.BOOLEAN.Value = 1;
+    True->Type = MDL_BOOLEAN;
+    True->uData.MDL_BOOLEAN.Value = 1;
     
     Nil = alloc_object();
-    Nil->Type = NIL;
+    Nil->Type = MDL_NIL;
     
     SymbolTable = Nil;
     QuoteSymbol = make_symbol(UL_"quote");
@@ -560,7 +559,7 @@ static inline OBJECT *
 pair_get_a(OBJECT *Pair)
 {
 	if (is_pair(Pair))
-		return(Pair->uData.PAIR.A);
+		return(Pair->uData.MDL_PAIR.A);
 	else
 		return(Nil);
 }
@@ -568,19 +567,19 @@ pair_get_a(OBJECT *Pair)
 static inline OBJECT *
 pair_get_b(OBJECT *Pair)
 {
-    return(Pair->uData.PAIR.B);
+    return(Pair->uData.MDL_PAIR.B);
 }
 
 static inline void
 pair_set_a(OBJECT *Pair, OBJECT *A)
 {
-    Pair->uData.PAIR.A = A;
+    Pair->uData.MDL_PAIR.A = A;
 }
 
 static inline void
 pair_set_b(OBJECT *Pair, OBJECT *B)
 {
-    Pair->uData.PAIR.B = B;
+    Pair->uData.MDL_PAIR.B = B;
 }
 
 static inline OBJECT *
@@ -591,17 +590,17 @@ make_symbol(u8 *Value)
     
     while(Elem != 0 && !is_nil(Elem))
     {
-        if (!strcmp((char *)pair_get_a(Elem)->uData.SYMBOL.Value, (char *)Value))
+        if (!strcmp((char *)pair_get_a(Elem)->uData.MDL_SYMBOL.Value, (char *)Value))
         {
             return(pair_get_a(Elem));
         }
         Elem = pair_get_b(Elem);
     }
-    Obj->Type = SYMBOL;
-    Obj->uData.SYMBOL.Value = (u8 *)push_size(GlobalArena, strlen((char *)Value) + 1, default_arena_params());
-    zassert(Obj->uData.SYMBOL.Value != 0);
+    Obj->Type = MDL_SYMBOL;
+    Obj->uData.MDL_SYMBOL.Value = (u8 *)push_size(GlobalArena, strlen((char *)Value) + 1, default_arena_params());
+    zassert(Obj->uData.MDL_SYMBOL.Value != 0);
     
-    string_copy(Obj->uData.SYMBOL.Value, Value);
+    string_copy(Obj->uData.MDL_SYMBOL.Value, Value);
     
     SymbolTable = make_pair(Obj, SymbolTable);
     
