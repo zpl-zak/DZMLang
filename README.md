@@ -9,6 +9,7 @@ Functional language written in C++.
 * Basic I/O operations. (write-char, read-char, read, write, peek, open, close, ...)
 * ~~Garbage Collector. (WIP)~~
 * Standard Library. (WIP)
+* Networking support (TCP)
 * Uses R5RS language specification.
 * Compatible with various others scripts written for different interpreters. (TLC, SICP-esque interpreters)
 
