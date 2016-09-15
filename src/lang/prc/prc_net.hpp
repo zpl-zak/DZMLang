@@ -37,10 +37,10 @@ def_proc(connect) {
     int portno = (int) pair_get_a(pair_get_b(pair_get_b(Args)))->uData.MDL_FIXNUM.Value;
 
     server = gethostbyname((char *) (pair_get_a(pair_get_b(Args))->uData.MDL_STRING.Value));
-    bzero((char *) &serv_addr, sizeof(serv_addr));
+	memset((char *)&serv_addr, '\0', sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
-    bcopy((char *) server->h_addr,
-          (char *) &serv_addr.sin_addr.s_addr,
+    memcpy((char *) &serv_addr.sin_addr.s_addr,
+		  (char *)server->h_addr,
           server->h_length);
     serv_addr.sin_port = htons(portno);
 
@@ -57,7 +57,7 @@ def_proc(listen) {
     int portno = (int) pair_get_a(pair_get_b(pair_get_b(Args)))->uData.MDL_FIXNUM.Value;
     int maxconn = (int) pair_get_a(pair_get_b(Args))->uData.MDL_FIXNUM.Value;
     int sockId = (int) pair_get_a(Args)->uData.MDL_SOCKET.SocketId;
-    bzero((char *) &serv_addr, sizeof(serv_addr));
+    memset((char *) &serv_addr, '\0',sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = htons(portno);
