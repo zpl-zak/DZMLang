@@ -41,5 +41,6 @@ dzm_log.ctm
 ctime
 
 .idea
+.idea/*
 build
 .DS_Store
