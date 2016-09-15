@@ -46,6 +46,8 @@ read_input(FILE *Stream)
     
     return(NewStream);
 }
+#endif
+
 #else
 static inline FILE *
 read_input(FILE *Stream)
@@ -54,9 +56,7 @@ read_input(FILE *Stream)
 }
 #endif
 
-#endif
-
-#if defined(_WIN32_)
+#ifdef WIN32
 #include <Windows.h>
 #endif
 

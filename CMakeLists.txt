@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.2)
 project(DZMLang)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-result -Wno-unused-parameter -std=gnu++11 -Wall -Wextra -Werror")
+if(WIN32)
+  
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-result -Wno-unused-parameter -std=gnu++11 -Wall -Wextra -Werror")
+endif()
 
 set(SOURCE_FILES
     app.cpp)
@@ -9,6 +13,10 @@ set(SOURCE_FILES
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(ctime ctime.c)
+
+if(WIN32)
+  target_link_libraries(ctime winmm.lib)
+endif()
 
 add_executable(dzm ${SOURCE_FILES})
 
