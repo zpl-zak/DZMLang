@@ -15,6 +15,7 @@ b32 IsVerbose;
 FILE *LogOutput;
 char ErrPrefix[3][6] = {"INFO", "WARN", "FATAL"};
 char *LogBuffer = 0;
+b32 PrintOk = 0;
 
 #define LOG(t, f,...) sprintf(LogBuffer, f, ## __VA_ARGS__); push_log(LogBuffer, t)
 

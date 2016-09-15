@@ -18,7 +18,7 @@
         (sqrt-iter (improve guess))))
   (sqrt-iter 1.0))
 
-(define (sqrt-n e x)
+(define (sqrt-n x e)
   (define (good? guess)
     (< (abs (- (expt guess e) x)) sqrt-guess))
   (define (improve guess exp)
@@ -158,6 +158,24 @@
          (remainder
           (* base (expmod base (- exp 1) m))
           m))))
+
+(define pi 3.14159265359)
+(define e 2.71828182846)
+
+(define (make-bignum num)
+  (let ((number num))
+    (define (num-set! n)
+      (! number n))
+    (define (num-get)
+      number)
+    (define (num-add n1) '())
+    (define (self m)
+      (cond ((eq? m 'set!) num-set!)
+            ((eq? m 'get) num-get)
+            ((eq? m 'type-of) 'bignum)))
+    self))
+(define (bignum? x)
+  (eq? 'bignum (send 'type-of x)))
 
 (define (fermat-test n)
   (define (try-it a)

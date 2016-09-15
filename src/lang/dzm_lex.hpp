@@ -6,7 +6,7 @@ static inline b32
 is_delimiter(s32 C)
 {
     return(isspace(C) || C == EOF ||
-           C == '(' || C == ')' ||
+           C == '(' || C == ')' || C == '[' || C == ']' ||
            C == '"' || C == ';' || C == '\'');
 }
 
@@ -149,7 +149,7 @@ read_pair(FILE *In)
     eat_whitespace(In);
     
     C = getc(In);
-    if(C == ')')
+    if(C == ')' || C == ']')
     {
         return(Nil);
     }
@@ -173,9 +173,9 @@ read_pair(FILE *In)
         eat_whitespace(In);
         
         C = getc(In);
-        if(C != ')')
+        if(C != ')' && C != ']')
         {
-            push_log("Pair does not end with ')'", ERR_WARN);
+            push_log("Pair does not end with ')' or ']'", ERR_WARN);
             InvalidCodePath;
         }
         return(make_pair(A,B));
@@ -226,9 +226,9 @@ read(FILE *In)
     // NOTE(zaklaus): FIXNUM | REALNUM
     else if(isdigit(C) || (C == '-' && (isdigit(peek(In)))))
     {
-        real32 Sign = 1.0f;
-        real64 Num = 0.0f;
-        real64 Realcnt = 1.0f;
+        real32 Sign = 1.0;
+        real64 Num = 0.0;
+        real64 Realcnt = 1.0;
         b32 Real = 0;
         if(C == '-')
         {
@@ -248,9 +248,9 @@ read(FILE *In)
             }
             if(Real)
             {
-                Realcnt *= 10.0f;
+                Realcnt *= 10.0;
             }
-            Num = (Num * 10.0f) + (C - '0');
+            Num = (Num * 10.0) + (C - '0');
         }
         if(Real)
             Num = (real64)Num / (real64)Realcnt;

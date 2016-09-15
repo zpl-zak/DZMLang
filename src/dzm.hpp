@@ -78,8 +78,9 @@ typedef uintptr_t uintptr;
 typedef size_t memory_index;
 typedef size_t mi;
 
-typedef float real32;
-typedef double real64;
+typedef float real16;
+typedef double real32;
+typedef long double real64;
 
 typedef int8 s8;
 typedef int8 s08;
@@ -94,6 +95,7 @@ typedef uint16 u16;
 typedef uint32 u32;
 typedef uint64 u64;
 
+typedef real16 r16;
 typedef real32 r32;
 typedef real64 r64;
 

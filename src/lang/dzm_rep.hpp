@@ -5,6 +5,9 @@
 static inline void
 test_load_file(const char *Name)
 {
+    b32 OldOk = PrintOk;
+    PrintOk = 0;
+
     FILE *File = fopen(Name, "r");
     
     if(File == 0)
@@ -23,11 +26,13 @@ test_load_file(const char *Name)
         write(stdout, eval(Exp, GlobalEnv));
     }
     fclose(File);
+    PrintOk = OldOk;
 }
 
 static inline void
 test_repl(void)
 {
+    PrintOk = 1;
     for(;;)
     {
         printf(": ");

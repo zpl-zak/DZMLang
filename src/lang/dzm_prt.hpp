@@ -41,7 +41,7 @@ write(FILE *Out, OBJECT *Obj, b32 StripQuotes)
 
      case REALNUM:
      {
-          fprintf(Out, "%1lf", Obj->uData.REALNUM.Value);
+          fprintf(Out, "%.17Lg", Obj->uData.REALNUM.Value);
      }break;
 
      case BOOLEAN:
@@ -138,7 +138,7 @@ write(FILE *Out, OBJECT *Obj, b32 StripQuotes)
      {
           if(Obj == VarSymbol)break;
 
-          if(!(Obj == OKSymbol))
+          if(!(Obj == OKSymbol) || ((Obj == OKSymbol) && PrintOk))
           {
                fprintf(Out, "%s", Obj->uData.SYMBOL.Value);
           }

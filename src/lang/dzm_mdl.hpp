@@ -515,6 +515,7 @@ is_true(OBJECT *Obj)
     return(Obj == True);
 }
 
+#include "dzm_srl.hpp"
 #include "dzm_prc.hpp"
 
 static inline void
@@ -537,7 +538,7 @@ init_defs(void)
     QuoteSymbol = make_symbol(UL_"quote");
     DefineSymbol = make_symbol(UL_"define");
     ShortDefineSymbol = make_symbol(UL_"?");
-    OKSymbol = make_symbol(UL_"\0");
+    OKSymbol = make_symbol(UL_"ok");
     SetSymbol = make_symbol(UL_"set!");
     ShortSetSymbol = make_symbol(UL_"!");
     IfSymbol = make_symbol(UL_"if");

@@ -79,7 +79,30 @@ def_proc(socket_write) {
     OBJECT *Send = pair_get_a(pair_get_b(Args));
     OBJECT *Sock = pair_get_a(Args);
 
-    int n = (int) write(Sock->uData.SOCKET.SocketId, (char *) Send, sizeof(OBJECT));
+    int n = 0;
+    //write(Sock->uData.SOCKET.SocketId, (char *) Send, sizeof(OBJECT));
+
+    if(is_pair(Send))
+    {
+        while(!is_nil(Send))
+        {
+            n += write(Sock->uData.SOCKET.SocketId, (char *) Send, sizeof(OBJECT));
+            if(is_string(Send) || is_symbol(Send))
+            {
+                n += write(Sock->uData.SOCKET.SocketId, (char *) Send->uData.STRING.Value, strlen((char *)Send->uData.STRING.Value)+1);
+            }
+            Send = pair_get_b(Send);
+        }
+    }
+    else
+    {
+        n = write(Sock->uData.SOCKET.SocketId, (char *) Send, sizeof(OBJECT));
+        if(is_string(Send) || is_symbol(Send))
+        {
+            n += write(Sock->uData.SOCKET.SocketId, (char *) Send->uData.STRING.Value, strlen((char *)Send->uData.STRING.Value)+1);
+        }
+    }
+
     return (make_fixnum((s64) n));
 }
 
@@ -87,9 +110,20 @@ def_proc(socket_write) {
 def_proc(socket_read) {
     OBJECT *Sock = pair_get_a(Args);
     OBJECT *Recv = alloc_object();
+    OBJECT *Ret = Recv;
 
     int n = (int) read(Sock->uData.SOCKET.SocketId, (char *) Recv, sizeof(OBJECT));
-    return (make_pair(Recv, make_fixnum((s64) n)));
+
+    if(is_pair(Recv))
+    {
+        while(0)
+        {
+            Recv = alloc_object();
+            n += (int) read(Sock->uData.SOCKET.SocketId, (char *) Recv, sizeof(OBJECT));
+        }
+    }
+
+    return (make_pair(Ret, make_fixnum((s64) n)));
 }
 
 def_proc(socket_close) {
