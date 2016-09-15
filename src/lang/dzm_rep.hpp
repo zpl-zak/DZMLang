@@ -16,6 +16,8 @@
 
 #if !defined(DZM_REP_H)
 
+b32 UseSchemeSyntax = 1;
+
 static inline void
 test_load_file(const char *Name)
 {
@@ -40,7 +42,11 @@ test_load_file(const char *Name)
     OBJECT *Exp;
     while(1)
     {
-        Exp = read(File);
+		if(UseSchemeSyntax)
+			Exp = read(File);
+		else
+			Exp = read_fn(File);
+
         if(Exp == 0)
         {
             break;
@@ -59,7 +65,7 @@ test_repl(void)
     {
         printf(": ");
         FILE *Stream = read_input(stdin);
-        write(stdout, eval(read(Stream), GlobalEnv));
+        write(stdout, eval(read_fn(Stream), GlobalEnv));
         printf("\n");
     }
 }
@@ -83,10 +89,18 @@ test_init(int argc, char** argv)
     FILE *Log = fopen("dzm_log.txt", "w");
     set_log_output(Log);
     set_log_verbose(1);
+
+	if(read_fn == 0)
+	{
+		read_fn = read;
+		read_pair_fn = read_pair;
+	}
     
     init_defs();
     test_load_file("std/stdlib.scm");
     
+	UseSchemeSyntax = 0;
+
     if(argc < 2)
     {
         printf("DZMLang REPL; By ZaKlaus.\nUse ^C to exit.\n");
