@@ -1,4 +1,3 @@
-
 // (c) ZaKlaus 2016; Apache 2 Licensed, see LICENSE;;
 
 #if !defined(PRC_NET_H)
