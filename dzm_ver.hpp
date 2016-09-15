@@ -8,7 +8,7 @@
 #define DZM_VERSION_CHANNEL "STABLE"
 #endif
 
-#define DZM_VERSION "v0.2-alpha" " " DZM_VERSION_CHANNEL
+#define DZM_VERSION "v0.3-alpha" " " DZM_VERSION_CHANNEL
 
 #define DZM_VER_H
 #endif
