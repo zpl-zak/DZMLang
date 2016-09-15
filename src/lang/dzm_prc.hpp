@@ -4,7 +4,9 @@
 
 #include <ctime>
 #include <cmath>
+#ifndef WIN32
 #include <pthread.h>
+#endif
 
 #define def_proc(Name) static inline OBJECT * Name##_proc(OBJECT *Args) 
 #define add_procedure(Name, Call)        \
@@ -937,8 +939,11 @@ def_proc(system)
     {
         Out = (pair_get_a(pair_get_b(Args)))->uData.MDL_OUTPUT.Stream;
     }
-    
+#ifdef WIN32
+	FILE *Sys = _popen((char *)(pair_get_a(Args)->uData.MDL_STRING.Value), "r");
+#else
     FILE *Sys = popen((char *)(pair_get_a(Args)->uData.MDL_STRING.Value), "r");
+#endif
     if(!Sys)
     {
         goto system_end;
@@ -949,7 +954,11 @@ def_proc(system)
     {
         putc((char)C, Out);
     }
+#ifdef WIN32
+	_pclose(Sys);
+#else
     pclose(Sys);
+#endif
 system_end:
     
     if(is_nil(pair_get_a(pair_get_b(Args))))
@@ -1126,15 +1135,23 @@ def_proc(parallel_exec)
      while(!is_nil(pair_get_a(Args)))
      {
           ++ThreadCount;
+#ifdef WIN32
+
+#else
           pthread_t *Thread = (pthread_t *)push_size(&TempArena, sizeof(pthread_t), default_arena_params());
           pthread_create(Thread, 0, exec_unit, (void *)pair_get_a(Args));
+#endif
           Args = pair_get_b(Args);
      }
 
      for(mi Idx=0; Idx<ThreadCount; Idx++)
      {
-          pthread_t *Thread = (pthread_t *)(TempArena.Base + (sizeof(pthread_t) * Idx));
+#ifdef WIN32
+
+#else
+		 pthread_t *Thread = (pthread_t *)(TempArena.Base + (sizeof(pthread_t) * Idx));
           pthread_join(*Thread, 0);
+#endif
      }
 
      end_temp(TempThreadPool);
@@ -1146,8 +1163,12 @@ def_proc(thread)
      OBJECT *ThreadList = Nil;
      while(!is_nil(pair_get_a(Args)))
      {
+#ifdef WIN32
+
+#else
           pthread_t *Thread = (pthread_t *)push_size(GlobalArena, sizeof(pthread_t), default_arena_params());
           pthread_create(Thread, 0, exec_unit, (void *)pair_get_a(Args));
+#endif
           ThreadList = make_pair(make_fixnum((s64)Thread), ThreadList);
           Args = pair_get_b(Args);
      }
@@ -1165,8 +1186,12 @@ def_proc(sleep)
 
 def_proc(thread_join)
 {
+#ifdef WIN32
+
+#else
      pthread_t *Thread = (pthread_t *)(pair_get_a(Args)->uData.MDL_FIXNUM.Value);
      return(make_fixnum(pthread_join(*Thread, 0)));
+#endif
 }
 
 /*
