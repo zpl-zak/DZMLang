@@ -94,7 +94,7 @@ test_init(int argc, char** argv)
         test_repl();
         return;
     }
-    printf("DZMLang Interpreter; By ZaKlaus.\n");
+    //printf("DZMLang Interpreter; By ZaKlaus.\n");
     
     if(!strcmp(argv[1], "--repl"))
     {
