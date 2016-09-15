@@ -79,7 +79,7 @@ tailcall:
     else if(is_tagged_list(Exp, LetrecSymbol))
     {
         Exp = let_to_application(Exp);
-        Exp->uData.PROCEDURE.Lazy = 1;
+        Exp->uData.MDL_PROCEDURE.Lazy = 1;
         goto tailcall;
     }
     else if(is_and(Exp))
@@ -126,13 +126,13 @@ tailcall:
         Arguments = list_of_values(operands(Exp), Env);
 
         if(is_procedure(Procedure) &&
-           Procedure->uData.PROCEDURE.Fn == apply_proc)
+           Procedure->uData.MDL_PROCEDURE.Fn == apply_proc)
         {
             Procedure = apply_operator(Arguments);
             Arguments = apply_operands(Arguments);
         }
         if(is_procedure(Procedure) &&
-           Procedure->uData.PROCEDURE.Fn == eval_proc)
+           Procedure->uData.MDL_PROCEDURE.Fn == eval_proc)
         {
             Exp = eval_expression(Arguments);
             Env = eval_env(Arguments);
@@ -140,15 +140,15 @@ tailcall:
         }
         if(is_procedure(Procedure))
         {
-            OBJECT *Res = (Procedure->uData.PROCEDURE.Fn)(Arguments);
+            OBJECT *Res = (Procedure->uData.MDL_PROCEDURE.Fn)(Arguments);
             return(Res);
         }
         else if(is_compound(Procedure))
         {
-            Env = extend_env(Procedure->uData.COMPOUND.Parameters,
+            Env = extend_env(Procedure->uData.MDL_COMPOUND.Parameters,
                              Arguments,
-                             Procedure->uData.COMPOUND.Env);
-            Exp = make_begin(Procedure->uData.COMPOUND.Body);
+                             Procedure->uData.MDL_COMPOUND.Env);
+            Exp = make_begin(Procedure->uData.MDL_COMPOUND.Body);
             goto tailcall;
         }
         else

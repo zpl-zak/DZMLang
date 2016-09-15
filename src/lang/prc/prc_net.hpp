@@ -10,7 +10,7 @@ def_proc(is_socket) {
 def_proc(make_socket) {
     OBJECT *Obj = make_socket();
 
-    if (Obj->uData.SOCKET.SocketId < 0) {
+    if (Obj->uData.MDL_MDL_SOCKET.SocketId < 0) {
         LOG(ERR_WARN, "Could not create socket.");
         return (Nil);
     }
@@ -21,9 +21,9 @@ def_proc(make_socket) {
 def_proc(connect) {
     struct hostent *server;
     struct sockaddr_in serv_addr;
-    int portno = (int) pair_get_a(pair_get_b(pair_get_b(Args)))->uData.FIXNUM.Value;
+    int portno = (int) pair_get_a(pair_get_b(pair_get_b(Args)))->uData.MDL_FIXNUM.Value;
 
-    server = gethostbyname((char *) (pair_get_a(pair_get_b(Args))->uData.STRING.Value));
+    server = gethostbyname((char *) (pair_get_a(pair_get_b(Args))->uData.MDL_STRING.Value));
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     bcopy((char *) server->h_addr,
@@ -31,7 +31,7 @@ def_proc(connect) {
           server->h_length);
     serv_addr.sin_port = htons(portno);
 
-    if (connect(pair_get_a(Args)->uData.SOCKET.SocketId,
+    if (connect(pair_get_a(Args)->uData.MDL_SOCKET.SocketId,
                 (struct sockaddr *) &serv_addr,
                 sizeof(serv_addr)) < 0) {
         return (False);
@@ -41,9 +41,9 @@ def_proc(connect) {
 
 def_proc(listen) {
     struct sockaddr_in serv_addr;
-    int portno = (int) pair_get_a(pair_get_b(pair_get_b(Args)))->uData.FIXNUM.Value;
-    int maxconn = (int) pair_get_a(pair_get_b(Args))->uData.FIXNUM.Value;
-    int sockId = (int) pair_get_a(Args)->uData.SOCKET.SocketId;
+    int portno = (int) pair_get_a(pair_get_b(pair_get_b(Args)))->uData.MDL_FIXNUM.Value;
+    int maxconn = (int) pair_get_a(pair_get_b(Args))->uData.MDL_FIXNUM.Value;
+    int sockId = (int) pair_get_a(Args)->uData.MDL_SOCKET.SocketId;
     bzero((char *) &serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
@@ -62,7 +62,7 @@ def_proc(accept) {
     struct sockaddr_in cli_addr;
     socklen_t clilen;
     int clientId = 0;
-    int sockId = pair_get_a(Args)->uData.SOCKET.SocketId;
+    int sockId = pair_get_a(Args)->uData.MDL_SOCKET.SocketId;
     clilen = sizeof(cli_addr);
     if ((clientId = accept(sockId,
                            (struct sockaddr *) &cli_addr,
@@ -70,8 +70,8 @@ def_proc(accept) {
         return (False);
     }
     OBJECT *Sock = alloc_object();
-    Sock->Type = SOCKET;
-    Sock->uData.SOCKET.SocketId = clientId;
+    Sock->Type = MDL_SOCKET;
+    Sock->uData.MDL_SOCKET.SocketId = clientId;
     return (Sock);
 }
 
@@ -80,26 +80,26 @@ def_proc(socket_write) {
     OBJECT *Sock = pair_get_a(Args);
 
     int n = 0;
-    //write(Sock->uData.SOCKET.SocketId, (char *) Send, sizeof(OBJECT));
+    //write(Sock->uData.MDL_SOCKET.SocketId, (char *) Send, sizeof(OBJECT));
 
     if(is_pair(Send))
     {
         while(!is_nil(Send))
         {
-            n += write(Sock->uData.SOCKET.SocketId, (char *) Send, sizeof(OBJECT));
+            n += write(Sock->uData.MDL_SOCKET.SocketId, (char *) Send, sizeof(OBJECT));
             if(is_string(Send) || is_symbol(Send))
             {
-                n += write(Sock->uData.SOCKET.SocketId, (char *) Send->uData.STRING.Value, strlen((char *)Send->uData.STRING.Value)+1);
+                n += write(Sock->uData.MDL_SOCKET.SocketId, (char *) Send->uData.MDL_STRING.Value, strlen((char *)Send->uData.MDL_STRING.Value)+1);
             }
             Send = pair_get_b(Send);
         }
     }
     else
     {
-        n = write(Sock->uData.SOCKET.SocketId, (char *) Send, sizeof(OBJECT));
+        n = write(Sock->uData.MDL_SOCKET.SocketId, (char *) Send, sizeof(OBJECT));
         if(is_string(Send) || is_symbol(Send))
         {
-            n += write(Sock->uData.SOCKET.SocketId, (char *) Send->uData.STRING.Value, strlen((char *)Send->uData.STRING.Value)+1);
+            n += write(Sock->uData.MDL_SOCKET.SocketId, (char *) Send->uData.MDL_STRING.Value, strlen((char *)Send->uData.MDL_STRING.Value)+1);
         }
     }
 
@@ -112,14 +112,14 @@ def_proc(socket_read) {
     OBJECT *Recv = alloc_object();
     OBJECT *Ret = Recv;
 
-    int n = (int) read(Sock->uData.SOCKET.SocketId, (char *) Recv, sizeof(OBJECT));
+    int n = (int) read(Sock->uData.MDL_SOCKET.SocketId, (char *) Recv, sizeof(OBJECT));
 
     if(is_pair(Recv))
     {
         while(0)
         {
             Recv = alloc_object();
-            n += (int) read(Sock->uData.SOCKET.SocketId, (char *) Recv, sizeof(OBJECT));
+            n += (int) read(Sock->uData.MDL_SOCKET.SocketId, (char *) Recv, sizeof(OBJECT));
         }
     }
 
@@ -129,7 +129,7 @@ def_proc(socket_read) {
 def_proc(socket_close) {
     OBJECT *Sock = pair_get_a(Args);
 
-    close(Sock->uData.SOCKET.SocketId);
+    close(Sock->uData.MDL_SOCKET.SocketId);
     return (OKSymbol);
 }
 
@@ -139,8 +139,8 @@ def_proc(socket_read_raw) {
 
     TEMP_MEMORY BufMemory = begin_temp(&StringArena);
 
-    int n = (int) read(Sock->uData.SOCKET.SocketId, (char *) (StringArena.Base),
-                       (size_t) (Size->uData.FIXNUM.Value));
+    int n = (int) read(Sock->uData.MDL_SOCKET.SocketId, (char *) (StringArena.Base),
+                       (size_t) (Size->uData.MDL_FIXNUM.Value));
 
     StringArena.Base[n] = 0; //NOTE(zaklaus): You have to trim the string afterwards, we won't do it implicitly here, as we don't know what you are expecting from the output.
     end_temp(BufMemory);
@@ -153,8 +153,8 @@ def_proc(socket_write_raw) {
     OBJECT *Size = pair_get_a(pair_get_b(Args));
     OBJECT *Base = pair_get_a(pair_get_b(pair_get_b(Args)));
 
-    int n = (int) write(Sock->uData.SOCKET.SocketId, (char *) (Base->uData.STRING.Value),
-                        (size_t) (Size->uData.FIXNUM.Value));
+    int n = (int) write(Sock->uData.MDL_SOCKET.SocketId, (char *) (Base->uData.MDL_STRING.Value),
+                        (size_t) (Size->uData.MDL_FIXNUM.Value));
 
     return (make_fixnum((s64) n));
 }

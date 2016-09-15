@@ -25,19 +25,19 @@ def_proc(inc)
 
      if(is_realnum(Arg0))
      {
-          Obj = make_realnum(Arg0->uData.REALNUM.Value + 1.0);
+          Obj = make_realnum(Arg0->uData.MDL_REALNUM.Value + 1.0);
      }
      else if(is_fixnum(Arg0))
      {
-          Obj = make_fixnum(Arg0->uData.FIXNUM.Value + 1);
+          Obj = make_fixnum(Arg0->uData.MDL_FIXNUM.Value + 1);
      }
      else if(is_character(Arg0))
      {
-          Obj = make_character(Arg0->uData.CHARACTER.Value + 1);
+          Obj = make_character(Arg0->uData.MDL_CHARACTER.Value + 1);
      }
      else if(is_string(Arg0))
      {
-          Obj = make_string(Arg0->uData.STRING.Value + 1);
+          Obj = make_string(Arg0->uData.MDL_STRING.Value + 1);
      }
      return(Obj);
 }
@@ -49,19 +49,19 @@ def_proc(dec)
 
      if(is_realnum(Arg0))
      {
-          Obj = make_realnum(Arg0->uData.REALNUM.Value - 1.0);
+          Obj = make_realnum(Arg0->uData.MDL_REALNUM.Value - 1.0);
      }
      else if(is_fixnum(Arg0))
      {
-          Obj = make_fixnum(Arg0->uData.FIXNUM.Value - 1);
+          Obj = make_fixnum(Arg0->uData.MDL_FIXNUM.Value - 1);
      }
      else if(is_character(Arg0))
      {
-          Obj = make_character(Arg0->uData.CHARACTER.Value - 1);
+          Obj = make_character(Arg0->uData.MDL_CHARACTER.Value - 1);
      }
      else if(is_string(Arg0))
      {
-          Obj = make_string(Arg0->uData.STRING.Value - 1);
+          Obj = make_string(Arg0->uData.MDL_STRING.Value - 1);
      }
      return(Obj);
 }
@@ -76,11 +76,11 @@ add_proc(OBJECT *Args)
     while(!is_nil(Args))
     {
         if(is_fixnum(pair_get_a(Args)))
-            Result += (pair_get_a(Args))->uData.FIXNUM.Value;
+            Result += (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
         else 
         {
             Real = 1;
-            Result += (pair_get_a(Args))->uData.REALNUM.Value;
+            Result += (pair_get_a(Args))->uData.MDL_REALNUM.Value;
         }
         Args = pair_get_b(Args);
     }
@@ -99,11 +99,11 @@ sub_proc(OBJECT *Args)
     if(!is_nil(Args))
     {
         if(is_fixnum(pair_get_a(Args)))
-            Result = (pair_get_a(Args))->uData.FIXNUM.Value;
+            Result = (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
         else 
         {
             Real = 1;
-            Result = (pair_get_a(Args))->uData.REALNUM.Value;
+            Result = (pair_get_a(Args))->uData.MDL_REALNUM.Value;
         }
         Args = pair_get_b(Args);
     }
@@ -111,7 +111,7 @@ sub_proc(OBJECT *Args)
     b32 IsAlone = 1;
     while(!is_nil(Args))
     {
-        Result -= (pair_get_a(Args))->uData.FIXNUM.Value;
+        Result -= (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
         Args = pair_get_b(Args);
         IsAlone = 0;
     }
@@ -135,18 +135,18 @@ div_proc(OBJECT *Args)
     if(!is_nil(Args))
     {
         if(is_fixnum(pair_get_a(Args)))
-            Result = (pair_get_a(Args))->uData.FIXNUM.Value;
+            Result = (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
         else 
         {
             Real = 1;
-            Result = (pair_get_a(Args))->uData.REALNUM.Value;
+            Result = (pair_get_a(Args))->uData.MDL_REALNUM.Value;
         }
         Args = pair_get_b(Args);
    }
     
     while(!is_nil(Args))
     {
-        if((pair_get_a(Args))->uData.FIXNUM.Value == 0)
+        if((pair_get_a(Args))->uData.MDL_FIXNUM.Value == 0)
         {
             LOG(ERR_WARN, "Division by zero");
             return(Nil);
@@ -154,11 +154,11 @@ div_proc(OBJECT *Args)
         }
         
         if(is_fixnum(pair_get_a(Args)))
-            Result /= (pair_get_a(Args))->uData.FIXNUM.Value;
+            Result /= (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
         else 
         {
             Real = 1;
-            Result /= (pair_get_a(Args))->uData.REALNUM.Value;
+            Result /= (pair_get_a(Args))->uData.MDL_REALNUM.Value;
         }
         Args = pair_get_b(Args);
     }
@@ -175,20 +175,20 @@ mod_proc(OBJECT *Args)
     
     if(!is_nil(Args))
     {
-        Result = (pair_get_a(Args))->uData.FIXNUM.Value;
+        Result = (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
         Args = pair_get_b(Args);
     }
     
     while(!is_nil(Args))
     {
-        if((pair_get_a(Args))->uData.FIXNUM.Value == 0)
+        if((pair_get_a(Args))->uData.MDL_FIXNUM.Value == 0)
         {
             LOG(ERR_WARN, "Division by zero");
             return(Nil);
             InvalidCodePath;
         }
         
-        Result %= (pair_get_a(Args))->uData.FIXNUM.Value;
+        Result %= (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
         Args = pair_get_b(Args);
     }
     return(make_fixnum(Result));
@@ -204,11 +204,11 @@ mul_proc(OBJECT *Args)
     while(!is_nil(Args))
     {
         if(is_fixnum(pair_get_a(Args)))
-            Result *= (pair_get_a(Args))->uData.FIXNUM.Value;
+            Result *= (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
         else 
         {
             Real = 1;
-            Result *= (pair_get_a(Args))->uData.REALNUM.Value;
+            Result *= (pair_get_a(Args))->uData.MDL_REALNUM.Value;
         }
         Args = pair_get_b(Args);
     }
@@ -274,24 +274,24 @@ def_proc(is_procedure)
 
 def_proc(char_to_integer)
 {
-    return(make_fixnum((pair_get_a(Args))->uData.CHARACTER.Value));
+    return(make_fixnum((pair_get_a(Args))->uData.MDL_CHARACTER.Value));
 }
 
 def_proc(integer_to_char)
 {
-    return(make_character((pair_get_a(Args))->uData.FIXNUM.Value));
+    return(make_character((pair_get_a(Args))->uData.MDL_FIXNUM.Value));
 }
 
 def_proc(string_to_char)
 {
-    return(make_character(*((pair_get_a(Args))->uData.STRING.Value)));
+    return(make_character(*((pair_get_a(Args))->uData.MDL_STRING.Value)));
 }
 
 def_proc(char_to_symbol)
 {
      TEMP_MEMORY Mem = begin_temp(&StringArena);
      char *Buffer = (char *)push_size(&StringArena, 2, default_arena_params());
-     sprintf(Buffer, "%c", pair_get_a(Args)->uData.CHARACTER.Value);
+     sprintf(Buffer, "%c", pair_get_a(Args)->uData.MDL_CHARACTER.Value);
      end_temp(Mem);
      return(make_symbol((u8 *)Buffer));
 }
@@ -300,7 +300,7 @@ def_proc(char_to_string)
 {
      TEMP_MEMORY Mem = begin_temp(&StringArena);
      char *Buffer = (char *)push_size(&StringArena, 2, default_arena_params());
-     sprintf(Buffer, "%c", pair_get_a(Args)->uData.CHARACTER.Value);
+     sprintf(Buffer, "%c", pair_get_a(Args)->uData.MDL_CHARACTER.Value);
      end_temp(Mem);
      return(make_string((u8 *)Buffer));
 }
@@ -309,15 +309,15 @@ def_proc(number_to_string)
 {
     TEMP_MEMORY Mem = begin_temp(&StringArena);
     char *Buffer = (char *)push_size(&StringArena, 66, default_arena_params());
-    if(is_fixnum(pair_get_a(Args))) sprintf(Buffer, "%" PRId64, (pair_get_a(Args))->uData.FIXNUM.Value);
-    else sprintf(Buffer, "%lf", (double)((pair_get_a(Args))->uData.REALNUM.Value));
+    if(is_fixnum(pair_get_a(Args))) sprintf(Buffer, "%" PRId64, (pair_get_a(Args))->uData.MDL_FIXNUM.Value);
+    else sprintf(Buffer, "%lf", (double)((pair_get_a(Args))->uData.MDL_REALNUM.Value));
     end_temp(Mem);
     return(make_string((u8 *)Buffer));
 }
 
 def_proc(string_to_number)
 {
-    char * String = (char *)((pair_get_a(Args))->uData.STRING.Value);
+    char * String = (char *)((pair_get_a(Args))->uData.MDL_STRING.Value);
     char * EndPtr = 0;
     s64 Number = strtoull(String, &EndPtr, 10);
     return(make_fixnum(Number));
@@ -330,39 +330,39 @@ def_proc(symbol_to_string)
 
 def_proc(string_to_symbol)
 {
-    return(make_symbol((pair_get_a(Args))->uData.STRING.Value));
+    return(make_symbol((pair_get_a(Args))->uData.MDL_STRING.Value));
 }
 
 def_proc(is_number_equal)
 {
      OBJECT *R = False;
-    if(pair_get_a(Args)->Type == FIXNUM)
+    if(pair_get_a(Args)->Type == MDL_FIXNUM)
     {
-        s64 Value = (pair_get_a(Args))->uData.FIXNUM.Value;
+        s64 Value = (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
         while(!is_nil(Args = pair_get_b(Args)))
         {
              if(is_fixnum(pair_get_a(Args)))
              {
-                  R = (Value == pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+                  R = (Value == pair_get_a(Args)->uData.MDL_FIXNUM.Value) ? True : False;
              }
              if(is_realnum(pair_get_a(Args)))
              {
-                  R = ((r64)Value == pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+                  R = ((r64)Value == pair_get_a(Args)->uData.MDL_REALNUM.Value) ? True : False;
              }
         }
     }
-    else if(pair_get_a(Args)->Type == REALNUM)
+    else if(pair_get_a(Args)->Type == MDL_REALNUM)
     {
-        r64 Value = (pair_get_a(Args))->uData.REALNUM.Value;
+        r64 Value = (pair_get_a(Args))->uData.MDL_REALNUM.Value;
         while(!is_nil(Args = pair_get_b(Args)))
         {
              if(is_fixnum(pair_get_a(Args)))
              {
-                  R = (Value == (r64)pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+                  R = (Value == (r64)pair_get_a(Args)->uData.MDL_FIXNUM.Value) ? True : False;
              }
              if(is_realnum(pair_get_a(Args)))
              {
-                  R = (Value == pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+                  R = (Value == pair_get_a(Args)->uData.MDL_REALNUM.Value) ? True : False;
              }
              if(R == False) return(R);
         }
@@ -373,34 +373,34 @@ def_proc(is_number_equal)
 def_proc(is_greater_than_or_equal)
 {
      OBJECT* R = 0;
-     if(pair_get_a(Args)->Type == FIXNUM)
+     if(pair_get_a(Args)->Type == MDL_FIXNUM)
      {
-          s64 Value = (pair_get_a(Args))->uData.FIXNUM.Value;
+          s64 Value = (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
           while(!is_nil(Args = pair_get_b(Args)))
           {
                if(is_fixnum(pair_get_a(Args)))
                {
-                    R = (Value >= pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+                    R = (Value >= pair_get_a(Args)->uData.MDL_FIXNUM.Value) ? True : False;
                }
                if(is_realnum(pair_get_a(Args)))
                {
-                    R = ((r64)Value >= pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+                    R = ((r64)Value >= pair_get_a(Args)->uData.MDL_REALNUM.Value) ? True : False;
                }
                if(R == False) return(R);
           }
      }
-     else if(pair_get_a(Args)->Type == REALNUM)
+     else if(pair_get_a(Args)->Type == MDL_REALNUM)
      {
-          r64 Value = (pair_get_a(Args))->uData.REALNUM.Value;
+          r64 Value = (pair_get_a(Args))->uData.MDL_REALNUM.Value;
           while(!is_nil(Args = pair_get_b(Args)))
           {
                if(is_fixnum(pair_get_a(Args)))
                {
-                    R = (Value >= (r64)pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+                    R = (Value >= (r64)pair_get_a(Args)->uData.MDL_FIXNUM.Value) ? True : False;
                }
                if(is_realnum(pair_get_a(Args)))
                {
-                    R = (Value >= pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+                    R = (Value >= pair_get_a(Args)->uData.MDL_REALNUM.Value) ? True : False;
                }
                if(R == False) return(R);
           }
@@ -411,34 +411,34 @@ def_proc(is_greater_than_or_equal)
 def_proc(is_greater_than)
 {
      OBJECT* R = 0;
-     if(pair_get_a(Args)->Type == FIXNUM)
+     if(pair_get_a(Args)->Type == MDL_FIXNUM)
      {
-          s64 Value = (pair_get_a(Args))->uData.FIXNUM.Value;
+          s64 Value = (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
           while(!is_nil(Args = pair_get_b(Args)))
           {
                if(is_fixnum(pair_get_a(Args)))
                {
-                    R = (Value > pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+                    R = (Value > pair_get_a(Args)->uData.MDL_FIXNUM.Value) ? True : False;
                }
                if(is_realnum(pair_get_a(Args)))
                {
-                    R = ((r64)Value > pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+                    R = ((r64)Value > pair_get_a(Args)->uData.MDL_REALNUM.Value) ? True : False;
                }
                if(R == False) return(R);
           }
      }
-     else if(pair_get_a(Args)->Type == REALNUM)
+     else if(pair_get_a(Args)->Type == MDL_REALNUM)
      {
-          r64 Value = (pair_get_a(Args))->uData.REALNUM.Value;
+          r64 Value = (pair_get_a(Args))->uData.MDL_REALNUM.Value;
           while(!is_nil(Args = pair_get_b(Args)))
           {
                if(is_fixnum(pair_get_a(Args)))
                {
-                    R = (Value > (r64)pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+                    R = (Value > (r64)pair_get_a(Args)->uData.MDL_FIXNUM.Value) ? True : False;
                }
                if(is_realnum(pair_get_a(Args)))
                {
-                    R = (Value > pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+                    R = (Value > pair_get_a(Args)->uData.MDL_REALNUM.Value) ? True : False;
                }
                if(R == False) return(R);
           }
@@ -449,34 +449,34 @@ def_proc(is_greater_than)
 def_proc(is_less_than)
 {
      OBJECT* R = 0;
-     if(pair_get_a(Args)->Type == FIXNUM)
+     if(pair_get_a(Args)->Type == MDL_FIXNUM)
      {
-          s64 Value = (pair_get_a(Args))->uData.FIXNUM.Value;
+          s64 Value = (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
           while(!is_nil(Args = pair_get_b(Args)))
           {
                if(is_fixnum(pair_get_a(Args)))
                {
-                    R = (Value < pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+                    R = (Value < pair_get_a(Args)->uData.MDL_FIXNUM.Value) ? True : False;
                }
                if(is_realnum(pair_get_a(Args)))
                {
-                    R = ((r64)Value < pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+                    R = ((r64)Value < pair_get_a(Args)->uData.MDL_REALNUM.Value) ? True : False;
                }
                if(R == False) return(R);
           }
      }
-     else if(pair_get_a(Args)->Type == REALNUM)
+     else if(pair_get_a(Args)->Type == MDL_REALNUM)
      {
-          r64 Value = (pair_get_a(Args))->uData.REALNUM.Value;
+          r64 Value = (pair_get_a(Args))->uData.MDL_REALNUM.Value;
           while(!is_nil(Args = pair_get_b(Args)))
           {
                if(is_fixnum(pair_get_a(Args)))
                {
-                    R = (Value < (r64)pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+                    R = (Value < (r64)pair_get_a(Args)->uData.MDL_FIXNUM.Value) ? True : False;
                }
                if(is_realnum(pair_get_a(Args)))
                {
-                    R = (Value < pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+                    R = (Value < pair_get_a(Args)->uData.MDL_REALNUM.Value) ? True : False;
                }
                if(R == False) return(R);
           }
@@ -487,34 +487,34 @@ def_proc(is_less_than)
 def_proc(is_less_than_or_equal)
 {
      OBJECT* R = 0;
-     if(pair_get_a(Args)->Type == FIXNUM)
+     if(pair_get_a(Args)->Type == MDL_FIXNUM)
      {
-          s64 Value = (pair_get_a(Args))->uData.FIXNUM.Value;
+          s64 Value = (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
           while(!is_nil(Args = pair_get_b(Args)))
           {
                if(is_fixnum(pair_get_a(Args)))
                {
-                    R = (Value <= pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+                    R = (Value <= pair_get_a(Args)->uData.MDL_FIXNUM.Value) ? True : False;
                }
                if(is_realnum(pair_get_a(Args)))
                {
-                    R = ((r64)Value <= pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+                    R = ((r64)Value <= pair_get_a(Args)->uData.MDL_REALNUM.Value) ? True : False;
                }
                if(R == False) return(R);
           }
      }
-     else if(pair_get_a(Args)->Type == REALNUM)
+     else if(pair_get_a(Args)->Type == MDL_REALNUM)
      {
-          r64 Value = (pair_get_a(Args))->uData.REALNUM.Value;
+          r64 Value = (pair_get_a(Args))->uData.MDL_REALNUM.Value;
           while(!is_nil(Args = pair_get_b(Args)))
           {
                if(is_fixnum(pair_get_a(Args)))
                {
-                    R = (Value <= (r64)pair_get_a(Args)->uData.FIXNUM.Value) ? True : False;
+                    R = (Value <= (r64)pair_get_a(Args)->uData.MDL_FIXNUM.Value) ? True : False;
                }
                if(is_realnum(pair_get_a(Args)))
                {
-                    R = (Value <= pair_get_a(Args)->uData.REALNUM.Value) ? True : False;
+                    R = (Value <= pair_get_a(Args)->uData.MDL_REALNUM.Value) ? True : False;
                }
                if(R == False) return(R);
           }
@@ -532,8 +532,8 @@ concat_tailcall:
    
     if(is_string(Text))
     {
-        Result = (char *)push_size(&StringArena, strlen((char *)Text->uData.STRING.Value)+1, default_arena_params());
-        strcpy(Result, (char *)Text->uData.STRING.Value);
+        Result = (char *)push_size(&StringArena, strlen((char *)Text->uData.MDL_STRING.Value)+1, default_arena_params());
+        strcpy(Result, (char *)Text->uData.MDL_STRING.Value);
     }
     else if(is_pair(Text))
     {
@@ -543,7 +543,7 @@ concat_tailcall:
     else
     {
         Result = (char *)push_size(&StringArena,2,default_arena_params());
-        Result[0] = (char)Text->uData.CHARACTER.Value;
+        Result[0] = (char)Text->uData.MDL_CHARACTER.Value;
         Result[1] = 0;
     }
     while(!is_nil(Args = pair_get_b(Args)))
@@ -553,8 +553,8 @@ concat_tailcall:
 concat_tailcall2:
         if(is_string(Text))
         {
-            Result = (char *)push_copy(&StringArena, strlen(Result) + strlen((char *)Text->uData.STRING.Value)+1, Result, default_arena_params());
-            strcat(Result, (char *)Text->uData.STRING.Value);
+            Result = (char *)push_copy(&StringArena, strlen(Result) + strlen((char *)Text->uData.MDL_STRING.Value)+1, Result, default_arena_params());
+            strcat(Result, (char *)Text->uData.MDL_STRING.Value);
         }
         else if(is_nil(Text))
         {
@@ -569,7 +569,7 @@ concat_tailcall2:
         {
             mi ResultEnd = strlen(Result);
             Result = (char *)push_copy(&StringArena, strlen(Result) + 2, Result, default_arena_params());
-            Result[ResultEnd] = (char)Text->uData.CHARACTER.Value;
+            Result[ResultEnd] = (char)Text->uData.MDL_CHARACTER.Value;
             Result[ResultEnd+1] = 0;
         }
     }
@@ -587,7 +587,7 @@ def_proc(cons)
 def_proc(car)
 {
     if(is_string(pair_get_a(Args)))
-        return(make_character(pair_get_a(Args)->uData.STRING.Value[0]));
+        return(make_character(pair_get_a(Args)->uData.MDL_STRING.Value[0]));
     else
         return(pair_get_a(pair_get_a(Args)));
 }
@@ -595,8 +595,8 @@ def_proc(car)
 def_proc(cdr)
 {
     if(is_string(pair_get_a(Args)) &&
-       (strlen((char *)pair_get_a(Args)->uData.STRING.Value) > 1))
-        return(make_string(pair_get_a(Args)->uData.STRING.Value+1));
+       (strlen((char *)pair_get_a(Args)->uData.MDL_STRING.Value) > 1))
+        return(make_string(pair_get_a(Args)->uData.MDL_STRING.Value+1));
     else if(is_pair(pair_get_a(Args)))
         return(pair_get_b(pair_get_a(Args)));
     else
@@ -632,25 +632,25 @@ def_proc(is_eq)
     
     switch(Obj1->Type)
     {
-        case REALNUM:
-        case FIXNUM:
+        case MDL_REALNUM:
+        case MDL_FIXNUM:
         {
-            return((Obj1->uData.FIXNUM.Value == 
-                    Obj2->uData.FIXNUM.Value) ?
+            return((Obj1->uData.MDL_FIXNUM.Value == 
+                    Obj2->uData.MDL_FIXNUM.Value) ?
                    True : False);
         }break;
         
-        case CHARACTER:
+        case MDL_CHARACTER:
         {
-            return((Obj1->uData.CHARACTER.Value == 
-                    Obj2->uData.CHARACTER.Value) ?
+            return((Obj1->uData.MDL_CHARACTER.Value == 
+                    Obj2->uData.MDL_CHARACTER.Value) ?
                    True : False);
         }break;
         
-        case STRING:
+        case MDL_STRING:
         {
-            return((!strcmp((char *)Obj1->uData.STRING.Value,
-                            (char *)Obj2->uData.STRING.Value)) ?
+            return((!strcmp((char *)Obj1->uData.MDL_STRING.Value,
+                            (char *)Obj2->uData.MDL_STRING.Value)) ?
                    True : False);
         }break;
         
@@ -706,7 +706,7 @@ def_proc(load)
     OBJECT *Result = 0;
     OBJECT *Env = GlobalEnv;
     
-    Filename = (pair_get_a(Args))->uData.STRING.Value;
+    Filename = (pair_get_a(Args))->uData.MDL_STRING.Value;
     In = fopen((char *)Filename, "r");
     if(In == 0)
     {
@@ -735,7 +735,7 @@ def_proc(read)
     FILE *In;
     OBJECT *Result;
     
-    In = is_nil(Args) ? read_input(stdin) : (pair_get_a(Args))->uData.INPUT.Stream;
+    In = is_nil(Args) ? read_input(stdin) : (pair_get_a(Args))->uData.MDL_INPUT.Stream;
     Result = read(In);
     return((Result == 0) ? EOF_Obj : Result);
 }
@@ -747,8 +747,8 @@ def_proc(write)
     
     Exp = pair_get_a(Args);
     Args = pair_get_b(Args);
-    Out = is_nil(Args) ? stdout : (pair_get_a(Args))->uData.OUTPUT.Stream;
-    b32 StripQuotes = is_nil(Args) ? 1 : is_nil(pair_get_b(Args)) ? 1 : (pair_get_a(pair_get_b(Args)))->uData.BOOLEAN.Value;
+    Out = is_nil(Args) ? stdout : (pair_get_a(Args))->uData.MDL_OUTPUT.Stream;
+    b32 StripQuotes = is_nil(Args) ? 1 : is_nil(pair_get_b(Args)) ? 1 : (pair_get_a(pair_get_b(Args)))->uData.MDL_BOOLEAN.Value;
     write(Out, Exp, StripQuotes);
     fflush(Out);
     return(OKSymbol);
@@ -759,7 +759,7 @@ def_proc(peek_char)
     FILE *In;
     s32 Result;
     
-    In = is_nil(Args) ? read_input(stdin) : (pair_get_a(Args))->uData.INPUT.Stream;
+    In = is_nil(Args) ? read_input(stdin) : (pair_get_a(Args))->uData.MDL_INPUT.Stream;
     Result = peek(In);
     return((Result == EOF) ? EOF_Obj : make_character(Result));
 }
@@ -769,7 +769,7 @@ def_proc(open_input)
     u8 *Filename;
     FILE *In;
     
-    Filename = (pair_get_a(Args))->uData.STRING.Value;
+    Filename = (pair_get_a(Args))->uData.MDL_STRING.Value;
     In = fopen((char *)Filename, "r");
     if(In == 0)
     {
@@ -783,7 +783,7 @@ def_proc(close_input)
 {
     s32 Result;
     
-    Result = fclose((pair_get_a(Args))->uData.INPUT.Stream);
+    Result = fclose((pair_get_a(Args))->uData.MDL_INPUT.Stream);
     if(Result == EOF)
     {
         LOG(ERR_WARN, "Could not close input");
@@ -802,7 +802,7 @@ def_proc(open_output)
     u8 *Filename;
     FILE *In;
     
-    Filename = (pair_get_a(Args))->uData.STRING.Value;
+    Filename = (pair_get_a(Args))->uData.MDL_STRING.Value;
     In = fopen((char *)Filename, "w");
     if(In == 0)
     {
@@ -816,7 +816,7 @@ def_proc(close_output)
 {
     s32 Result;
     
-    Result = fclose((pair_get_a(Args))->uData.INPUT.Stream);
+    Result = fclose((pair_get_a(Args))->uData.MDL_INPUT.Stream);
     if(Result == EOF)
     {
         LOG(ERR_WARN, "Could not close output");
@@ -842,8 +842,8 @@ def_proc(write_char)
     
     Char = pair_get_a(Args);
     Args = pair_get_b(Args);
-    Out = is_nil(Args) ? stdout : (pair_get_a(Args))->uData.OUTPUT.Stream;
-    putc(Char->uData.CHARACTER.Value, Out);
+    Out = is_nil(Args) ? stdout : (pair_get_a(Args))->uData.MDL_OUTPUT.Stream;
+    putc(Char->uData.MDL_CHARACTER.Value, Out);
     fflush(Out);
     return(OKSymbol);
 }
@@ -861,9 +861,9 @@ def_proc(write_string)
         char *Buffer = (char *)push_size(&StringArena, 66, default_arena_params());
         if(is_realnum(String))
         {
-            sprintf(Buffer, "%lf", (double)String->uData.REALNUM.Value);
+            sprintf(Buffer, "%lf", (double)String->uData.MDL_REALNUM.Value);
         }
-        else sprintf(Buffer, "%" PRId64, String->uData.FIXNUM.Value);
+        else sprintf(Buffer, "%" PRId64, String->uData.MDL_FIXNUM.Value);
         
         String = make_string((u8 *)Buffer);
         
@@ -871,12 +871,12 @@ def_proc(write_string)
     }
     else if(!is_string(String))
     {
-        LOG(ERR_WARN, "write-string expects 1 parameter to be: <STRING|REALNUM|FIXNUM>.");
+        LOG(ERR_WARN, "write-string expects 1 parameter to be: <MDL_STRING|MDL_REALNUM|MDL_FIXNUM>.");
         return(Nil);
     }
     Args = pair_get_b(Args);
-    Out = is_nil(Args) ? stdout : (pair_get_a(Args))->uData.OUTPUT.Stream;
-    fprintf(Out, "%s", (char *)String->uData.STRING.Value);
+    Out = is_nil(Args) ? stdout : (pair_get_a(Args))->uData.MDL_OUTPUT.Stream;
+    fprintf(Out, "%s", (char *)String->uData.MDL_STRING.Value);
     fflush(Out);
     return(OKSymbol);
 }
@@ -886,7 +886,7 @@ def_proc(read_string)
     FILE *In;
     OBJECT *Result;
     
-    In = (is_nil(pair_get_a(Args))) ? stdin : (pair_get_a(Args))->uData.INPUT.Stream;
+    In = (is_nil(pair_get_a(Args))) ? stdin : (pair_get_a(Args))->uData.MDL_INPUT.Stream;
     char *String = (char *)StringArena.Base;
     fgets(String, StringArena.Size, In);
     Result = make_string((u8 *)String);
@@ -901,7 +901,7 @@ trim_string(u8 *String);
 def_proc(trim)
 {
      if(!is_string(pair_get_a(Args))) return(pair_get_a(Args));
-     return(make_string(trim_string(pair_get_a(Args)->uData.STRING.Value)));
+     return(make_string(trim_string(pair_get_a(Args)->uData.MDL_STRING.Value)));
 }
 
 def_proc(read_char)
@@ -911,11 +911,11 @@ def_proc(read_char)
     
     if(is_string(pair_get_a(Args)))
     {
-        Result = *(pair_get_a(Args)->uData.STRING.Value);
+        Result = *(pair_get_a(Args)->uData.MDL_STRING.Value);
         return(make_character(Result));
     }
     
-    In = is_nil(Args) ? stdin : (pair_get_a(Args))->uData.INPUT.Stream;
+    In = is_nil(Args) ? stdin : (pair_get_a(Args))->uData.MDL_INPUT.Stream;
     Result = getc(In);
 #if _WIN32_
     getc(In); // Consume '\r'
@@ -935,10 +935,10 @@ def_proc(system)
     FILE *Out = stdout;
     if(!is_nil(pair_get_a(pair_get_b(Args))))
     {
-        Out = (pair_get_a(pair_get_b(Args)))->uData.OUTPUT.Stream;
+        Out = (pair_get_a(pair_get_b(Args)))->uData.MDL_OUTPUT.Stream;
     }
     
-    FILE *Sys = popen((char *)(pair_get_a(Args)->uData.STRING.Value), "r");
+    FILE *Sys = popen((char *)(pair_get_a(Args)->uData.MDL_STRING.Value), "r");
     if(!Sys)
     {
         goto system_end;
@@ -985,7 +985,7 @@ def_proc(error_reporting)
         return(OKSymbol);
     }
     
-    u8 Result = (u8)(pair_get_a(Args)->uData.FIXNUM.Value);
+    u8 Result = (u8)(pair_get_a(Args)->uData.MDL_FIXNUM.Value);
     error_reporting(Result);
     return(OKSymbol);
 }
@@ -998,7 +998,7 @@ def_proc(random)
     
     if(!is_nil(pair_get_a(Args)))
     {
-        RandomValue %= (pair_get_a(Args))->uData.FIXNUM.Value;
+        RandomValue %= (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
     }
     
     return(make_fixnum(RandomValue));
@@ -1011,71 +1011,71 @@ def_proc(error)
         LOG(ERR_WARN, "error is missing: <message>");
         return(OKSymbol);
     }
-    LOG(ERR_WARN, "Exception -> %s", (char *)pair_get_a(Args)->uData.STRING.Value);
+    LOG(ERR_WARN, "Exception -> %s", (char *)pair_get_a(Args)->uData.MDL_STRING.Value);
     return(OKSymbol);
 }
 
 def_proc(sin)
 {
-    if(pair_get_a(Args)->Type == REALNUM)
+    if(pair_get_a(Args)->Type == MDL_REALNUM)
     {
-        return(make_realnum(sin((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        return(make_realnum(sin((double)(pair_get_a(Args)->uData.MDL_REALNUM.Value))));
     }
-    return(make_realnum(sin((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    return(make_realnum(sin((double)(pair_get_a(Args)->uData.MDL_FIXNUM.Value))));
 }
 
 def_proc(cos)
 {
-    if(pair_get_a(Args)->Type == REALNUM)
+    if(pair_get_a(Args)->Type == MDL_REALNUM)
     {
-        return(make_realnum(cos((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        return(make_realnum(cos((double)(pair_get_a(Args)->uData.MDL_REALNUM.Value))));
     }
-    return(make_realnum(cos((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    return(make_realnum(cos((double)(pair_get_a(Args)->uData.MDL_FIXNUM.Value))));
 }
 
 def_proc(tan)
 {
-    if(pair_get_a(Args)->Type == REALNUM)
+    if(pair_get_a(Args)->Type == MDL_REALNUM)
     {
-        return(make_realnum(tan((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        return(make_realnum(tan((double)(pair_get_a(Args)->uData.MDL_REALNUM.Value))));
     }
-    return(make_realnum(tan((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    return(make_realnum(tan((double)(pair_get_a(Args)->uData.MDL_FIXNUM.Value))));
 }
 
 def_proc(asin)
 {
-    if(pair_get_a(Args)->Type == REALNUM)
+    if(pair_get_a(Args)->Type == MDL_REALNUM)
     {
-        return(make_realnum(asin((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        return(make_realnum(asin((double)(pair_get_a(Args)->uData.MDL_REALNUM.Value))));
     }
-    return(make_realnum(asin((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    return(make_realnum(asin((double)(pair_get_a(Args)->uData.MDL_FIXNUM.Value))));
 }
 
 def_proc(acos)
 {
-    if(pair_get_a(Args)->Type == REALNUM)
+    if(pair_get_a(Args)->Type == MDL_REALNUM)
     {
-        return(make_realnum(acos((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        return(make_realnum(acos((double)(pair_get_a(Args)->uData.MDL_REALNUM.Value))));
     }
-    return(make_realnum(acos((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    return(make_realnum(acos((double)(pair_get_a(Args)->uData.MDL_FIXNUM.Value))));
 }
 
 def_proc(atan)
 {
-    if(pair_get_a(Args)->Type == REALNUM)
+    if(pair_get_a(Args)->Type == MDL_REALNUM)
     {
-        return(make_realnum(atan((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        return(make_realnum(atan((double)(pair_get_a(Args)->uData.MDL_REALNUM.Value))));
     }
-    return(make_realnum(atan((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    return(make_realnum(atan((double)(pair_get_a(Args)->uData.MDL_FIXNUM.Value))));
 }
 
 def_proc(sqrt)
 {
-    if(pair_get_a(Args)->Type == REALNUM)
+    if(pair_get_a(Args)->Type == MDL_REALNUM)
     {
-        return(make_realnum(sqrt((double)(pair_get_a(Args)->uData.REALNUM.Value))));
+        return(make_realnum(sqrt((double)(pair_get_a(Args)->uData.MDL_REALNUM.Value))));
     }
-    return(make_realnum(sqrt((double)(pair_get_a(Args)->uData.FIXNUM.Value))));
+    return(make_realnum(sqrt((double)(pair_get_a(Args)->uData.MDL_FIXNUM.Value))));
 }
 
 def_proc(exit)
@@ -1083,7 +1083,7 @@ def_proc(exit)
      s32 ErrorCode = 0;
      if(!is_nil(pair_get_a(Args)))
      {
-          ErrorCode = pair_get_a(Args)->uData.FIXNUM.Value;
+          ErrorCode = pair_get_a(Args)->uData.MDL_FIXNUM.Value;
      }
 
      exit((int)ErrorCode);
@@ -1093,7 +1093,7 @@ def_proc(log_verbose)
 {
     if(!is_nil(pair_get_a(Args)) && !is_boolean(pair_get_a(Args)))
     {
-        LOG(ERR_WARN, "log-verbose is missing: <BOOLEAN>");
+        LOG(ERR_WARN, "log-verbose is missing: <MDL_BOOLEAN>");
         return(OKSymbol);
     }
     b32 Result = 0;
@@ -1157,7 +1157,7 @@ def_proc(sleep)
 {
      if(!is_nil(pair_get_a(Args)))
      {
-          sleepcp((int)pair_get_a(Args)->uData.FIXNUM.Value);
+          sleepcp((int)pair_get_a(Args)->uData.MDL_FIXNUM.Value);
      }
      return(OKSymbol);
      Unreachable(Args);
@@ -1165,14 +1165,14 @@ def_proc(sleep)
 
 def_proc(thread_join)
 {
-     pthread_t *Thread = (pthread_t *)(pair_get_a(Args)->uData.FIXNUM.Value);
+     pthread_t *Thread = (pthread_t *)(pair_get_a(Args)->uData.MDL_FIXNUM.Value);
      return(make_fixnum(pthread_join(*Thread, 0)));
 }
 
 /*
 def_proc(thread_exit)
 {
-     int errcode = (is_fixnum(pair_get_a(Args))) ? pair_get_a(Args)->uData.FIXNUM.Value : 0;
+     int errcode = (is_fixnum(pair_get_a(Args))) ? pair_get_a(Args)->uData.MDL_FIXNUM.Value : 0;
      pthread_exit((void *)errcode);
      return(OKSymbol);
 }
@@ -1188,7 +1188,7 @@ def_proc(serialize)
 
 def_proc(deserialize)
 {
-    char *Data = (char *)pair_get_a(Args)->uData.STRING.Value;
+    char *Data = (char *)pair_get_a(Args)->uData.MDL_STRING.Value;
     OBJECT *Out = alloc_object();
     deserialize(Out, Data);
     return(Out);
