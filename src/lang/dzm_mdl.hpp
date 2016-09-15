@@ -24,6 +24,7 @@ enum OBJECT_TYPE
 struct OBJECT
 {
     u8 Type;
+    OBJECT *Name;
     union
     {
         struct
@@ -114,6 +115,7 @@ static inline OBJECT *
 alloc_object(void)
 {
     OBJECT *Obj = push_type(GlobalArena, OBJECT, align_noclear(sizeof(OBJECT)));
+    Obj->Name = Nil;
     
     zassert(Obj);
     return(Obj);
@@ -468,6 +470,8 @@ define_variable(OBJECT *Var, OBJECT *Val, OBJECT *Env)
         Vars = pair_get_b(Vars);
         Vals = pair_get_b(Vals);
     }
+
+    Val->Name = Var;
     add_binding_to_frame(Var, Val, Frame);
 }
 

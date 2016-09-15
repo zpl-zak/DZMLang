@@ -146,12 +146,16 @@ write(FILE *Out, OBJECT *Obj, b32 StripQuotes)
 
      case MDL_COMPOUND:
      {
-          fprintf(Out, "#<BUILTIN>");
+          write(Out, make_pair(DefineSymbol,
+                               make_pair(
+                                       make_pair(Obj->Name,
+                                                 Obj->uData.MDL_COMPOUND.Parameters),
+                                       Obj->uData.MDL_COMPOUND.Body)), StripQuotes);
      }break;
 
      case MDL_PROCEDURE:
      {
-          fprintf(Out, "#<PROCEDURE>");
+          fprintf(Out, "#<NATIVE>");
           //write_pair(Out, *(Obj->uData.PROCEDURE.Fn));
      }break;
 
