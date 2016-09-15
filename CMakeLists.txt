@@ -12,15 +12,7 @@ set(SOURCE_FILES
 
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_executable(ctime ctime.c)
-
-if(WIN32)
-  target_link_libraries(ctime winmm.lib)
-endif()
-
 add_executable(dzm ${SOURCE_FILES})
-
-
 
 if(WIN32)
 
