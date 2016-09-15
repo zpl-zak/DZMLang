@@ -12,8 +12,16 @@ test_load_file(const char *Name)
     
     if(File == 0)
     {
-        fprintf(stderr, "File not found\n");
-        exit(1);
+        if(!strcmp(Name,"std/stdlib.scm"))
+        {
+            LOG(ERR_WARN, "%s\n", "Standard Library couldn't be loaded! Running in minimal mode!");
+            return;
+        }
+        else
+        {
+            fprintf(stderr, "File not found\n");
+            exit(0);
+        }
     }
     OBJECT *Exp;
     while(1)
