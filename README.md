@@ -13,14 +13,7 @@ Functional language written in C++.
 * Compatible with various others scripts written for different interpreters. (TLC, SICP-esque interpreters)
 
 ## Build Instructions
-* On Windows
-   * Windows is not officially supported yet. Check issue #31.
-* On Linux and Mac OS X
-   * Make sure you have the latest stable version of G++/clang++ compiler installed.
-   * Make sure you have the latest version of **libreadline6** and **libreadline6-dev** installed (if applicable).
-   * `mkdir build` and `cd build` into it.
-   * `cmake ../` inside of the directory
-   * `make` the project.
+* See [How to compile](https://github.com/zaklaus/DZMLang/wiki/How-to-compile) for build instructions.
 
 ## Credits
 *  **Hal Abelson's, Jerry Sussman's and Julie Sussman's Structure and Interpretation of Computer Programs** (MIT Press, 1984; ISBN 0-262-01077-1; known as SICP) book.
