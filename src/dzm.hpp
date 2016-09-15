@@ -18,8 +18,12 @@
 #include <ctype.h>
 
 #if defined(__linux) || defined(__APPLE__)
+
+#if !defined(__ANDROID__) && !defined(__APPLE__)
 #include <readline/readline.h>
 #include <readline/history.h>
+#endif
+
 #include <unistd.h>
 
 #include <sys/types.h>
@@ -27,11 +31,10 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-
+#if defined(__linux)
 static inline FILE * 
 read_input(FILE *Stream)
 {
-    #if defined(__linux) 
     char *Buffer = readline("");
     FILE *NewStream = Stream;
     
@@ -42,9 +45,6 @@ read_input(FILE *Stream)
     }
     
     return(NewStream);
-    #else
-    return(Stream);
-    #endif
 }
 #else
 static inline FILE *
@@ -52,11 +52,14 @@ read_input(FILE *Stream)
 {
     return(Stream);
 }
+#endif
+
+#endif
+
 #if defined(_WIN32_)
 #include <Windows.h>
 #endif
 
-#endif
 
 typedef int8_t int8;
 typedef int16_t int16;
