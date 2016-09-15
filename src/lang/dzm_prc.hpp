@@ -325,7 +325,7 @@ def_proc(string_to_number)
 
 def_proc(symbol_to_string)
 {
-    return(make_string((pair_get_a(Args))->uData.SYMBOL.Value));
+    return(make_string((pair_get_a(Args))->uData.MDL_SYMBOL.Value));
 }
 
 def_proc(string_to_symbol)
@@ -1178,22 +1178,6 @@ def_proc(thread_exit)
 }
 */
 
-def_proc(serialize)
-{
-    char *Out = (char *)StringArena.Base;
-    char *End = serialize(Out, pair_get_a(Args));
-    *End = 0;
-    return(make_string((u8 *)Out));
-}
-
-def_proc(deserialize)
-{
-    char *Data = (char *)pair_get_a(Args)->uData.MDL_STRING.Value;
-    OBJECT *Out = alloc_object();
-    deserialize(Out, Data);
-    return(Out);
-}
-
 static inline void
 init_builtins(OBJECT *Env)
 {
@@ -1291,9 +1275,6 @@ init_builtins(OBJECT *Env)
     add_procedure("log-verbose"    , log_verbose_proc);
     
     add_procedure("random"         , random_proc);
-
-    add_procedure("serialize"      , serialize_proc);
-    add_procedure("deserialize"      , deserialize_proc);
 
     install_net_module(Env);
 }

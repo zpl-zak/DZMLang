@@ -10,7 +10,7 @@ def_proc(is_socket) {
 def_proc(make_socket) {
     OBJECT *Obj = make_socket();
 
-    if (Obj->uData.MDL_MDL_SOCKET.SocketId < 0) {
+    if (Obj->uData.MDL_SOCKET.SocketId < 0) {
         LOG(ERR_WARN, "Could not create socket.");
         return (Nil);
     }

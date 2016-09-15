@@ -34,24 +34,24 @@ write(FILE *Out, OBJECT *Obj, b32 StripQuotes)
      }
      switch(Obj->Type)
      {
-     case FIXNUM:
+     case MDL_FIXNUM:
      {
-          fprintf(Out, "%" PRId64, Obj->uData.FIXNUM.Value);
+          fprintf(Out, "%" PRId64, Obj->uData.MDL_FIXNUM.Value);
      }break;
 
-     case REALNUM:
+     case MDL_REALNUM:
      {
-          fprintf(Out, "%.17Lg", Obj->uData.REALNUM.Value);
+          fprintf(Out, "%.17Lg", Obj->uData.MDL_REALNUM.Value);
      }break;
 
-     case BOOLEAN:
+     case MDL_BOOLEAN:
      {
           fprintf(Out, "#%c", is_false(Obj) ? 'f' : 't');
      }break;
 
-     case CHARACTER:
+     case MDL_CHARACTER:
      {
-          u8 C = Obj->uData.CHARACTER.Value;
+          u8 C = Obj->uData.MDL_CHARACTER.Value;
           if(!StripQuotes)fprintf(Out, "#\\");
           switch(C)
           {
@@ -80,9 +80,9 @@ write(FILE *Out, OBJECT *Obj, b32 StripQuotes)
           }
      }break;
 
-     case STRING:
+     case MDL_STRING:
      {
-          u8 *Str = Obj->uData.STRING.Value;
+          u8 *Str = Obj->uData.MDL_STRING.Value;
           if(!StripQuotes)fprintf(Out, "%c", '"');
 
           while(*Str != 0)
@@ -122,50 +122,50 @@ write(FILE *Out, OBJECT *Obj, b32 StripQuotes)
           if(!StripQuotes)fprintf(Out, "%c", '"');
      }break;
 
-     case NIL:
+     case MDL_NIL:
      {
-          fprintf(Out, "()");
+          fprintf(Out, "'()");
      }break;
 
-     case PAIR:
+     case MDL_PAIR:
      {
           fprintf(Out, "(");
           write_pair(Out, Obj);
           fprintf(Out, ")");
      }break;
 
-     case SYMBOL:
+     case MDL_SYMBOL:
      {
           if(Obj == VarSymbol)break;
 
           if(!(Obj == OKSymbol) || ((Obj == OKSymbol) && PrintOk))
           {
-               fprintf(Out, "%s", Obj->uData.SYMBOL.Value);
+               fprintf(Out, "%s", Obj->uData.MDL_SYMBOL.Value);
           }
      }break;
 
-     case COMPOUND:
+     case MDL_COMPOUND:
      {
           fprintf(Out, "#<BUILTIN>");
      }break;
 
-     case PROCEDURE:
+     case MDL_PROCEDURE:
      {
           fprintf(Out, "#<PROCEDURE>");
           //write_pair(Out, *(Obj->uData.PROCEDURE.Fn));
      }break;
 
-     case INPUT:
+     case MDL_INPUT:
      {
           fprintf(Out, "#<INPUT>");
      }break;
 
-     case OUTPUT:
+     case MDL_OUTPUT:
      {
           fprintf(Out, "#<OUTPUT>");
      }break;
 
-     case SOCKET:
+     case MDL_SOCKET:
      {
           fprintf(Out, "#<SOCKET>");
      }break;
