@@ -51,7 +51,7 @@ trim_string(u8 *String)
 {
      if(String == 0 || *String == 0) return(String);
      u8 *Char = String;
-     u32 Size = strlen((char *)String);
+     size_t Size = strlen((char *)String);
      if(Size == 0) return(String);
 
      while(isspace(Char[Size-1])) Char[--Size] = 0;

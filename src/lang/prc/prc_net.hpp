@@ -16,6 +16,10 @@
 
 #if !defined(PRC_NET_H)
 
+#ifdef WIN32
+#define _WINSOCK_DEPRECATED_NO_WARNINGS 1
+#endif
+
 def_proc(is_socket) {
     return (is_socket(pair_get_a(Args)) ? True : False);
 }
@@ -78,7 +82,7 @@ def_proc(accept) {
     int clientId = 0;
     int sockId = pair_get_a(Args)->uData.MDL_SOCKET.SocketId;
     clilen = sizeof(cli_addr);
-    if ((clientId = accept(sockId,
+    if ((clientId = (int)accept(sockId,
                            (struct sockaddr *) &cli_addr,
                            &clilen)) < 0) {
         return (False);
@@ -108,7 +112,7 @@ def_proc(socket_write) {
             if(is_string(Send) || is_symbol(Send))
             {
 #ifdef WIN32
-				n += send(Sock->uData.MDL_SOCKET.SocketId, (char *)Send->uData.MDL_STRING.Value, strlen((char *)Send->uData.MDL_STRING.Value) + 1, NULL);
+				n += send(Sock->uData.MDL_SOCKET.SocketId, (char *)Send->uData.MDL_STRING.Value, (int)(strlen((char *)Send->uData.MDL_STRING.Value) + 1), NULL);
 #else
                 n += write(Sock->uData.MDL_SOCKET.SocketId, (char *) Send->uData.MDL_STRING.Value, strlen((char *)Send->uData.MDL_STRING.Value)+1);
 #endif
@@ -126,7 +130,7 @@ def_proc(socket_write) {
 		if(is_string(Send) || is_symbol(Send))
         {
 #ifdef WIN32
-			n += send(Sock->uData.MDL_SOCKET.SocketId, (char *)Send->uData.MDL_STRING.Value, strlen((char *)Send->uData.MDL_STRING.Value) + 1, NULL);
+			n += send(Sock->uData.MDL_SOCKET.SocketId, (char *)Send->uData.MDL_STRING.Value, (int)(strlen((char *)Send->uData.MDL_STRING.Value) + 1), NULL);
 #else
 			n += write(Sock->uData.MDL_SOCKET.SocketId, (char *) Send->uData.MDL_STRING.Value, strlen((char *)Send->uData.MDL_STRING.Value)+1);
 #endif
@@ -181,7 +185,7 @@ def_proc(socket_read_raw) {
     TEMP_MEMORY BufMemory = begin_temp(&StringArena);
 #ifdef WIN32
 	int n = (int)recv(Sock->uData.MDL_SOCKET.SocketId, (char *)(StringArena.Base),
-		(size_t)(Size->uData.MDL_FIXNUM.Value), NULL);
+		(int)(Size->uData.MDL_FIXNUM.Value), NULL);
 #else
     int n = (int) read(Sock->uData.MDL_SOCKET.SocketId, (char *) (StringArena.Base),
                        (size_t) (Size->uData.MDL_FIXNUM.Value));
@@ -200,7 +204,7 @@ def_proc(socket_write_raw) {
 
 #ifdef WIN32
 	int n = (int)send(Sock->uData.MDL_SOCKET.SocketId, (char *)(Base->uData.MDL_STRING.Value),
-		(size_t)(Size->uData.MDL_FIXNUM.Value), NULL);
+		(int)(Size->uData.MDL_FIXNUM.Value), NULL);
 #else
     int n = (int) write(Sock->uData.MDL_SOCKET.SocketId, (char *) (Base->uData.MDL_STRING.Value),
                         (size_t) (Size->uData.MDL_FIXNUM.Value));

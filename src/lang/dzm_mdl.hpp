@@ -223,7 +223,7 @@ make_socket()
      OBJECT *Obj = alloc_object();
      Obj->Type = MDL_SOCKET;
 
-     int sockId = socket(AF_INET, SOCK_STREAM, 0);
+     int sockId = (int)socket(AF_INET, SOCK_STREAM, 0);
 	 Obj->uData.MDL_SOCKET.SocketId = sockId;
      return(Obj);
 }

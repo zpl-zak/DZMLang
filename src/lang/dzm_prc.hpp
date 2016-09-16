@@ -112,12 +112,12 @@ add_proc(OBJECT *Args)
 static inline OBJECT *
 sub_proc(OBJECT *Args)
 {
-    real32 Result = 0;
+    r64 Result = 0;
     b32 Real = 0;
     if(!is_nil(Args))
     {
         if(is_fixnum(pair_get_a(Args)))
-            Result = (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
+            Result = (r64)(pair_get_a(Args))->uData.MDL_FIXNUM.Value;
         else 
         {
             Real = 1;
@@ -148,16 +148,15 @@ sub_proc(OBJECT *Args)
 static inline OBJECT *
 div_proc(OBJECT *Args)
 {
-    real32 Result = 0;
-    b32 Real = 0;
+    r64 Result = 0;
+    b32 Real = 1;
     if(!is_nil(Args))
     {
         if(is_fixnum(pair_get_a(Args)))
-            Result = (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
+            Result = (r64)(pair_get_a(Args))->uData.MDL_FIXNUM.Value;
         else 
         {
-            Real = 1;
-            Result = (pair_get_a(Args))->uData.MDL_REALNUM.Value;
+            Result = (r64)(pair_get_a(Args))->uData.MDL_REALNUM.Value;
         }
         Args = pair_get_b(Args);
    }
@@ -172,11 +171,10 @@ div_proc(OBJECT *Args)
         }
         
         if(is_fixnum(pair_get_a(Args)))
-            Result /= (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
+            Result = (r64)Result / (r64)(pair_get_a(Args))->uData.MDL_FIXNUM.Value;
         else 
         {
-            Real = 1;
-            Result /= (pair_get_a(Args))->uData.MDL_REALNUM.Value;
+            Result /= (r64)(pair_get_a(Args))->uData.MDL_REALNUM.Value;
         }
         Args = pair_get_b(Args);
     }
@@ -187,9 +185,48 @@ div_proc(OBJECT *Args)
 }
 
 static inline OBJECT *
+div_full_proc(OBJECT *Args)
+{
+	r64 Result = 0;
+	b32 Real = 0;
+	if (!is_nil(Args))
+	{
+		if (is_fixnum(pair_get_a(Args)))
+			Result = (r64)(pair_get_a(Args))->uData.MDL_FIXNUM.Value;
+		else
+		{
+			Result = (r64)(pair_get_a(Args))->uData.MDL_REALNUM.Value;
+		}
+		Args = pair_get_b(Args);
+	}
+
+	while (!is_nil(Args))
+	{
+		if ((pair_get_a(Args))->uData.MDL_FIXNUM.Value == 0)
+		{
+			LOG(ERR_WARN, "Division by zero");
+			return(Nil);
+			InvalidCodePath;
+		}
+
+		if (is_fixnum(pair_get_a(Args)))
+			Result = (r64)Result / (r64)(pair_get_a(Args))->uData.MDL_FIXNUM.Value;
+		else
+		{
+			Result /= (r64)(pair_get_a(Args))->uData.MDL_REALNUM.Value;
+		}
+		Args = pair_get_b(Args);
+	}
+	if (!Real)
+		return(make_fixnum((s64)Result));
+	else
+		return(make_realnum(Result));
+}
+
+static inline OBJECT *
 mod_proc(OBJECT *Args)
 {
-    s32 Result = 0;
+    s64 Result = 0;
     
     if(!is_nil(Args))
     {
@@ -216,7 +253,7 @@ mod_proc(OBJECT *Args)
 static inline OBJECT *
 mul_proc(OBJECT *Args)
 {
-    real32 Result = 1;
+    r64 Result = 1;
     b32 Real = 0;
     
     while(!is_nil(Args))
@@ -297,7 +334,7 @@ def_proc(char_to_integer)
 
 def_proc(integer_to_char)
 {
-    return(make_character((pair_get_a(Args))->uData.MDL_FIXNUM.Value));
+    return(make_character((u8)(pair_get_a(Args))->uData.MDL_FIXNUM.Value));
 }
 
 def_proc(string_to_char)
@@ -906,7 +943,7 @@ def_proc(read_string)
     
     In = (is_nil(pair_get_a(Args))) ? stdin : (pair_get_a(Args))->uData.MDL_INPUT.Stream;
     char *String = (char *)StringArena.Base;
-    fgets(String, StringArena.Size, In);
+    fgets(String, (int)StringArena.Size, In);
     Result = make_string((u8 *)String);
     StringArena.Used = 0;
     
@@ -1017,7 +1054,7 @@ def_proc(error_reporting)
 
 def_proc(random)
 {
-    srand(time(0));
+    srand((unsigned int)time(0));
     
     s64 RandomValue = (s64)rand();
     
@@ -1105,7 +1142,7 @@ def_proc(sqrt)
 
 def_proc(exit)
 {
-     s32 ErrorCode = 0;
+     s64 ErrorCode = 0;
      if(!is_nil(pair_get_a(Args)))
      {
           ErrorCode = pair_get_a(Args)->uData.MDL_FIXNUM.Value;
@@ -1156,6 +1193,7 @@ init_builtins(OBJECT *Env)
     add_procedure("-"   , sub_proc);
     add_procedure("*"   , mul_proc);
     add_procedure("/"   , div_proc);
+	add_procedure("//", div_full_proc);
     add_procedure("%"   , mod_proc);
     
     add_procedure("nil?"     , is_nil_proc);
