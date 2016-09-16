@@ -128,7 +128,9 @@ is_nil(OBJECT *Obj);
 static inline OBJECT *
 alloc_object(void)
 {
-    OBJECT *Obj = push_type(GlobalArena, OBJECT, align_noclear(sizeof(OBJECT)));
+	//push_type(GlobalArena, OBJECT, align_noclear(sizeof(OBJECT)));
+	OBJECT *Obj = (OBJECT *)malloc(sizeof(OBJECT));
+	//GlobalArena->Used += sizeof(OBJECT);
     Obj->Name = Nil;
     
     zassert(Obj);
@@ -629,7 +631,7 @@ make_symbol(u8 *Value)
         Elem = pair_get_b(Elem);
     }
     Obj->Type = MDL_SYMBOL;
-    Obj->uData.MDL_SYMBOL.Value = (u8 *)push_size(GlobalArena, strlen((char *)Value) + 1, default_arena_params());
+	Obj->uData.MDL_SYMBOL.Value = (u8 *)malloc(strlen((char *)Value) + 1);//push_size(GlobalArena, strlen((char *)Value) + 1, default_arena_params());
     zassert(Obj->uData.MDL_SYMBOL.Value != 0);
     
     string_copy(Obj->uData.MDL_SYMBOL.Value, Value);

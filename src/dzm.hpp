@@ -165,7 +165,8 @@ typedef uintptr_t umm;
 #define UL_ (u8 *)
 #define L_  (s8 *)
 
-#define MAX_VM_SIZE     4096 * 1024 * 32
+//HACK(zaklaus): Disabling GlobalArena, we use malloc() for now.
+#define MAX_VM_SIZE     4096
 
 static inline void
 zero_size(memory_index Size, void *Ptr)

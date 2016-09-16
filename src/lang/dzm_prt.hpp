@@ -197,7 +197,7 @@ write(FILE *Out, OBJECT *Obj, b32 StripQuotes)
 
      if(PrintMemUsage)
      {
-          LOG(ERR_INFO, "Free: %d, Total: %d", (int)get_arena_size_remaining(GlobalArena, default_arena_params()), (int)GlobalArena->Size);
+          //LOG(ERR_INFO, "Free: %d, Total: %d", (int)get_arena_size_remaining(GlobalArena, default_arena_params()), (int)GlobalArena->Size);
      }
 }
 

@@ -1027,9 +1027,10 @@ system_end:
 
 def_proc(arena_mem)
 {
-    return(make_pair(make_fixnum(
+	return(make_fixnum(0));
+    	/*make_pair(make_fixnum(
         get_arena_size_remaining(GlobalArena, default_arena_params())),
-        make_fixnum(GlobalArena->Size)));
+        make_fixnum(GlobalArena->Size)));*/
     Unreachable(Args);
 }
 

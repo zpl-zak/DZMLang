@@ -138,7 +138,7 @@ push_size(MEMORY_ARENA *Arena, mi SizeInit, ARENA_PUSH_PARAMS Params)
 {
     mi Size = get_effective_size_for(Arena, SizeInit, Params);
     
-    zassert((Arena->Used + Size) <= Arena->Size);
+	zassert((Arena->Used + Size) <= Arena->Size);
     
     mi AlignmentOffset = get_alignment_offset(Arena, Params.Alignment);
     void *Result = Arena->Base + Arena->Used + AlignmentOffset;
@@ -245,8 +245,8 @@ MEMORY_ARENA TempArena;
 void
 init_mem(void)
 {
-    initialize_arena(&StringArena, Megabytes(64), malloc(Megabytes(64)));
-    initialize_arena(&TempArena, Megabytes(32), malloc(Megabytes(32)));
+    initialize_arena(&StringArena, Megabytes(1), malloc(Megabytes(1)));
+    initialize_arena(&TempArena, Megabytes(1), malloc(Megabytes(1)));
 }
 
 #define push_struct(Arena, type, ...) (type *)push_size(Arena, sizeof(type), ## __VA_ARGS__)
