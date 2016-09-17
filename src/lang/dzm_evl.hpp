@@ -137,7 +137,7 @@ tailcall:
     else if(is_application(Exp))
     {
         Procedure = eval(op(Exp), Env);
-        Arguments = list_of_values(operands(Exp), Env);
+        Arguments = list_of_values(operands(Exp), Env, 0);
 
         if(is_procedure(Procedure) &&
            Procedure->uData.MDL_PROCEDURE.Fn == apply_proc)
@@ -154,6 +154,8 @@ tailcall:
         }
         if(is_procedure(Procedure))
         {
+			//Arguments = list_of_values(operands(Exp), Env, 1);
+			//write(stdout, Arguments);
             OBJECT *Res = (Procedure->uData.MDL_PROCEDURE.Fn)(Arguments);
             return(Res);
         }
@@ -167,8 +169,6 @@ tailcall:
         }
         else
         {
-             //LOG(ERR_WARN, "Unknown procedure type: %s", Exp->uData.SYMBOL.Value);
-             //InvalidCodePath;
              Exp = pair_get_a(Exp);
              goto tailcall;
         }

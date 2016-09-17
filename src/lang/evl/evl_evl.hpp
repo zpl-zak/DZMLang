@@ -24,17 +24,21 @@ is_variadic(OBJECT *Exp)
 }
 
 static inline OBJECT *
-list_of_values(OBJECT *Exps, OBJECT *Env)
+list_of_values(OBJECT *Exps, OBJECT *Env, b32 ShouldEval)
 {
     if(is_no_operands(Exps))
     {
         return(Nil);
     }
-    else
-    {
-         return(make_pair(eval(first_operand(Exps), Env),
-                         list_of_values(rest_operands(Exps), Env)));
-    }
+
+	OBJECT *Arg = first_operand(Exps);
+	if(1)//ShouldEval || is_quoted(Arg) || is_variable(Arg) || is_procedure(Arg))
+	{
+		Arg = eval(Arg, Env);
+
+	}
+	return(make_pair(Arg,
+	                 list_of_values(rest_operands(Exps), Env, ShouldEval)));
 }
 
 static inline OBJECT *
