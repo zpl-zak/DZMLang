@@ -63,7 +63,7 @@ test_repl(void)
     PrintOk = 1;
     for(;;)
     {
-        printf(": ");
+        //printf(": ");
         FILE *Stream = read_input(stdin);
         write(stdout, eval(read_fn(Stream), GlobalEnv));
         printf("\n");
