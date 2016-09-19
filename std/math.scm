@@ -29,6 +29,15 @@
         (sqrt-iter (improve guess exp))))
   (sqrt-iter x e))
 
+(define (poly root lst)
+  (let ((result 0.0))
+    (define (poly-iter r l)
+      (if (not (nil? l))
+          (begin (set! result ((+ (* result r) (car l))))
+                 (poly-iter r (cdr l)))
+          result))
+    (poly-iter root lst)))
+
 (define (average-2 x y)
     (/ (+ x y) 2))
 
