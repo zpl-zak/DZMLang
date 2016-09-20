@@ -160,9 +160,10 @@ write(FILE *Out, OBJECT *Obj, b32 StripQuotes)
 
      case MDL_COMPOUND:
      {
+          OBJECT *Name = (is_nil(Obj->Name)) ? make_symbol(UL_"lambda") : Obj->Name;
           write(Out, make_pair(DefineSymbol,
                                make_pair(
-                                       make_pair(Obj->Name,
+                                       make_pair(Name,
                                                  Obj->uData.MDL_COMPOUND.Parameters),
                                        Obj->uData.MDL_COMPOUND.Body)), StripQuotes);
      }break;
@@ -170,7 +171,6 @@ write(FILE *Out, OBJECT *Obj, b32 StripQuotes)
      case MDL_PROCEDURE:
      {
           fprintf(Out, "#<NATIVE>");
-          //write_pair(Out, *(Obj->uData.PROCEDURE.Fn));
      }break;
 
      case MDL_INPUT:

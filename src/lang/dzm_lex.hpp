@@ -62,7 +62,7 @@ trim_string(u8 *String)
 }
 
 static inline void
-eat_whitespace(FILE *In)
+eat_whitespace(FILE *In, b32 EndOnWhitespace = 0)
 {
     s32 C;
     
@@ -79,6 +79,10 @@ eat_whitespace(FILE *In)
         }
         
         ungetc(C, In);
+        if(EndOnWhitespace)
+        {
+             ungetc(C, In);
+        }
         break;
     }
 }
@@ -141,7 +145,14 @@ read_character(FILE *In)
                 return(make_character(' '));
             }
         }break;
-        
+    case 'v':
+    {
+         if(peek(In) == 'a')
+         {
+              eat_expected_string(In, "ar");
+              return(True);
+         }
+    }
         case 'n':
         {
             if(peek(In) == 'e')
