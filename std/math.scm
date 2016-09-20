@@ -26,17 +26,15 @@
   (define (sqrt-iter guess exp)
     (if (good? guess)
         guess
-        (sqrt-iter (improve guess exp))))
+        (sqrt-iter (improve guess exp) e)))
   (sqrt-iter x e))
 
 (define (poly root lst)
-  (let ((result 0.0))
-    (define (poly-iter r l)
-      (if (not (nil? l))
-          (begin (set! result ((+ (* result r) (car l))))
-                 (poly-iter r (cdr l)))
-          result))
-    (poly-iter root lst)))
+  (define (poly-iter root product l)
+    (if (nil? l)
+        product
+        (poly-iter root (+ (* product root) (car l)) (cdr l))))
+  (poly-iter root 0.0 lst))
 
 (define (average-2 x y)
     (/ (+ x y) 2))
