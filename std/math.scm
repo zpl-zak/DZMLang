@@ -29,12 +29,12 @@
         (sqrt-iter (improve guess exp) e)))
   (sqrt-iter x e))
 
-(define (poly root lst)
-  (define (poly-iter root product l)
+(define (horner root lst)
+  (define (horner-iter root product l)
     (if (nil? l)
         product
-        (poly-iter root (+ (* product root) (car l)) (cdr l))))
-  (poly-iter root 0.0 lst))
+        (horner-iter root (+ (* product root) (car l)) (cdr l))))
+  (horner-iter root 0.0 lst))
 
 (define (average-2 x y)
     (/ (+ x y) 2))
@@ -166,7 +166,10 @@
           (* base (expmod base (- exp 1) m))
           m))))
 
-(define pi 3.14159265359)
+(define pi 3.1415926535897932)
+(define piover180 0.0174532925199432957)
+(define (deg2rad x) (* x piover180))
+(define (rad2deg x) (/ x piover180))
 (define e 2.71828182846)
 
 (define (make-bignum num)
