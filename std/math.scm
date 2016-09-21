@@ -4,7 +4,7 @@
   (define (iter a b)
     (if (= b 0)
         a
-        (iter (/ a 10) (- b 1))))
+        (iter (* a 0.1) (- b 1))))
   (! sqrt-guess (iter 1.0 x)))
 
 (define (sqrt-2 x)
@@ -28,6 +28,12 @@
         guess
         (sqrt-iter (improve guess exp) e)))
   (sqrt-iter x e))
+
+(define (pytaghoras a b c)
+  (cond ((= a 0) (sqrt (- (square c) (square b))))
+        ((= b 0) (sqrt (- (square c) (square a))))
+        ((= c 0) (sqrt (+ (square a) (square b))))
+        (else (= (square c) (+ (square a) (square b))))))
 
 (define (horner root lst)
   (define (horner-iter root product l)
