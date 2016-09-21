@@ -611,6 +611,12 @@ pair_nth(OBJECT *Pair, s64 n)
      OBJECT *Obj = Pair;
      while(n-- != 0)
      {
+          if(!is_pair(Obj))
+          {
+               LOG(ERR_WARN, "Can't access element out of list's bounds!");
+               return(Nil);
+          }
+
           Obj = pair_get_b(Obj);
      }
      return(pair_get_a(Obj));
