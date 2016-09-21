@@ -29,7 +29,7 @@
         (sqrt-iter (improve guess exp) e)))
   (sqrt-iter x e))
 
-(define (pytaghoras a b c)
+(define (pytagoras a b c)
   (cond ((= a 0) (sqrt (- (square c) (square b))))
         ((= b 0) (sqrt (- (square c) (square a))))
         ((= c 0) (sqrt (+ (square a) (square b))))
