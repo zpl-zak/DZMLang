@@ -46,12 +46,11 @@
     (/ (+ x y) 2))
 
 (define (average x)
-  (begin
-    (define (average-iter l)
-      (if (nil? l)
-          0
-          (+ (car l) (average-iter (cdr l)))))
-      (/ (average-iter x) (length x) 1.0)))
+  (define (average-iter l)
+    (if (nil? l)
+        0
+        (+ (car l) (average-iter (cdr l)))))
+  (/ (average-iter x) (length x) 1.0))
 
 (define (square x) (* x x))
 

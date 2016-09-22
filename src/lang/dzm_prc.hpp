@@ -228,11 +228,20 @@ mod_proc(OBJECT *Args)
 {
      s64 Result = 0;
 
+     if(is_realnum(pair_get_a(Args)))
+     {
+          r64 Value = pair_get_a(Args)->uData.MDL_REALNUM.Value;
+          if(trunc(Value) != Value) Value = -1;
+
+          pair_set_a(Args, make_fixnum(Value));
+     }
+
      if(!is_nil(Args))
      {
           Result = (pair_get_a(Args))->uData.MDL_FIXNUM.Value;
           Args = pair_get_b(Args);
      }
+
 
      while(!is_nil(Args))
      {

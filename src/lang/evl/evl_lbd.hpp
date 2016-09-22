@@ -24,7 +24,8 @@ make_lambda(OBJECT *Parameters, OBJECT *Body)
 static inline b32
 is_lambda(OBJECT *Exp)
 {
-    return(is_tagged_list(Exp, LambdaSymbol));
+    return(is_tagged_list(Exp, LambdaSymbol) ||
+           is_tagged_list(Exp, ShortLambdaSymbol));
 }
 
 static inline OBJECT *

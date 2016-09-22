@@ -308,6 +308,7 @@ OBJECT *OKSymbol;
 OBJECT *ShortSetSymbol;
 OBJECT *SetSymbol;
 OBJECT *LambdaSymbol;
+OBJECT *ShortLambdaSymbol;
 OBJECT *BeginSymbol;
 OBJECT *CondSymbol;
 OBJECT *ArrayAccessSymbol;
@@ -567,6 +568,7 @@ init_defs(void)
      ShortSetSymbol = make_symbol(UL_"!");
      IfSymbol = make_symbol(UL_"if");
      LambdaSymbol = make_symbol(UL_"lambda");
+     ShortLambdaSymbol = make_symbol(UL_"&");
      BeginSymbol = make_symbol(UL_"begin");
      CondSymbol = make_symbol(UL_"cond");
      ElseSymbol = make_symbol(UL_"else");

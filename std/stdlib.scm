@@ -134,6 +134,11 @@
         (f)
         (repeat f (cdr n)))))
 
+(define (contains x l)
+  (cond ((nil? l) #f)
+        ((eq? x (car l)) #t)
+        (else (contains x (cdr l)))))
+
 (define (filter predicate sequence)
   (cond ((null? sequence) nil)
         ((predicate (car sequence))

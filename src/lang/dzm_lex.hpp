@@ -35,7 +35,7 @@ is_initial(s32 C)
 {
     return(isalpha(C) || C == '*' || C == '/' || C == '>' ||
            C == '<'   || C == '=' || C == '?' || C == '!' ||
-           C == '_'   || C == '%');
+           C == '_'   || C == '%' || C == '&');
 }
 
 static inline s32
