@@ -60,6 +60,12 @@ read_input(FILE *Stream)
     
     return(NewStream);
 }
+#else
+static inline FILE *
+read_input(FILE *Stream)
+{
+    return(Stream);
+}
 #endif
 
 #else
