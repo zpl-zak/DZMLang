@@ -1,4 +1,4 @@
-# DZMLang [![Build Status](https://travis-ci.org/zaklaus/DZMLang.svg?branch=master)](https://travis-ci.org/zaklaus/DZMLang) [![Apache 2 licensed](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)](https://github.com/zaklaus/DZMLang/blob/master/LICENSE)
+# DZMLang [![Build Status](https://travis-ci.org/arogan-group/DZMLang.svg?branch=master)](https://travis-ci.org/arogan-group/DZMLang) [![Apache 2 licensed](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)](https://github.com/arogan-group/DZMLang/blob/master/LICENSE)
 
 Functional language written in C++.
 
